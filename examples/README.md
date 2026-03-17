@@ -8,20 +8,34 @@ Each sub-directory is an independent Ada project with its own GNAT project file 
 
 ```
 examples/
-  hello_comms/      -- minimal IPC command-pattern example
-  simulated_rt/     -- real-time loop with simulated hardware
-  distributed_app/  -- multi-node application skeleton
+  ring/             -- minimal IPC command-pattern example
+  gyrator_example/  -- real-time loop in simulated
+  toms/             -- multi-node application skeleton
 ```
 
 ## Building an example
 
 ```
-cd examples/hello_comms
-gprbuild -P hello_comms.gpr
-./bin/hello_comms
+cd examples/gyrator_example
+gprbuild -aP../.. gyrator_ex.gpr
+./client_main
 ```
+
+## Running a distributed example
+
+```
+cd ../drivers
+gprbuild -aP.. p4.gpr
+cd ../examples/gyrator_example
+env P4PATH="../../launch.pro" ../../drivers/p4
+```
+
+This uses ssh to launch the application
+
 
 ## Conventions
 
 * Every example must build cleanly against the library in `src/`.
-* Keep examples small and focused; complex scenarios belong in `test/` or `docs/`.
+* Keep examples small and focused; complex scenarios belong in `test/`.
+
+
