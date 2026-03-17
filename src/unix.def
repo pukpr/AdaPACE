@@ -1,0 +1,1 @@
+"gnu-ip.ads"  -DHOST=Int -DSTDCALL=C -DSOCKET=""

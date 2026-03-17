@@ -1,0 +1,277 @@
+with Interfaces.C.Strings;
+with Interfaces.C.Pointers;
+with System;
+with Gnu.Env;
+
+package Gnu.Ip is
+
+    ---------------------------------------------------
+    -- GNU.IP - OS Adaptation data for IP, sockets, etc
+    ---------------------------------------------------
+
+    Host_Type : constant String := Gnu.Env.Getenv ("HOSTTYPE", "unknown");
+
+    package Thin is
+	generic package Pointers renames Interfaces.C.Pointers;
+
+
+	package C renames Interfaces.C;
+	package Strings renames C.Strings;
+
+	use type C.Int;
+	--  This is an ugly hack to be able to declare the Failure constant
+	--  below.
+
+	Success : constant C.Int := 0;
+	Failure : constant C.Int := -1;
+
+	type Int_Access is access all C.Int;
+	pragma Convention (C, Int_Access);
+	--  Access to C integers.
+
+	type Chars_Ptr_Array is array (C.Size_T range <>) of
+				    aliased Strings.Chars_Ptr;
+
+	package Chars_Ptr_Pointers is
+	    new Pointers (C.Size_T, Strings.Chars_Ptr,
+			  Chars_Ptr_Array, Strings.Null_Ptr);
+	--  Arrays of C (char *).
+
+	type In_Addr is
+	    record
+		S_B1, S_B2, S_B3, S_B4 : C.Unsigned_Char;
+	    end record;
+	pragma Convention (C, In_Addr);
+	--  Internet address.
+
+	type In_Addr_Access is access all In_Addr;
+	pragma Convention (C, In_Addr_Access);
+	--  Access to internet address.
+
+	Inaddr_Any : aliased constant In_Addr := (others => 0);
+	--  Any internet address (all the interfaces).
+
+	type In_Addr_Access_Array is
+	    array (Positive range <>) of aliased In_Addr_Access;
+	pragma Convention (C, In_Addr_Access_Array);
+	package In_Addr_Access_Pointers is
+	    new Pointers (Positive, In_Addr_Access, In_Addr_Access_Array, null);
+	--  Array of internet addresses.
+
+	type Sockaddr is
+	    record
+		Sa_Family : C.Unsigned_Short;
+		Sa_Data : C.Char_Array (1 .. 14);
+	    end record;
+	pragma Convention (C, Sockaddr);
+	--  Socket address.
+
+	type Sockaddr_Access is access all Sockaddr;
+	pragma Convention (C, Sockaddr_Access);
+	--  Access to socket address.
+
+	type Sockaddr_In is
+	    record
+		Sin_Family : C.Unsigned_Short;
+		Sin_Port : C.Unsigned_Short := 0;
+		Sin_Addr : In_Addr := Inaddr_Any;
+		Sin_Zero : C.Char_Array (1 .. 8) := (others => C.Char'Val (0));
+	    end record;
+	pragma Convention (C, Sockaddr_In);
+	--  Internet socket address.
+
+	type Sockaddr_In_Access is access all Sockaddr_In;
+	pragma Convention (C, Sockaddr_In_Access);
+	--  Access to internet socket address.
+
+	type Hostent is
+	    record
+		H_Name : Strings.Chars_Ptr;
+		H_Aliases : Chars_Ptr_Pointers.Pointer;
+		H_Addrtype : C.$HOST;
+		H_Length : C.$HOST;
+		H_Addr_List : In_Addr_Access_Pointers.Pointer;
+	    end record;
+	pragma Convention (C, Hostent);
+	--  Host entry.
+
+	type Hostent_Access is access all Hostent;
+	pragma Convention (C, Hostent_Access);
+	--  Access to host entry.
+
+	function C_Accept
+		     (S : C.Int; Addr : Sockaddr_Access; Addrlen : access C.Int)
+		     return C.Int;
+	function C_Accept
+		     (S : C.Int; Addr : Sockaddr_In_Access; Addrlen : access C.Int)
+		     return C.Int;
+	function C_Accept
+		     (S : C.Int; Addr : System.Address; Addrlen : access C.Int)
+		     return C.Int;
+
+	function C_Bind (S : C.Int; Name : Sockaddr_Access; Namelen : C.Int)
+			return C.Int;
+	function C_Bind (S : C.Int; Name : Sockaddr_In_Access; Namelen : C.Int)
+			return C.Int;
+	function C_Bind (S : C.Int; Name : System.Address; Namelen : C.Int)
+			return C.Int;
+
+	function C_Close (Fildes : C.Int) return C.Int;
+
+	function C_Connect (S : C.Int; Name : Sockaddr_Access; Namelen : C.Int)
+			   return C.Int;
+	function C_Connect (S : C.Int; Name : Sockaddr_In_Access; Namelen : C.Int)
+			   return C.Int;
+	function C_Connect (S : C.Int; Name : System.Address; Namelen : C.Int)
+			   return C.Int;
+
+
+	function C_Gethostbyaddr
+		     (Addr : Strings.Chars_Ptr; Length : C.Int; Typ : C.Int)
+		     return Hostent_Access;
+
+	function C_Gethostbyname
+		     (Name : Strings.Chars_Ptr) return Hostent_Access;
+
+	function C_Gethostname
+		     (Name : Strings.Chars_Ptr; Namelen : C.Int) return C.Int;
+
+	function C_Getsockname
+		     (S : C.Int; Name : Sockaddr_Access; Namelen : access C.Int)
+		     return C.Int;
+	function C_Getsockname
+		     (S : C.Int; Name : Sockaddr_In_Access; Namelen : access C.Int)
+		     return C.Int;
+
+	function C_Inet_Addr (Cp : Strings.Chars_Ptr)
+			     return Interfaces.Unsigned_32;
+
+	function C_Listen (S, Backlog : C.Int) return C.Int;
+
+	function C_Recv (S : C.Int; Buf : Strings.Chars_Ptr; Len, Flags : C.Int)
+			return C.Int;
+	function C_Recv (S : C.Int; Buf : System.Address; Len, Flags : C.Int)
+			return C.Int;
+
+	function C_Send (S : C.Int;
+			 Msg : Strings.Chars_Ptr;
+			 Len : C.Int;
+			 Flags : C.Int) return C.Int;
+	function C_Send (S : C.Int;
+			 Msg : System.Address;
+			 Len : C.Int;
+			 Flags : C.Int) return C.Int;
+
+	function C_Setsockopt (S : C.Int;
+			       Level : C.Int;
+			       Optname : C.Int;
+			       Optval : System.Address;
+			       Optlen : C.Int) return C.Int;
+
+	function C_Shutdown (S : C.Int; How : C.Int) return C.Int;
+	procedure C_Shutdown (S : C.Int; How : C.Int);
+
+	function C_Socket (Domain, Typ, Protocol : C.Int) return C.Int;
+
+	function C_Htonl (Val : in Interfaces.C.Unsigned_Long)
+			 return Interfaces.C.Unsigned_Long;
+
+	function C_Ntohl (Val : in Interfaces.C.Unsigned_Long)
+			 return Interfaces.C.Unsigned_Long;
+
+
+	--
+	-- UDP/Multicast 
+	--
+
+	function C_Recvfrom (S : C.Int;
+			     Buf : System.Address;
+			     Len : C.Int;
+			     Flags : C.Int;
+			     From : System.Address;
+			     Fromlen : access C.Int) return C.Int;
+
+	function C_Sendto (S : C.Int;
+			   Msg : System.Address;
+			   Len : C.Int;
+			   Flags : C.Int;
+			   To : System.Address;
+			   Tolen : C.Int) return C.Int;
+
+	type Ip_Mreq is
+	    record
+		Imr_Multiaddr : In_Addr;
+		Imr_Interface : In_Addr := Inaddr_Any;
+	    end record;
+	pragma Convention (C, Ip_Mreq);
+	--  Multicast structure
+
+    private
+
+	pragma Import ($STDCALL, C_Accept, "accept");
+	pragma Import ($STDCALL, C_Bind, "bind");
+	pragma Import ($STDCALL, C_Close, "close" & $SOCKET);
+	pragma Import ($STDCALL, C_Connect, "connect");
+	pragma Import ($STDCALL, C_Gethostbyaddr, "gethostbyaddr");
+	pragma Import ($STDCALL, C_Gethostbyname, "gethostbyname");
+	pragma Import ($STDCALL, C_Gethostname, "gethostname");
+	pragma Import ($STDCALL, C_Getsockname, "getsockname");
+	pragma Import ($STDCALL, C_Inet_Addr, "inet_addr");
+	pragma Import ($STDCALL, C_Listen, "listen");
+	pragma Import ($STDCALL, C_Recv, "recv");
+	pragma Import ($STDCALL, C_Send, "send");
+	pragma Import ($STDCALL, C_Setsockopt, "setsockopt");
+	pragma Import ($STDCALL, C_Shutdown, "shutdown");
+	pragma Import ($STDCALL, C_Socket, "socket");
+	pragma Import ($STDCALL, C_Htonl, "htonl");
+	pragma Import ($STDCALL, C_Ntohl, "ntohl");
+
+	pragma Import ($STDCALL, C_Recvfrom, "recvfrom");
+	pragma Import ($STDCALL, C_Sendto, "sendto");
+
+    end Thin;
+
+    package Constants is
+	Pc_Port : Integer := Boolean'Pos (Host_Type = "ppc" or
+					  Host_Type = "wintel");
+        -- for PC Windows or LINUX use "wintel"
+	Af_Inet : constant := 2;
+	Sock_Stream : Thin.C.Int := Thin.C.Int (2 - Pc_Port);
+	Sock_Dgram : Thin.C.Int := Thin.C.Int (1 + Pc_Port);
+	So_Reuseaddr : constant := 4;
+	So_Reuseport : constant := 16#0200#;  -- sgi/irix
+	Sol_Socket : constant := 65535;
+	Ipproto_Tcp : constant := 6; -- for setsockopt
+	Tcp_Nodelay : constant := 1; -- for setsockopt
+
+	Ipproto_Ip : constant := 0;
+
+        --
+	-- This is the multicast setup for Lynx, Sun, SGI. 
+	-- (windows untested)
+	--
+	Sun_Port : Integer := 4 * Boolean'Pos (Host_Type = "sun4");
+	Ppc_Port : Integer := 11 * Boolean'Pos (Host_Type = "ppc");
+	Win_Port : Integer := 18 * Boolean'Pos (Host_Type = "windows");
+	Multicast_Port : Integer := Sun_Port + Ppc_Port + Win_Port;
+
+	Ip_Multicast_Ttl : Thin.C.Int := Thin.C.Int (21 - Multicast_Port);
+	Ip_Multicast_Loop : Thin.C.Int := Thin.C.Int (22 - Multicast_Port);
+	Ip_Add_Membership : Thin.C.Int := Thin.C.Int (23 - Multicast_Port);
+	Ip_Drop_Membership : Thin.C.Int := Thin.C.Int (24 - Multicast_Port);
+
+    end Constants;
+
+private
+
+#if Win then
+    -- This is stuff for starting up the WinSock
+    function Start_Winsock return Integer;
+    pragma Import (C, Start_Winsock);
+    Startup : Integer := Start_Winsock;
+#end if;
+
+------------------------------------------------------------------------------
+-- $id: gnu-ip.prep,v 1.1 09/16/2002 20:20:01 pukitepa Exp $
+------------------------------------------------------------------------------
+end Gnu.Ip;
