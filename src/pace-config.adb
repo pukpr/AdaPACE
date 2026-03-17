@@ -22,9 +22,10 @@ package body Pace.Config is
    Debug : Boolean := Pace.Getenv ("PACE_CONFIG_DEBUG", 0) = 1;
    Get_Separator : constant Character := GNAT.OS_Lib.Path_Separator;
    CN : constant String := Ada.Command_Line.Command_Name;
-   Current : constant String :=   -- binary placed in bin/$OS
-    CN(CN'First..Ada.Strings.Fixed.Index(CN, "/", Ada.Strings.Backward)) & "../../ssom/";
-   Pace_Home : constant String := Current & Get_Separator & Current & "../../Common/ssom/";
+   -- Current : constant String :=   -- binary placed in bin/$OS
+   -- CN(CN'First..Ada.Strings.Fixed.Index(CN, "/", Ada.Strings.Backward)) & "../../ssom/";
+   Pace_Home : constant String := Pace.Getenv ("PACE", ".");
+   -- Current & Get_Separator & Current & "../../Common/ssom/";
 
    Simulation_Start : Time;
 

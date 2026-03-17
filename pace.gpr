@@ -1,0 +1,107 @@
+--with "xmlada";
+
+project Pace is
+
+   type Sys_Type is ("Linux", "SunOS", "Windows_NT");
+   System : Sys_Type := external ("OS", "Linux");
+
+   type Arch_Type is ("i686", "x86_64");
+   Arch : Arch_Type := external ("ARCH", "i686");
+
+   Lib_Dir := "";
+   March_Flag := "";
+   PIC_Flag := "";
+   Gnat_Link_Flags := ();
+
+ --  case Arch is
+ --     when "i686" =>
+ --        Lib_Dir := "lib/" & System;
+ --        March_Flag := "-march=i686";
+ --     when "x86_64" =>
+ --        Lib_Dir := "lib64/" & System;
+ --        March_Flag := "-march=native";
+ --        PIC_Flag := "-fPIC";
+ --        Gnat_Link_Flags := ("-shared-libgcc", "-lgnat", "-lgnarl");
+ --  end case;
+
+   Multi := external ("MULTI", "1"); -- multiprocessing
+   Branch := external ("BRANCH", ""); -- if alternate binary directories needed
+   -- Rdynamic used for applications with unresolved upreferences during linkage
+   Rdynamic := external ("RDYNAMIC", "-g"); -- "-g" => 'do nothing'  "-rdynamic" => 'shared lib'
+   Opt := external ("OPTLEVEL", "-O2"); -- "-pg" => 'profiling'
+   Exp := external ("EXPERIMENTAL", ""); -- experimental platform code (optional)
+   Deb := external ("DEBUG", "-g");   -- Debug 
+   GDB := external ("GGDB", "-ggdb"); -- Debug for GDB
+
+   Execs := "bin/" & System & Branch;
+   Objs := Execs & "/obj";
+   Libs := Lib_Dir & Branch;
+
+   for Languages use ("ada");
+   --for Main_Language use "ada";
+
+
+   for Source_Dirs use (--"platform/" & Exp,
+                        --"platform/" & System & "/ada",
+                        "src", -- "ada", 
+			"src/xml", 
+			--"ada/gnat",
+                        --"plugins/smscomms", 
+			--"plugins/dvs",
+                        "drivers");
+
+   for Main use ("es.adb");
+
+
+
+   package Builder is
+      for Default_Switches("ada") use ("-gnatQ", "-s", "-j" & Multi);
+      -- the switch "-gnatep=[unix|win].def" allows us to preprocess at this point
+   end Builder;
+
+   package Compiler is
+      case System is
+         when "Linux" | "SunOS" | "Windows_NT" =>
+            for Default_Switches ("ada") use (
+               Deb, 
+               GDB,
+               --"-pipe",
+               March_Flag,
+               PIC_Flag,
+               Opt,
+               -- "-gnatwe",
+
+               -- "-gnaty3h",
+
+               "-gnat12");
+
+      end case;
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-static", "-E");
+   end Binder;
+
+   package Linker is
+      case System is
+         when "Windows_NT" =>
+           for Default_Switches("ada") use ("-g", "-lwsock32", 
+                                            "-Xlinker", "--stack=0xFD000");
+                                        --  "-Xlinker","--stack=0x80000,0x1000",
+                                        --  "-Xlinker","--heap=0x80000,0x1000");
+         when "Linux" =>
+           for Default_Switches("ada") use (Rdynamic);
+         when "SunOS" =>
+           for Default_Switches("ada") use (Rdynamic, "-lsocket", "-lnsl");
+      end case;
+   end Linker;
+
+   package Ide is
+      for Vcs_Kind use "Subversion";
+   end Ide;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("");
+   end Pretty_Printer;
+
+end Pace;

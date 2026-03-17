@@ -1,9 +1,9 @@
 with Pace.Strings;
 with Pace.Tcp.Http;
-with Pace.Log;
+with Pace.Log.System;
 with Pace.Server.Dispatch;
 with Pace.Server.Home;
-with Ses.Codetest;
+--with Ses.Codetest;
 with Ses.Pp;
 with Text_Io;
 

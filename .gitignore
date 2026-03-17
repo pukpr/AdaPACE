@@ -3,3 +3,10 @@
 
 # Ada Library Information
 *.ali
+
+# artifacts
+trace.out
+*.stderr
+*.stdout
+
+

@@ -1,0 +1,20 @@
+<html>
+<title>Debugging</title>
+<body>
+<h1>Debugging Page</h1>
+
+Show  <a href="ENVIRONMENT" target="T">Environment</a> | 
+      <a href="ARGUMENTS" target="T">Arguments</a> |
+      <a href="pace.log.system.tasking_debug" target="T">Tasks</a> (on console)
+<p/>
+<form target="T" method="GET" action="pace.log.system.back_trace">
+  <input type="SUBMIT" value="Enter HEX addresses to trace back">
+  <input type="TEXT" size="100" name="set" value=""> (from top stack down)
+</form>
+
+<iframe name="T" width="100%" height="75%" />
+
+</body>
+</html>
+
+
