@@ -17,3 +17,12 @@ run (5, "localhost", "P4 is ready", "localhost", trace(true)).
 run (6, "localhost", "P4 is ready", "localhost", trace(true)).
 
 group (1, from(1), to(6), wait(0.0)).
+
+color(1,blue,black).
+color(2,yellow,black).
+color(3,red,black).
+color(4,green,black).
+color(5,magenta,black).
+color(6,cyan,black).
+color(_,white,black).
+
