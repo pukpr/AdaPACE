@@ -1,0 +1,12 @@
+with "../../pace.gpr";
+
+project Assembly is
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Main use ("plc_main.adb", "conveyor_main.adb", "robot_a_main.adb", 
+                 "robot_b_main.adb", "robot_c_main.adb", "vision_main.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+end Assembly;
