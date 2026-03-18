@@ -1,0 +1,11 @@
+with "../../pace.gpr";
+
+project Max_Finder is
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Main use ("server_main.adb", "worker_main.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+end Max_Finder;
