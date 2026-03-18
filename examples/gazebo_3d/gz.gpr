@@ -1,9 +1,9 @@
-project P4 extends "pace.gpr" is
+project gz extends "pace.gpr" is
 
    for Source_Dirs use (".");
    for Object_Dir use "obj";
    for Exec_Dir use ".";
-   for Main use ("p4.adb", "es.adb", "web_server.adb", "generic_p4_launcher.adb" );
+   for Main use ("test_cw.adb");
 
    package Builder is
       for Default_Switches ("ada") use ("-g");
@@ -13,4 +13,4 @@ project P4 extends "pace.gpr" is
        for Default_Switches ("ada") use ("-gnat12", "-gnatQ");
    end Compiler;
 
-end P4;
+end gz;

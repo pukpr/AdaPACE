@@ -27,7 +27,7 @@ package body Pace.Keyed_Shared_Memory is
       use System.Storage_Elements;
       Id : Integer;
    begin
-      -- Pool.Size := Size_In_Storage_Elements;
+      Pool.Size := Size_In_Storage_Elements;
       Id        :=
          Shmget
            (Pool.Key,

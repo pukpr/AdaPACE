@@ -26,9 +26,7 @@ package Pace.Keyed_Shared_Memory is
    use System.Storage_Pools;
    use System.Storage_Elements;
 
-   type Block (Key : Integer;
-               Size: System.Storage_Elements.Storage_Count) is new
-	             Root_Storage_Pool with private;
+   type Block (Key : Integer) is new Root_Storage_Pool with private;
 
    procedure Allocate
      (Pool                     : in out Block;
@@ -50,11 +48,9 @@ package Pace.Keyed_Shared_Memory is
 
 private
 
-   type Block (Key : Integer;
-               Size: System.Storage_Elements.Storage_Count) is new
-	              Root_Storage_Pool with record
+   type Block (Key : Integer) is new Root_Storage_Pool with record
       Shm_Id : Integer;
-      -- Size   : System.Storage_Elements.Storage_Count := 0;
+      Size   : System.Storage_Elements.Storage_Count;
    end record;
 
    ----------------------------------------------------------------------------
