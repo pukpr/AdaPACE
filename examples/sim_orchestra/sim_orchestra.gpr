@@ -1,0 +1,11 @@
+with "../../pace.gpr";
+
+project Sim_Orchestra is
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Main use ("sim_main.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+end Sim_Orchestra;

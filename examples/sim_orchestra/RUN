@@ -1,0 +1,1 @@
+env PACE_NODE=0 PACE_SIM=1 ./obj/sim_main
