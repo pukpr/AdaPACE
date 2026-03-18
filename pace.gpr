@@ -70,9 +70,7 @@ project Pace is
                PIC_Flag,
                Opt,
                -- "-gnatwe",
-
                -- "-gnaty3h",
-
                "-gnat12");
 
       end case;
@@ -95,10 +93,6 @@ project Pace is
            for Default_Switches("ada") use (Rdynamic, "-lsocket", "-lnsl");
       end case;
    end Linker;
-
-   package Ide is
-      for Vcs_Kind use "Subversion";
-   end Ide;
 
    package Pretty_Printer is
       for Default_Switches ("ada") use ("");
