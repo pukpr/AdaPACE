@@ -11,14 +11,12 @@ package Assembly is
    procedure Input (Obj : in Tray_Loaded); -- Conveyor -> PLC
 
    -- 2. Vision System
-   type Inspect_Tray is new Pace.Msg with null record;
-   procedure Input (Obj : in Inspect_Tray); -- PLC -> Vision
-
-   type Inspection_Result is new Pace.Msg with record
-      Offset_X : Float;
-      Offset_Y : Float;
+   type Inspect_Tray is new Pace.Msg with record
+      Offset_X : Float := 0.0;
+      Offset_Y : Float := 0.0;
    end record;
-   procedure Input (Obj : in Inspection_Result); -- Vision -> PLC
+   -- Send_Inout dispatches to Inout primitive
+   procedure Inout (Obj : in out Inspect_Tray); -- PLC <-> Vision
 
    -- 3. Robot A (SCARA - Cell Placement)
    type Prepare_A is new Pace.Msg with null record;

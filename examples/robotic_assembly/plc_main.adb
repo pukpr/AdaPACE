@@ -15,18 +15,6 @@ procedure PLC_Main is
       Cmd_PlaceA   : Assembly.Place_Cells;
       Cmd_PickB    : Assembly.Pick_Busbar;
       Cmd_WeldC    : Assembly.Weld_Cells;
-
-      -- Internal state tracking
-      Tray_At_Station : Boolean := False;
-      Vision_Data     : Boolean := False;
-      Offset_X, Offset_Y : Float := 0.0;
-
-      -- Overriding the Input to update local state in the task context
-      -- (Actually PACE handles this via message dispatch, but for a simple cycle
-      --  we need to synchronize responses. In a real system, the PLC would be
-      --  a state machine. Here we use PACE's synchronous send mechanism where appropriate
-      --  or simple event sequencing).
-
    begin
       Pace.Log.Wait (2.0); -- Let everything boot
 
@@ -40,17 +28,17 @@ procedure PLC_Main is
 
          -- Once Tray is loaded, Start Inspection
          Pace.Log.Put_Line ("PLC: Tray at station. Starting Vision Inspection...");
-         Pace.Socket.Send_Inout (Cmd_Inspect); -- Using Inout to wait for data (pseudo-sync)
-         -- Actually our Assembly spec used Input for async return, 
-         -- but for this demo PLC sequence, we'll assume the cycle waits.
+         -- Synchronous call: blocks until Vision's Inout(Obj) returns
+         Pace.Socket.Send_Inout (Cmd_Inspect); 
          
-         -- Simulation: In a real PACE app, the PLC would receive Assembly.Inspection_Result 
-         -- which would trigger the next state.
-         
+         Pace.Log.Put_Line ("PLC: Received Vision Offsets (" & 
+                            Float'Image(Cmd_Inspect.Offset_X) & "," & 
+                            Float'Image(Cmd_Inspect.Offset_Y) & ")");
+
          -- High Speed Core: Placement
-         Pace.Log.Put_Line ("PLC: Adjusting coordinates and commanding Robot A to Place.");
-         Cmd_PlaceA.Offset_X := 0.01; -- Usually derived from message
-         Cmd_PlaceA.Offset_Y := -0.02;
+         Pace.Log.Put_Line ("PLC: Commanding Robot A to Place with vision adjustments.");
+         Cmd_PlaceA.Offset_X := Cmd_Inspect.Offset_X;
+         Cmd_PlaceA.Offset_Y := Cmd_Inspect.Offset_Y;
          Pace.Socket.Send (Cmd_PlaceA, Ack => True);
 
          -- Concurrent: Pick Busbar (B) and Prepare Welding (C)

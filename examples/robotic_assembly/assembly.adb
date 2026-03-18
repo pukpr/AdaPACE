@@ -19,25 +19,15 @@ package body Assembly is
       Pace.Log.Put_Line ("PLC: Confirmed Tray Loaded.");
    end Input;
 
-   -- Vision implementation
-   procedure Input (Obj : in Inspect_Tray) is
-      Result : Inspection_Result;
+   -- Vision implementation (Synchronous Two-Way)
+   procedure Inout (Obj : in out Inspect_Tray) is
    begin
       Pace.Log.Put_Line ("Vision: Inspecting empty tray for debris...");
       Pace.Log.Wait (0.5);
-      Result.Offset_X := 0.01; -- Simulated offset
-      Result.Offset_Y := -0.02;
-      Pace.Log.Put_Line ("Vision: Inspection complete. Sending offsets to PLC.");
-      Pace.Socket.Send (Result);
-   end Input;
-
-   -- PLC callback for Vision
-   procedure Input (Obj : in Inspection_Result) is
-   begin
-      Pace.Log.Put_Line ("PLC: Received Inspection Result (" & 
-                         Float'Image(Obj.Offset_X) & "," & 
-                         Float'Image(Obj.Offset_Y) & ")");
-   end Input;
+      Obj.Offset_X := 0.01; -- Simulated offset
+      Obj.Offset_Y := -0.02;
+      Pace.Log.Put_Line ("Vision: Inspection complete. Returning offsets.");
+   end Inout;
 
    -- Robot A implementation
    procedure Input (Obj : in Prepare_A) is
