@@ -1,0 +1,1 @@
+gprbuild -aP../.. handshake.gpr

@@ -1,0 +1,11 @@
+with "../../pace.gpr";
+
+project Handshake is
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Main use ("initiator_main.adb", "responder_main.adb", "verifier_main.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+end Handshake;
