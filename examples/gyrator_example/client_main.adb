@@ -34,7 +34,7 @@ begin
    Pace.Socket.Send_Out (Status_Request);
    Ada.Text_IO.Put_Line ("Client: Status is " & Gyrator.Status_Type'Image(Status_Request.Value));
    
-   delay 2.0;
+   pace.log.wait(2.0);
    
    -- Send Halt
    Ada.Text_IO.Put_Line ("Client: Sending Halt...");

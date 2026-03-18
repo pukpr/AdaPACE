@@ -1,13 +1,12 @@
 with Pace.Log;
 with Producer_Pkg;
 with Processor_Pkg;
-with Consumer_Pkg;
+--with Consumer_Pkg;
 with Ada.Text_IO;
 
 procedure Sim_Main is
-   function ID is new Pace.Log.Unit_ID;
 begin
-   Pace.Log.Agent_Id (ID);
+   Pace.Log.Agent_Id;
    Ada.Text_IO.Put_Line ("Discrete Event Simulation Started (Node 0).");
    
    -- In simulation mode (PACE_SIM=1), this will jump through time

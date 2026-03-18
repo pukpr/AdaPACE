@@ -8,7 +8,7 @@ procedure Initiator_Main is
    function ID is new Pace.Log.Unit_ID;
    P : Handshake.Propose;
 begin
-   Pace.Log.Agent_Id (ID);
+   Pace.Log.Agent_Id;  -- For non-distributed "main" DES mode
    Ada.Text_IO.Put_Line ("Initiator Node 1 Started.");
 
    -- Wait for other nodes to be ready

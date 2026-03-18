@@ -16,6 +16,7 @@ procedure PLC_Main is
       Cmd_PickB    : Assembly.Pick_Busbar;
       Cmd_WeldC    : Assembly.Weld_Cells;
    begin
+      Pace.Log.Agent_Id (ID);
       Pace.Log.Wait (2.0); -- Let everything boot
 
       loop
@@ -55,7 +56,7 @@ procedure PLC_Main is
    end Conductor;
 
 begin
-   Pace.Log.Agent_Id (ID);
+   Pace.Log.Agent_Id;
    Ada.Text_IO.Put_Line ("PLC Conductor (Node 1) Started.");
    Ses.Pp.Parser;
 exception
