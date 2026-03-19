@@ -124,6 +124,10 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
+      <link name="neck">
+        <pose>0 0 0.1265 0 0 -1.3870399358228831e-06</pose>
+        <inertial>
+          <pose>-1.0000000000000001e-05 0 -0.02742 0 0 0</pose>
           <mass>0.064420000000000005</mass>
           <inertia>
             <ixx>7.4993000000000005e-05</ixx>
