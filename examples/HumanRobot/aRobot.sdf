@@ -81,7 +81,7 @@
     </scene>
     <model name='Nao'>
       <pose>0 0 0.34999999999999998 0 0 0</pose>
-      <link name='Torso'>
+      <link name='torso'>
         <pose>0 0 0 0 0 0</pose>
         <inertial>
           <pose>-0.00413 0 0.04342 0 0 0</pose>
@@ -124,32 +124,6 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='World' type='fixed'>
-        <child>Torso</child>
-        <parent>world</parent>
-        <axis>
-          <xyz>0 0 1</xyz>
-          <limit>
-            <lower>-inf</lower>
-            <upper>inf</upper>
-            <effort>inf</effort>
-            <velocity>inf</velocity>
-            <stiffness>100000000</stiffness>
-            <dissipation>1</dissipation>
-          </limit>
-          <dynamics>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-            <damping>0</damping>
-            <friction>0</friction>
-          </dynamics>
-        </axis>
-        <pose>0 0 0 0 0 0</pose>
-      </joint>
-      <link name='Neck'>
-        <pose>0 0 0.1265 0 0 -1.3870399358228831e-06</pose>
-        <inertial>
-          <pose>-1.0000000000000001e-05 0 -0.02742 0 0 0</pose>
           <mass>0.064420000000000005</mass>
           <inertia>
             <ixx>7.4993000000000005e-05</ixx>
@@ -175,8 +149,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='HeadYaw' type='revolute'>
-        <child>Neck</child>
-        <parent>Torso</parent>
+        <child>neck</child>
+        <parent>torso</parent>
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
@@ -216,7 +190,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='Head'>
+      <link name='head'>
         <pose>0 0 0.1265 -1.3977607196138039e-26 -0.39062398673468363 -5.2746357878706762e-10</pose>
         <inertial>
           <pose>-0.0011199999999999999 0 0.052580000000000002 0 0 0</pose>
@@ -267,8 +241,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='HeadPitch' type='revolute'>
-        <child>Head</child>
-        <parent>Neck</parent>
+        <child>head</child>
+        <parent>neck</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -308,7 +282,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LPelvis'>
+      <link name='lpelvis'>
         <pose>0 0.050000000000000003 -0.08500000000000002 -0.0081307131093677071 0.12683297833987414 -0.12786562822362446</pose>
         <inertial>
           <pose>-0.0078100000000000001 -0.011140000000000001 0.026610000000000002 0 0 0</pose>
@@ -337,8 +311,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LHipYawPitch' type='revolute'>
-        <child>LPelvis</child>
-        <parent>Torso</parent>
+        <child>lpelvis</child>
+        <parent>torso</parent>
         <axis>
           <xyz>0 0.70710678118654757 -0.70710678118654757</xyz>
           <limit>
@@ -378,7 +352,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LHip'>
+      <link name='lhip'>
         <pose>0 0.050000000000000003 -0.08500000000000002 0.38373752108727921 0.12683283821503108 -0.12786548464815206</pose>
         <inertial>
           <pose>-0.01549 0.00029 -0.0051500000000000001 0 0 0</pose>
@@ -407,8 +381,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LHipRoll' type='revolute'>
-        <child>LHip</child>
-        <parent>LPelvis</parent>
+        <child>lhip</child>
+        <parent>lpelvis</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -448,7 +422,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LThigh'>
+      <link name='lthigh'>
         <pose>0 0.050000000000000003 -0.08500000000000002 0.38049691209434267 0.002362571482665192 -0.17794817996118364</pose>
         <inertial>
           <pose>0.0013799999999999999 0.0022100000000000002 -0.05373 0 0 0</pose>
@@ -498,8 +472,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LHipPitch' type='revolute'>
-        <child>LThigh</child>
-        <parent>LHip</parent>
+        <child>lthigh</child>
+        <parent>lhip</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -539,7 +513,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LTibia'>
+      <link name='ltibia'>
         <pose>0.0063580052067250242 0.086590658999382439 -0.17784772180178776 0.38049801309210379 0.0023942922623822432 -0.17793536460623077</pose>
         <inertial>
           <pose>0.0045300000000000002 0.0022499999999999998 -0.049360000000000001 0 0 0</pose>
@@ -589,8 +563,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LKneePitch' type='revolute'>
-        <child>LTibia</child>
-        <parent>LThigh</parent>
+        <child>ltibia</child>
+        <parent>lthigh</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -630,7 +604,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LAnkle'>
+      <link name='lankle'>
         <pose>0.012896703499137513 0.12424278406810244 -0.27338814729225036 0.81818204996798094 -1.036998205689482 -0.92224882259984908</pose>
         <inertial>
           <pose>0.00044999999999999999 0.00029 0.0068500000000000002 0 0 0</pose>
@@ -659,8 +633,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LAnklePitch' type='revolute'>
-        <child>LAnkle</child>
-        <parent>LTibia</parent>
+        <child>lankle</child>
+        <parent>ltibia</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -700,7 +674,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LSole'>
+      <link name='lsole'>
         <pose>0.012896699813509336 0.12424277840542107 -0.27338814977618514 0.81817311876065479 -1.0369982151242252 -0.92224875811288276</pose>
         <inertial>
           <pose>0.025420000000000002 0.0033 -0.032390000000000002 0 0 0</pose>
@@ -753,8 +727,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LAnkleRoll' type='revolute'>
-        <child>LSole</child>
-        <parent>LAnkle</parent>
+        <child>lsole</child>
+        <parent>lankle</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -794,7 +768,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LShoulder'>
+      <link name='lshoulder'>
         <pose>0 0.098000000000000004 0.099999999999999978 0 0.00014734399523568377 0</pose>
         <inertial>
           <pose>-0.00165 -0.026630000000000001 0.00013999999999999999 0 0 0</pose>
@@ -823,8 +797,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LShoulderPitch' type='revolute'>
-        <child>LShoulder</child>
-        <parent>Torso</parent>
+        <child>lshoulder</child>
+        <parent>torso</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -864,7 +838,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LBicep'>
+      <link name='lbicep'>
         <pose>0 0.098000000000000004 0.099999999999999978 1.9723299989196092e-08 0.00014615953147212765 0.00013494364507771965</pose>
         <inertial>
           <pose>0.024549999999999999 0.0056299999999999996 0.0033 0 0 0</pose>
@@ -914,8 +888,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LShoulderRoll' type='revolute'>
-        <child>LBicep</child>
-        <parent>LShoulder</parent>
+        <child>lbicep</child>
+        <parent>lshoulder</parent>
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
@@ -955,7 +929,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LElbow'>
+      <link name='lelbow'>
         <pose>0.10499796101868519 0.11301425800474864 0.099984557024090093 1.7556659507421669e-05 0.00014707881473429501 0.00013579184040330241</pose>
         <inertial>
           <pose>-0.027439999999999999 0 -0.00013999999999999999 0 0 0</pose>
@@ -975,8 +949,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LElbowYaw' type='revolute'>
-        <child>LElbow</child>
-        <parent>LBicep</parent>
+        <child>lelbow</child>
+        <parent>lbicep</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -1016,7 +990,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LForeArm'>
+      <link name='lforearm'>
         <pose>0.10499797789911967 0.11301414008664218 0.099984684822460757 1.231027094518655e-05 0.0001463804338950724 -0.034771931577044494</pose>
         <inertial>
           <pose>0.025559999999999999 0.00281 0.00076000000000000004 0 0 0</pose>
@@ -1066,8 +1040,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LElbowRoll' type='revolute'>
-        <child>LForeArm</child>
-        <parent>LElbow</parent>
+        <child>lforearm</child>
+        <parent>lelbow</parent>
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
@@ -1107,7 +1081,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='LWrist'>
+      <link name='lwrist'>
         <pose>0.16091414137992541 0.11106922827037047 0.099976293269942618 -9.6142168956852959e-05 0.0001476357271162147 -0.034770777465542239</pose>
         <inertial>
           <pose>0.034340000000000002 -0.00088000000000000003 0.0030799999999999998 0 0 0</pose>
@@ -1156,8 +1130,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='LWristYaw' type='revolute'>
-        <child>LWrist</child>
-        <parent>LForeArm</parent>
+        <child>lwrist</child>
+        <parent>lforearm</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -1197,7 +1171,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RPelvis'>
+      <link name='rpelvis'>
         <pose>0 -0.050000000000000003 -0.08500000000000002 4.8863112313712385e-08 -0.0003126119291717477 -0.00031261194444693957</pose>
         <inertial>
           <pose>-0.0078100000000000001 0.011140000000000001 0.026610000000000002 0 0 0</pose>
@@ -1247,8 +1221,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RHipYawPitch' type='revolute'>
-        <child>RPelvis</child>
-        <parent>Torso</parent>
+        <child>rpelvis</child>
+        <parent>torso</parent>
         <axis>
           <xyz>0 0.70710678118654757 0.70710678118654757</xyz>
           <limit>
@@ -1288,7 +1262,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RHip'>
+      <link name='rhip'>
         <pose>0 -0.050000000000000003 -0.08500000000000002 9.2727546558208731e-06 -0.00031368019904438595 -0.00031368021447671069</pose>
         <inertial>
           <pose>-0.01549 -0.00029 -0.0051500000000000001 0 0 0</pose>
@@ -1317,8 +1291,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RHipRoll' type='revolute'>
-        <child>RHip</child>
-        <parent>RPelvis</parent>
+        <child>rhip</child>
+        <parent>rpelvis</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -1358,7 +1332,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RThigh'>
+      <link name='rthigh'>
         <pose>0 -0.050000000000000003 -0.08500000000000002 9.2258195199735831e-06 -0.00093177611355486955 -0.00031221277501101519</pose>
         <inertial>
           <pose>0.0013799999999999999 -0.0022100000000000002 -0.05373 0 0 0</pose>
@@ -1387,8 +1361,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RHipPitch' type='revolute'>
-        <child>RThigh</child>
-        <parent>RHip</parent>
+        <child>rthigh</child>
+        <parent>rhip</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -1428,7 +1402,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RTibia'>
+      <link name='rtibia'>
         <pose>9.3207436987678496e-05 -0.049999106211739815 -0.18499995655786472 1.4247720580067421e-05 0.8661675416454816 -0.00030144873524122002</pose>
         <inertial>
           <pose>0.0045300000000000002 -0.0022499999999999998 -0.049360000000000001 0 0 0</pose>
@@ -1478,8 +1452,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RKneePitch' type='revolute'>
-        <child>RTibia</child>
-        <parent>RThigh</parent>
+        <child>rtibia</child>
+        <parent>rthigh</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -1519,7 +1493,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RAnkle'>
+      <link name='rankle'>
         <pose>-0.078301214517177559 -0.04997398725403638 -0.25165363052109613 1.4259151551716767e-05 0.86611367210102785 -0.00030169130484704733</pose>
         <inertial>
           <pose>0.00044999999999999999 -0.00029 0.0068500000000000002 0 0 0</pose>
@@ -1548,8 +1522,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RAnklePitch' type='revolute'>
-        <child>RAnkle</child>
-        <parent>RTibia</parent>
+        <child>rankle</child>
+        <parent>rtibia</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -1589,7 +1563,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RSole'>
+      <link name='rsole'>
         <pose>-0.078301222380184457 -0.049973988344118897 -0.25165362585527373 1.2717248660807728e-05 0.86611373393859137 -0.00030167872660314592</pose>
         <inertial>
           <pose>0.025420000000000002 -0.0033 -0.032390000000000002 0 0 0</pose>
@@ -1642,8 +1616,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RAnkleRoll' type='revolute'>
-        <child>RSole</child>
-        <parent>RAnkle</parent>
+        <child>rsole</child>
+        <parent>rankle</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -1683,7 +1657,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RShoulder'>
+      <link name='rshoulder'>
         <pose>0 -0.098000000000000004 0.099999999999999978 0 0.00014687350312896568 0</pose>
         <inertial>
           <pose>-0.00165 0.026630000000000001 0.00013999999999999999 0 0 0</pose>
@@ -1712,8 +1686,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RShoulderPitch' type='revolute'>
-        <child>RShoulder</child>
-        <parent>Torso</parent>
+        <child>rshoulder</child>
+        <parent>torso</parent>
         <axis>
           <xyz>0 1 0</xyz>
           <limit>
@@ -1753,7 +1727,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RBicep'>
+      <link name='rbicep'>
         <pose>0 -0.098000000000000004 0.099999999999999978 -1.9595353269914058e-08 0.00014594778503394167 -0.00013426276539364948</pose>
         <inertial>
           <pose>0.024549999999999999 -0.0056299999999999996 0.0033 0 0 0</pose>
@@ -1803,8 +1777,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RShoulderRoll' type='revolute'>
-        <child>RBicep</child>
-        <parent>RShoulder</parent>
+        <child>rbicep</child>
+        <parent>rshoulder</parent>
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
@@ -1844,7 +1818,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RElbow'>
+      <link name='relbow'>
         <pose>0.10499797631242676 -0.11301415111386755 0.099984617379239804 -1.1123757649809453e-05 0.00014650397132050892 -0.00013477381230568423</pose>
         <inertial>
           <pose>-0.027439999999999999 0 -0.00013999999999999999 0 0 0</pose>
@@ -1864,8 +1838,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RElbowYaw' type='revolute'>
-        <child>RElbow</child>
-        <parent>RBicep</parent>
+        <child>relbow</child>
+        <parent>rbicep</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -1905,7 +1879,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RForeArm'>
+      <link name='rforearm'>
         <pose>0.10499796932958995 -0.11301419989215036 0.099984564293293832 -6.024656208322532e-06 0.00014730956589943564 0.034771361997654751</pose>
         <inertial>
           <pose>0.025559999999999999 -0.00281 0.00076000000000000004 0 0 0</pose>
@@ -1955,8 +1929,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RElbowRoll' type='revolute'>
-        <child>RForeArm</child>
-        <parent>RElbow</parent>
+        <child>rforearm</child>
+        <parent>relbow</parent>
         <axis>
           <xyz>0 0 1</xyz>
           <limit>
@@ -1996,7 +1970,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-      <link name='RWrist'>
+      <link name='rwrist'>
         <pose>0.16091416038207124 -0.11106899463244894 0.099976474367932888 9.6153278838728392e-05 0.00014636361972903778 0.034772229402578729</pose>
         <inertial>
           <pose>0.034340000000000002 0.00088000000000000003 0.0030799999999999998 0 0 0</pose>
@@ -2045,8 +2019,8 @@
         <enable_wind>false</enable_wind>
       </link>
       <joint name='RWristYaw' type='revolute'>
-        <child>RWrist</child>
-        <parent>RForeArm</parent>
+        <child>rwrist</child>
+        <parent>rforearm</parent>
         <axis>
           <xyz>1 0 0</xyz>
           <limit>
@@ -2088,6 +2062,7 @@
       </plugin>
       <static>false</static>
       <self_collide>false</self_collide>
+      <plugin filename="libTablePlugin.so" name="custom_sim::TableControlPlugin" />      
     </model>
     <light name='sun' type='directional'>
       <pose>0 0 10 0 0 0</pose>
