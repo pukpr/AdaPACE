@@ -1,0 +1,4 @@
+# Clear stale shared memory segment (Key: 123456)
+ipcrm -M 123456 2>/dev/null
+
+env P4PATH="../../launch.pro" ../../drivers/p4

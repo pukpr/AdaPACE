@@ -1,0 +1,1 @@
+gprbuild -aP../.. jpc.gpr
