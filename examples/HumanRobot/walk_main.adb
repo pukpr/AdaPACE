@@ -38,7 +38,7 @@ procedure Walk_Main is
          Gz_Joints.Set_Pose(LHipPitch, Roll => Hip_P_Amp * sin(Phase));
          Gz_Joints.Set_Pose(RHipPitch, Roll => Hip_P_Amp * sin(Phase + Pi));
          
-         -- Knees bend forward (positive in this SDF usually)
+         -- Knees bend forward
          Gz_Joints.Set_Pose(LKneePitch, Roll => Knee_P_Amp * (0.5 + 0.5 * sin(Phase - Pi/2.0)));
          Gz_Joints.Set_Pose(RKneePitch, Roll => Knee_P_Amp * (0.5 + 0.5 * sin(Phase + Pi/2.0)));
          
@@ -74,7 +74,7 @@ procedure Walk_Main is
          Gz_Joints.Set_Pose(LShoulderPitch, Roll => Arm_S_Amp * sin(Phase + Pi));
          Gz_Joints.Set_Pose(RShoulderPitch, Roll => Arm_S_Amp * sin(Phase));
          
-         -- Fixed elbow bend for more natural look
+         -- Fixed elbow bend
          Gz_Joints.Set_Pose(LElbowRoll, Roll => -0.5);
          Gz_Joints.Set_Pose(RElbowRoll, Roll => 0.5);
 
@@ -92,18 +92,27 @@ procedure Walk_Main is
       Time : Long_Float := 0.0;
       Freq : constant Long_Float := 1.0 * Vel_Mult;
       Phase : Long_Float;
+      
+      -- Ground Plane enforcement variables
+      X_Pos : Long_Float := 0.0;
+      Forward_Speed : constant Long_Float := 0.15 * Vel_Mult; -- m/s
    begin
       Pace.Log.Agent_Id (ID);
       loop
          Phase := 2.0 * Pi * Freq * Time;
 
-         -- Torso kinematic roll (link control)
-         Gz_Links.Set_Rot(Torso, Roll => 0.05 * sin(Phase));
+         -- Enforce Ground Plane: Fix Z at 0.35, increment X for forward motion.
+         -- Using Set_Pose instead of Set_Rot to surgically control position.
+         Gz_Links.Set_Pose(Torso, 
+                           X => X_Pos, 
+                           Z => 0.35, 
+                           Roll => 0.05 * sin(Phase));
          
-         -- Head/Neck stabilization (joint control)
+         -- Head/Neck stabilization
          Gz_Joints.Set_Pose(HeadYaw,   Roll => 0.1 * sin(Phase));
          Gz_Joints.Set_Pose(HeadPitch, Roll => 0.05 * cos(Phase));
 
+         X_Pos := X_Pos + Forward_Speed * dT;
          Pace.Log.Wait (dT);
          Time := Time + dT;
       end loop;
