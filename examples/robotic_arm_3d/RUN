@@ -1,0 +1,4 @@
+# Run the Gazebo simulator in one terminal:
+# gz sim robotic_arm.sdf
+# Then run this control app:
+./obj/arm_control
