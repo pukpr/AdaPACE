@@ -14,13 +14,13 @@ procedure Arm_Control is
       dT : constant := 0.05;
    begin
       Pace.Log.Agent_Id (ID);
-      Pace.Log.Put_Line ("Robotic Arm Control Started.");
+      Pace.Log.Put_Line ("Robotic Arm Control Started (Enhanced Motion).");
 
       loop
-         -- Simple sinusoidal motion for visualization
-         Gz.Set_Rot(Name => Lower_Arm, Pitch => 0.5 * sin(Time));
-         Gz.Set_Rot(Name => Upper_Arm, Pitch => 0.8 * cos(Time * 0.7));
-         Gz.Set_Rot(Name => Gripper,   Yaw   => 0.3 * sin(Time * 2.0));
+         -- Increased amplitudes for more visible motion
+         Gz.Set_Rot(Name => Lower_Arm, Pitch => 1.5 * sin(Time));
+         Gz.Set_Rot(Name => Upper_Arm, Pitch => 2.0 * cos(Time * 0.7));
+         Gz.Set_Rot(Name => Gripper,   Yaw   => 1.0 * sin(Time * 2.0));
 
          Pace.Log.Wait (dT);
          Time := Time + dT;
