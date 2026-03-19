@@ -1,0 +1,1 @@
+gprbuild -aP../.. humanoid.gpr
