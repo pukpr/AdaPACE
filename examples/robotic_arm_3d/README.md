@@ -9,11 +9,16 @@ This example demonstrates how to use the PACE library to control a 3D robotic me
 -   **HAL Integration**: Uses the `HAL.Gazebo_Commands` generic package to send rotation commands to specific links in the SDF model.
 -   **Gazebo Plugin**: The SDF model includes `libTablePlugin.so`, which facilitates the communication between the Ada application and the Gazebo simulation engine via shared memory (Key: 123456).
 
+## Physics and Visualization
+
+-   **Zero Gravity**: Gravity is set to `<gravity>0 0 0</gravity>` in the SDF. Without this (or explicit joint clamping/fixing), the links would accelerate downward in the -Z direction due to physics simulation.
+-   **Enhanced Materials**: Links use distinct `ambient`, `diffuse`, and `specular` properties to ensure high visibility against the background.
+
 ## PACE Patterns Demonstrated
 
 -   **Real-Time Tasking**: Uses an Ada task to periodically update the robot's state.
 -   **Simulation Awareness**: Uses `Pace.Log.Wait` for timing, allowing the code to potentially run in discrete-event simulation mode.
--   **HAL Generic Instantiation**: Shows how to map an Ada enumeration to SDF link names via `HAL.Gazebo_Commands`.
+-   **Distributed Launching**: Uses a `session.pro` file to concurrently launch both the Gazebo simulator and the Ada control application.
 
 ## Building and Running
 
@@ -23,14 +28,10 @@ sh BUILD
 ```
 
 ### Run
-1.  **Start Gazebo** (requires Gazebo Sim installed):
-    ```bash
-    gz sim robotic_arm.sdf
-    ```
-2.  **Run the Control Application**:
-    ```bash
-    sh RUN
-    ```
-    (Note: `RUN` simply executes `./obj/arm_control`)
+The example uses the `P4` driver to launch both Gazebo and the control agent:
+```bash
+sh RUN
+```
+This executes: `env P4PATH="../../launch.pro" ../../drivers/p4`. 
 
-Once both are running, you should see the robotic arm in Gazebo performing a continuous waving/sinusoidal motion. Type `-999` in the Ada application console to shut it down.
+Once running, the robotic arm will perform a continuous waving/sinusoidal motion in the Gazebo window. Type `-999` in the P4 console to shut down both processes.
