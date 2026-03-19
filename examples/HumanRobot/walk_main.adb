@@ -16,37 +16,38 @@ procedure Walk_Main is
    dT : constant := 0.02; 
 
    ----------------------------------------------------------------------------
-   -- GAIT CONTROLLER: Handles legs and pelvis
+   -- GAIT CONTROLLER: Handles legs and pelvis joints
    ----------------------------------------------------------------------------
    task Gait_Controller;
    task body Gait_Controller is
       function ID is new Pace.Log.Unit_ID;
       Time : Long_Float := 0.0;
-      Freq : constant Long_Float := 1.5 * Vel_Mult;
+      Freq : constant Long_Float := 1.0 * Vel_Mult;
       Phase : Long_Float;
       
-      -- Amplitudes
-      Hip_P_Amp   : constant := 0.3;
-      Knee_P_Amp  : constant := 0.4;
-      Ankle_P_Amp : constant := 0.15;
+      -- Amplitudes (in radians for joint positions)
+      Hip_P_Amp   : constant := 0.4;
+      Knee_P_Amp  : constant := 0.5;
+      Ankle_P_Amp : constant := 0.2;
    begin
       Pace.Log.Agent_Id (ID);
       loop
          Phase := 2.0 * Pi * Freq * Time;
 
-         -- Legs (180 deg out of phase)
-         Gz.Set_Rot(LThigh, Pitch => Hip_P_Amp * sin(Phase));
-         Gz.Set_Rot(RThigh, Pitch => Hip_P_Amp * sin(Phase + Pi));
+         -- Leg Joints (180 deg out of phase)
+         Gz_Joints.Set_Pose(LHipPitch, Roll => Hip_P_Amp * sin(Phase));
+         Gz_Joints.Set_Pose(RHipPitch, Roll => Hip_P_Amp * sin(Phase + Pi));
          
-         Gz.Set_Rot(LTibia, Pitch => Knee_P_Amp * (0.5 + 0.5 * sin(Phase - Pi/2.0)));
-         Gz.Set_Rot(RTibia, Pitch => Knee_P_Amp * (0.5 + 0.5 * sin(Phase + Pi/2.0)));
+         -- Knees bend forward (positive in this SDF usually)
+         Gz_Joints.Set_Pose(LKneePitch, Roll => Knee_P_Amp * (0.5 + 0.5 * sin(Phase - Pi/2.0)));
+         Gz_Joints.Set_Pose(RKneePitch, Roll => Knee_P_Amp * (0.5 + 0.5 * sin(Phase + Pi/2.0)));
          
-         Gz.Set_Rot(LAnkle, Pitch => Ankle_P_Amp * cos(Phase));
-         Gz.Set_Rot(RAnkle, Pitch => Ankle_P_Amp * cos(Phase + Pi));
+         Gz_Joints.Set_Pose(LAnklePitch, Roll => -Ankle_P_Amp * sin(Phase));
+         Gz_Joints.Set_Pose(RAnklePitch, Roll => -Ankle_P_Amp * sin(Phase + Pi));
 
-         -- Pelvis/Hip Roll for weight shifting
-         Gz.Set_Rot(LHip, Roll => 0.1 * cos(Phase));
-         Gz.Set_Rot(RHip, Roll => 0.1 * cos(Phase));
+         -- Weight shifting via Hip Roll
+         Gz_Joints.Set_Pose(LHipRoll, Roll => 0.1 * cos(Phase));
+         Gz_Joints.Set_Pose(RHipRoll, Roll => 0.1 * cos(Phase));
 
          Pace.Log.Wait (dT);
          Time := Time + dT;
@@ -54,33 +55,28 @@ procedure Walk_Main is
    end Gait_Controller;
 
    ----------------------------------------------------------------------------
-   -- ARM CONTROLLER: Handles shoulders, elbows, wrists
+   -- ARM CONTROLLER: Handles shoulders, elbows
    ----------------------------------------------------------------------------
    task Arm_Controller;
    task body Arm_Controller is
       function ID is new Pace.Log.Unit_ID;
       Time : Long_Float := 0.0;
-      Freq : constant Long_Float := 1.5 * Vel_Mult;
+      Freq : constant Long_Float := 1.0 * Vel_Mult;
       Phase : Long_Float;
       
-      Arm_S_Amp : constant := 0.3;
-      Elbow_P   : constant := 0.4; -- Fixed bend
+      Arm_S_Amp : constant := 0.4;
    begin
       Pace.Log.Agent_Id (ID);
       loop
          Phase := 2.0 * Pi * Freq * Time;
 
-         -- Shoulders (In sync with opposite leg)
-         Gz.Set_Rot(LShoulder, Pitch => Arm_S_Amp * sin(Phase + Pi));
-         Gz.Set_Rot(RShoulder, Pitch => Arm_S_Amp * sin(Phase));
+         -- Shoulders (Opposite to legs)
+         Gz_Joints.Set_Pose(LShoulderPitch, Roll => Arm_S_Amp * sin(Phase + Pi));
+         Gz_Joints.Set_Pose(RShoulderPitch, Roll => Arm_S_Amp * sin(Phase));
          
-         -- Slight elbow movement
-         Gz.Set_Rot(LElbow, Pitch => Elbow_P + 0.1 * sin(Phase));
-         Gz.Set_Rot(RElbow, Pitch => Elbow_P + 0.1 * sin(Phase + Pi));
-
-         -- Wrists
-         Gz.Set_Rot(LWrist, Yaw => 0.1 * sin(Phase));
-         Gz.Set_Rot(RWrist, Yaw => 0.1 * sin(Phase + Pi));
+         -- Fixed elbow bend for more natural look
+         Gz_Joints.Set_Pose(LElbowRoll, Roll => -0.5);
+         Gz_Joints.Set_Pose(RElbowRoll, Roll => 0.5);
 
          Pace.Log.Wait (dT);
          Time := Time + dT;
@@ -88,25 +84,25 @@ procedure Walk_Main is
    end Arm_Controller;
 
    ----------------------------------------------------------------------------
-   -- POSTURE CONTROLLER: Handles torso, neck, head
+   -- POSTURE CONTROLLER: Handles torso (kinematic) and head joints
    ----------------------------------------------------------------------------
    task Posture_Controller;
    task body Posture_Controller is
       function ID is new Pace.Log.Unit_ID;
       Time : Long_Float := 0.0;
-      Freq : constant Long_Float := 1.5 * Vel_Mult;
+      Freq : constant Long_Float := 1.0 * Vel_Mult;
       Phase : Long_Float;
    begin
       Pace.Log.Agent_Id (ID);
       loop
          Phase := 2.0 * Pi * Freq * Time;
 
-         -- Torso sway
-         Gz.Set_Rot(Torso, Roll => 0.05 * sin(Phase), Pitch => 0.05);
+         -- Torso kinematic roll (link control)
+         Gz_Links.Set_Rot(Torso, Roll => 0.05 * sin(Phase));
          
-         -- Head/Neck stabilization (Counter-sway)
-         Gz.Set_Rot(Neck, Yaw   => 0.05 * sin(Phase));
-         Gz.Set_Rot(Head, Pitch => 0.02 * cos(Phase));
+         -- Head/Neck stabilization (joint control)
+         Gz_Joints.Set_Pose(HeadYaw,   Roll => 0.1 * sin(Phase));
+         Gz_Joints.Set_Pose(HeadPitch, Roll => 0.05 * cos(Phase));
 
          Pace.Log.Wait (dT);
          Time := Time + dT;

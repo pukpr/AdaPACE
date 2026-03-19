@@ -152,7 +152,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='HeadYaw' type='revolute'>
+      <joint name='headyaw' type='revolute'>
         <child>neck</child>
         <parent>torso</parent>
         <axis>
@@ -185,7 +185,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>HeadYaw</joint_name>
+        <joint_name>headyaw</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -244,7 +244,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='HeadPitch' type='revolute'>
+      <joint name='headpitch' type='revolute'>
         <child>head</child>
         <parent>neck</parent>
         <axis>
@@ -277,7 +277,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>HeadPitch</joint_name>
+        <joint_name>headpitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -314,7 +314,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LHipYawPitch' type='revolute'>
+      <joint name='lhipyawpitch' type='revolute'>
         <child>lpelvis</child>
         <parent>torso</parent>
         <axis>
@@ -347,7 +347,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LHipYawPitch</joint_name>
+        <joint_name>lhipyawpitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -384,7 +384,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LHipRoll' type='revolute'>
+      <joint name='lhiproll' type='revolute'>
         <child>lhip</child>
         <parent>lpelvis</parent>
         <axis>
@@ -417,7 +417,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LHipRoll</joint_name>
+        <joint_name>lhiproll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -475,7 +475,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LHipPitch' type='revolute'>
+      <joint name='lhippitch' type='revolute'>
         <child>lthigh</child>
         <parent>lhip</parent>
         <axis>
@@ -508,7 +508,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LHipPitch</joint_name>
+        <joint_name>lhippitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -566,7 +566,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LKneePitch' type='revolute'>
+      <joint name='lkneepitch' type='revolute'>
         <child>ltibia</child>
         <parent>lthigh</parent>
         <axis>
@@ -599,7 +599,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LKneePitch</joint_name>
+        <joint_name>lkneepitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -636,7 +636,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LAnklePitch' type='revolute'>
+      <joint name='lanklepitch' type='revolute'>
         <child>lankle</child>
         <parent>ltibia</parent>
         <axis>
@@ -669,7 +669,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LAnklePitch</joint_name>
+        <joint_name>lanklepitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -730,7 +730,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LAnkleRoll' type='revolute'>
+      <joint name='lankleroll' type='revolute'>
         <child>lsole</child>
         <parent>lankle</parent>
         <axis>
@@ -763,7 +763,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LAnkleRoll</joint_name>
+        <joint_name>lankleroll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -800,7 +800,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LShoulderPitch' type='revolute'>
+      <joint name='lshoulderpitch' type='revolute'>
         <child>lshoulder</child>
         <parent>torso</parent>
         <axis>
@@ -833,7 +833,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LShoulderPitch</joint_name>
+        <joint_name>lshoulderpitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -891,7 +891,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LShoulderRoll' type='revolute'>
+      <joint name='lshoulderroll' type='revolute'>
         <child>lbicep</child>
         <parent>lshoulder</parent>
         <axis>
@@ -924,7 +924,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LShoulderRoll</joint_name>
+        <joint_name>lshoulderroll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -952,7 +952,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LElbowYaw' type='revolute'>
+      <joint name='lelbowyaw' type='revolute'>
         <child>lelbow</child>
         <parent>lbicep</parent>
         <axis>
@@ -985,7 +985,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LElbowYaw</joint_name>
+        <joint_name>lelbowyaw</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1043,7 +1043,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LElbowRoll' type='revolute'>
+      <joint name='lelbowroll' type='revolute'>
         <child>lforearm</child>
         <parent>lelbow</parent>
         <axis>
@@ -1076,7 +1076,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LElbowRoll</joint_name>
+        <joint_name>lelbowroll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1133,7 +1133,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='LWristYaw' type='revolute'>
+      <joint name='lwristyaw' type='revolute'>
         <child>lwrist</child>
         <parent>lforearm</parent>
         <axis>
@@ -1166,7 +1166,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>LWristYaw</joint_name>
+        <joint_name>lwristyaw</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1224,7 +1224,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RHipYawPitch' type='revolute'>
+      <joint name='rhipyawpitch' type='revolute'>
         <child>rpelvis</child>
         <parent>torso</parent>
         <axis>
@@ -1257,7 +1257,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RHipYawPitch</joint_name>
+        <joint_name>rhipyawpitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1294,7 +1294,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RHipRoll' type='revolute'>
+      <joint name='rhiproll' type='revolute'>
         <child>rhip</child>
         <parent>rpelvis</parent>
         <axis>
@@ -1327,7 +1327,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RHipRoll</joint_name>
+        <joint_name>rhiproll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1364,7 +1364,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RHipPitch' type='revolute'>
+      <joint name='rhippitch' type='revolute'>
         <child>rthigh</child>
         <parent>rhip</parent>
         <axis>
@@ -1397,7 +1397,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RHipPitch</joint_name>
+        <joint_name>rhippitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1455,7 +1455,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RKneePitch' type='revolute'>
+      <joint name='rkneepitch' type='revolute'>
         <child>rtibia</child>
         <parent>rthigh</parent>
         <axis>
@@ -1488,7 +1488,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RKneePitch</joint_name>
+        <joint_name>rkneepitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1525,7 +1525,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RAnklePitch' type='revolute'>
+      <joint name='ranklepitch' type='revolute'>
         <child>rankle</child>
         <parent>rtibia</parent>
         <axis>
@@ -1558,7 +1558,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RAnklePitch</joint_name>
+        <joint_name>ranklepitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1619,7 +1619,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RAnkleRoll' type='revolute'>
+      <joint name='rankleroll' type='revolute'>
         <child>rsole</child>
         <parent>rankle</parent>
         <axis>
@@ -1652,7 +1652,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RAnkleRoll</joint_name>
+        <joint_name>rankleroll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1689,7 +1689,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RShoulderPitch' type='revolute'>
+      <joint name='rshoulderpitch' type='revolute'>
         <child>rshoulder</child>
         <parent>torso</parent>
         <axis>
@@ -1722,7 +1722,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RShoulderPitch</joint_name>
+        <joint_name>rshoulderpitch</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1780,7 +1780,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RShoulderRoll' type='revolute'>
+      <joint name='rshoulderroll' type='revolute'>
         <child>rbicep</child>
         <parent>rshoulder</parent>
         <axis>
@@ -1813,7 +1813,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RShoulderRoll</joint_name>
+        <joint_name>rshoulderroll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1841,7 +1841,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RElbowYaw' type='revolute'>
+      <joint name='relbowyaw' type='revolute'>
         <child>relbow</child>
         <parent>rbicep</parent>
         <axis>
@@ -1874,7 +1874,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RElbowYaw</joint_name>
+        <joint_name>relbowyaw</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -1932,7 +1932,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RElbowRoll' type='revolute'>
+      <joint name='relbowroll' type='revolute'>
         <child>rforearm</child>
         <parent>relbow</parent>
         <axis>
@@ -1965,7 +1965,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RElbowRoll</joint_name>
+        <joint_name>relbowroll</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
@@ -2022,7 +2022,7 @@
         <self_collide>false</self_collide>
         <enable_wind>false</enable_wind>
       </link>
-      <joint name='RWristYaw' type='revolute'>
+      <joint name='rwristyaw' type='revolute'>
         <child>rwrist</child>
         <parent>rforearm</parent>
         <axis>
@@ -2055,7 +2055,7 @@
         <pose>0 0 0 0 0 0</pose>
       </joint>
       <plugin name='ignition::gazebo::systems::JointPositionController' filename='ignition-gazebo-joint-position-controller-system'>
-        <joint_name>RWristYaw</joint_name>
+        <joint_name>rwristyaw</joint_name>
         <p_gain>10</p_gain>
         <i_gain>0.1</i_gain>
         <d_gain>0.01</d_gain>
