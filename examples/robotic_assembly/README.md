@@ -42,3 +42,18 @@ sh BUILD
 sh RUN
 ```
 To shutdown the system, type `-999` into the console.
+
+
+
+
+https://github.com/user-attachments/assets/d228925c-5714-47b0-91b2-700375206852
+
+*The P4 launching utility interleaves text output from the distriubuted apps*
+
+
+https://github.com/user-attachments/assets/af426389-d518-47b1-a17a-83d65bf1823f
+
+*Entering a carriage return prints out current status, entering -99 or -999 shuts down the processes*
+
+
+
