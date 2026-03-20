@@ -44,14 +44,6 @@ public:
                 Entity entity = _ecm.EntityByComponents(components::Name(name));
                 if (entity != kNullEntity) {
                   
-                  // Check if it's a joint
-                  bool is_joint = _ecm.Component<components::JointPosition>(entity) != nullptr ||
-                                  _ecm.Component<components::JointForceCmd>(entity) != nullptr;
-
-                  // If not identified as joint yet, try to see if it has joint components
-                  // or if we can wrap it as a Joint object
-                  gz::sim::Joint joint_obj(entity);
-                  
                   switch (entry.command) {
                     case 0:{ // SET_POSE / SET_POSITION
                       auto posComp = mutableEcm.Component<components::JointPosition>(entity);
@@ -63,6 +55,8 @@ public:
                               poseComp->Data() = math::Pose3d(entry.x, entry.y, entry.z, 
                                                              entry.roll, entry.pitch, entry.yaw);
                               mutableEcm.SetChanged(entity, components::Pose::typeId, ComponentState::OneTimeChange);
+                          } else {
+                              std::cout << "TableControlPlugin ERROR: Link or Joint '" << name << "' not found in components." << std::endl;
                           }
                       }
                       last_sequences[name] = entry.sequence;
@@ -72,6 +66,8 @@ public:
                       auto link = gz::sim::Link(entity);
                       if (link.Valid(_ecm)) {
                           link.SetAngularVelocity(mutableEcm, math::Vector3d(entry.roll, entry.pitch, entry.yaw));
+                      } else {
+                          std::cout << "TableControlPlugin ERROR: Link '" << name << "' not found or invalid." << std::endl;
                       }
                       last_sequences[name] = entry.sequence;
                       break;
@@ -86,6 +82,8 @@ public:
                               link.AddWorldWrench(mutableEcm, math::Vector3d(0.0, 0.0, 0.0),
                                                               math::Vector3d(entry.roll, entry.pitch, entry.yaw),
                                                               math::Vector3d(entry.x, entry.y, entry.z));
+                          } else {
+                              std::cout << "TableControlPlugin ERROR: Link or Joint '" << name << "' not found for force command." << std::endl;
                           }
                       }
                       last_sequences[name] = entry.sequence;
@@ -94,6 +92,9 @@ public:
                     default:
                      break;
                   }
+                } else {
+                    std::cout << "TableControlPlugin ERROR: Entity with name '" << name << "' not found." << std::endl;
+                    last_sequences[name] = entry.sequence;
                 }
             }
         }
