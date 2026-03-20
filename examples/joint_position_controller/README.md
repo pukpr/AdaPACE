@@ -29,3 +29,12 @@ sh RUN
 ```
 
 Once running, you should see the Panda robot in Gazebo moving its arm joints and opening/closing its gripper. Type `-999` in the P4 console to shut down both processes.
+
+
+https://github.com/user-attachments/assets/6590e3e4-d3c2-4993-87bc-0b9b57978583
+
+*what Gemini generated*
+
+
+https://github.com/user-attachments/assets/4e2bb8cc-a83b-4e34-b099-41f48b6831ff
+
