@@ -48,17 +48,16 @@
       </link>
     </model>
 
-    <!-- PANDA ROBOT MODEL -->
-    <model name="panda">
+    <!-- PANDA ROBOT -->
+    <!-- Using include directly as it resulted in successful download previously -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Panda</uri>
+      <name>panda</name>
       <static>true</static>
       <pose>0 0 0.8 0 0 0</pose>
-      <include merge="true">
-        <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Panda</uri>
-      </include>
-      
-      <!-- PACE Plugin MUST be at the end of the <model> section -->
+      <!-- Attaching plugin to the included model -->
       <plugin filename="libTablePlugin.so" name="custom_sim::TableControlPlugin" />
-    </model>
+    </include>
 
   </world>
 </sdf>
