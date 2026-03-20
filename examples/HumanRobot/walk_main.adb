@@ -101,12 +101,13 @@ procedure Walk_Main is
       loop
          Phase := 2.0 * Pi * Freq * Time;
 
+         Gz_Links.Set_Rot(Torso, Yaw => 0.05 * sin(Phase));
          -- Enforce Ground Plane: Fix Z at 0.35, increment X for forward motion.
          -- Using Set_Pose instead of Set_Rot to surgically control position.
-         Gz_Links.Set_Pose(Torso, 
-                           X => X_Pos, 
-                           Z => 0.35, 
-                           Roll => 0.05 * sin(Phase));
+         -- Gz_Links.Set_Pose(Torso, 
+         --                  X => X_Pos, 
+         --                  Z => 0.35, 
+         --                  Roll => 0.05 * sin(Phase));
          
          -- Head/Neck stabilization
          Gz_Joints.Set_Pose(HeadYaw,   Roll => 0.1 * sin(Phase));
