@@ -45,3 +45,11 @@ sh RUN
 ```
 
 Once running, the robot in Gazebo will perform a continuous walking motion. Type `-999` in the P4 console to shut down both processes.
+
+
+
+
+https://github.com/user-attachments/assets/94e5f864-fd3c-449f-a605-af552ce06fcd
+
+*what Gemini generated after prompting for a typical human-like gate*
+
