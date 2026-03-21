@@ -401,4 +401,15 @@ package body Mob.Vehicle is
       return Joystick.Get_Unique_Id;
    end Get_Joystick_Unique_Id;
 
+   procedure Input (Obj : in Emplace) is
+   begin
+      Emplaced_State := True;
+      Pace.Log.Trace (Obj);
+   end Input;
+
+   procedure Output (Obj : out Emplacement_Status) is
+   begin
+      Obj.Is_Emplaced := Emplaced_State;
+   end Output;
+
 end Mob.Vehicle;

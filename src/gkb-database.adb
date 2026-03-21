@@ -55,9 +55,9 @@ package body Gkb.Database is
    function Get (Query, Value : String) return String is
       V : Variables (1 .. 2);
    begin
-      V (1) := +Value;
+      V (1) := S2u (Value);
       Agent.Query (Query, V);
-      return +V (2);
+      return U2s (V (2));
    end Get;
 
    ---------
@@ -85,10 +85,10 @@ package body Gkb.Database is
    function Get (Query, V1, V2 : String) return String is
       V : Variables (1 .. 3);
    begin
-      V (1) := +V1;
-      V (2) := +V2;
+      V (1) := S2u (V1);
+      V (2) := S2u (V2);
       Agent.Query (Query, V);
-      return +V (3);
+      return U2s (V (3));
    end Get;
 
    ---------
@@ -116,11 +116,11 @@ package body Gkb.Database is
    function Get (Query, V1, V2, V3 : String) return String is
       V : Variables (1 .. 4);
    begin
-      V (1) := +V1;
-      V (2) := +V2;
-      V (3) := +V3;
+      V (1) := S2u (V1);
+      V (2) := S2u (V2);
+      V (3) := S2u (V3);
       Agent.Query (Query, V);
-      return +V (4);
+      return U2s (V (4));
    end Get;
 
    ---------
@@ -148,12 +148,12 @@ package body Gkb.Database is
    function Get (Query, V1, V2, V3, V4 : String) return String is
       V : Variables (1 .. 5);
    begin
-      V (1) := +V1;
-      V (2) := +V2;
-      V (3) := +V3;
-      V (4) := +V4;
+      V (1) := S2u (V1);
+      V (2) := S2u (V2);
+      V (3) := S2u (V3);
+      V (4) := S2u (V4);
       Agent.Query (Query, V);
-      return +V (5);
+      return U2s (V (5));
    end Get;
 
    ---------

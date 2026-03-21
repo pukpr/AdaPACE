@@ -1,5 +1,9 @@
+with Interfaces;
+
 package Sdl.Linkage is
 
-   pragma Linker_Options ("-lSDL");
+   -- this is a stub to resolve linker issues
+
+   pragma Elaborate_Body;
 
 end Sdl.Linkage;

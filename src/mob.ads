@@ -45,7 +45,7 @@ package Mob is
          Gear_2_Acc_Factor : Float := 2.5;                -- Meters / Dt (Seconds)
          Gear_3_Acc_Factor : Float := 2.0;                -- Meters / Dt (Seconds)
          Rev_Acc_Factor : Float := 1.0;                   -- Meters / Dt (Seconds)
-         Dt : Float := 0.05;                              -- Delta Update Time
+         Dt : Float := 1.0;                               -- Delta Update Time
       end record;
 
    -- the properties that define an engine

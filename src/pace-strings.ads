@@ -44,6 +44,14 @@ package Pace.Strings is
    function Ustr_To_Str (Str : Us) return String;
    function U2s (Str : Us) return String renames Ustr_To_Str;
 
+   function "+" (Str : String) return Us renames Str_To_Ustr;
+   function "+" (Str : Us) return String renames Ustr_To_Str;
+   function "+" (Str : String) return Bs renames Str_To_Bstr;
+   function "+" (Str : Bs) return Us renames Bstr_To_Ustr;
+
+   function "+" (Str : Bs) return String renames Bstr_To_Str;
+   function "+" (Str : Us) return Bs renames Ustr_To_Bstr;
+
    ---- LARGE bounded strings <-> Fixed & Unbounded
    function Btext_To_Str (Str : Bt) return String;
    function Str_To_Btext (Str : String) return Bt;

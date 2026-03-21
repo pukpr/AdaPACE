@@ -8,7 +8,7 @@ package body Hal.GeoTrans is
 
    function ID is new Pace.Log.Unit_ID;
 
-   pragma Linker_Options ("-lm");
+   --pragma Linker_Options ("-lm");
 
    UTM_NO_ERROR              : constant := 16#0000#;
    UTM_LAT_ERROR             : constant := 16#0001#;
@@ -54,16 +54,25 @@ package body Hal.GeoTrans is
 --   procedure Geotrans_Init (Path : in Interfaces.C.Strings.Chars_Ptr);
 --   pragma Import (Cpp, Geotrans_Init, "_Z13geotrans_initPKc");
 
-   function Initialize_Engine return Long_Integer;
-   pragma Import (Cpp, Initialize_Engine, "Initialize_Engine");
+   function Initialize_Engine return Long_Integer is
+   begin
+      return 0;
+   end;
+--   pragma Import (Cpp, Initialize_Engine, "Initialize_Engine");
 
    function Convert_UTM_To_Geodetic (Zone       : in Long_Integer;
                                      Hemisphere : in Character;
                                      Easting    : in Long_Float;
                                      Northing   : in Long_Float;
                                      Latitude   : access Long_Float;
-                                     Longitude  : access Long_Float) return Long_Integer;
-   pragma Import (Cpp, Convert_UTM_To_Geodetic, "Convert_UTM_To_Geodetic");
+                                     Longitude  : access Long_Float) return Long_Integer is
+   begin
+      Latitude.all := 0.7;
+      Longitude.all := 0.7;
+      return 0;
+   end;
+                                  
+   --pragma Import (Cpp, Convert_UTM_To_Geodetic, "Convert_UTM_To_Geodetic");
 
 
    function Convert_Geodetic_To_UTM (Latitude   : in Long_Float;
@@ -71,8 +80,11 @@ package body Hal.GeoTrans is
                                      Zone       : access Long_Integer;
                                      Hemisphere : access Character;
                                      Easting    : access Long_Float;
-                                     Northing   : access Long_Float) return Long_Integer;
-   pragma Import (Cpp, Convert_Geodetic_To_UTM, "Convert_Geodetic_To_UTM");
+                                     Northing   : access Long_Float) return Long_Integer  is
+   begin
+      return 0;
+   end;
+   --pragma Import (Cpp, Convert_Geodetic_To_UTM, "Convert_Geodetic_To_UTM");
 
 
    procedure UTM_To_Geo (

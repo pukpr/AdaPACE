@@ -198,9 +198,9 @@ package body Pace.Server.Kbase_Utilities is
       Xml_Str : Unbounded_String;
    begin
       for I in V'Range loop
-         Append (Xml_Str, Pace.Server.Xml.Item (Xml_Tag, +V (I)));
+         Append (Xml_Str, Pace.Server.Xml.Item (Xml_Tag, U2s (V (I))));
       end loop;
-      return +Xml_Str;
+      return U2s (Xml_Str);
    end List_To_Xml;
 
 
@@ -211,14 +211,14 @@ package body Pace.Server.Kbase_Utilities is
       use Pace.Rule_Process;
       -- in order to know the length of each of the Variables lists,
       -- must do first call to Get_List immediately
-      V1 : Variables := Get_List ((+Lists (1).Text), Delimiter);
+      V1 : Variables := Get_List (U2s (Lists (1).Text), Delimiter);
       Vars : array (Lists'Range) of Variables (V1'Range);
       Xml_Str : Unbounded_String;
    begin
       -- parse the text for each one
       Vars (1) := V1;
       for I in 2 .. Vars'Last loop
-         Vars (I) := Get_List ((+Lists (I).Text), Delimiter);
+         Vars (I) := Get_List (U2s (Lists (I).Text), Delimiter);
       end loop;
 
       -- create the xml
@@ -228,12 +228,12 @@ package body Pace.Server.Kbase_Utilities is
          begin
             for I in Vars'Range loop  -- looping through each Variables
                Append (Temp_Xml, Pace.Server.Xml.Item
-                                   ((+Lists (I).Xml_Tag), +(Vars (I) (J))));
+                                   (U2s (Lists (I).Xml_Tag), U2s (Vars (I) (J))));
             end loop;
-            Append (Xml_Str, Pace.Server.Xml.Item (Xml_Tag, +Temp_Xml));
+            Append (Xml_Str, Pace.Server.Xml.Item (Xml_Tag, U2s (Temp_Xml)));
          end;
       end loop;
-      return +Xml_Str;
+      return U2s (Xml_Str);
    end Lists_To_Xml;
 
 

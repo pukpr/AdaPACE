@@ -153,6 +153,7 @@ package body Pace.Log is
    end T_Name;
 
    Encountered_Shell_Filesize_Limit : Boolean := False;
+   Quit_Was_Set : Boolean := False;
 
    --
    -- Trace output format
@@ -178,9 +179,12 @@ package body Pace.Log is
       end if;
    exception
       when E : others =>
-         Pace.Error ("Trace_File hit " & Ada.Exceptions.Exception_Name(E),
-                     "Encountered Shell Filesize Limit=" & 
-                     Boolean'Image (Encountered_Shell_Filesize_Limit));
+         if not Quit_Was_Set then
+            Pace.Error ("Trace_File hit " & Ada.Exceptions.Exception_Name(E),
+                       "Encountered Shell Filesize Limit=" & 
+                        Boolean'Image (Encountered_Shell_Filesize_Limit));
+         end if;
+		     
          Trace_On := False;
    end Event_Trace;
 
@@ -468,6 +472,7 @@ package body Pace.Log is
    procedure Set_Quit is
    begin
       if Trace_On then
+         Quit_Was_Set := True;
          Ada.Text_Io.Close (Trace_File);
       end if;
       Os_Exit (0);

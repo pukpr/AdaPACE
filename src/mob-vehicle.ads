@@ -191,7 +191,18 @@ package Mob.Vehicle is
    function Get_Gear_Mode return Gear_Mode_Type;
    function Is_Brake_Set return Boolean;
 
+   type Emplace is new Pace.Msg with null record;
+   procedure Input (Obj : in Emplace);
+
+   type Emplacement_Status is new Pace.Msg with
+      record
+         Is_Emplaced : Boolean;
+      end record;
+   procedure Output (Obj : out Emplacement_Status);
+
 private
+
+   Emplaced_State : Boolean := False;
 
    Current_Fuel_Cell : Integer := 1;
    Rpms : Float := 0.0;                  -- engine revolutions per minute;
