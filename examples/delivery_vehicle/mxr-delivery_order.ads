@@ -12,19 +12,19 @@ package Mxr.Delivery_Order is
       end record;
    procedure Inout (Obj : in out Is_Delivery_Order_Received);
 
-   -- signals that the mission has been received
-   type Wait_For_Mission_Received is new
+   -- signals that the job has been received
+   type Wait_For_Job_Received is new
      Pace.Notify.Subscription with null record;
 
    type Clear_Delivery_Order_Received is new Pace.Msg with null record;
    procedure Input (Obj : in Clear_Delivery_Order_Received);
 
-   -- may schedule delivery mission
+   -- may schedule delivery job
    type Call_For_Delivery is new Pace.Server.Dispatch.Action with null record;
    procedure Inout (Obj : in out Call_For_Delivery);
 
-   -- adds a delivery mission directly to queue
-   procedure Add_To_Queue (Mission_Id : Str.Bstr.Bounded_String);
+   -- adds a delivery job directly to queue
+   procedure Add_To_Queue (Job_Id : Str.Bstr.Bounded_String);
 
 private
    pragma Inline (Input);

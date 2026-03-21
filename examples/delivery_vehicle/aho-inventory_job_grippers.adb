@@ -1,7 +1,7 @@
 with Pace;
 with Pace.Log;
 
-package body Aho.Inventory_Loader_Grippers is
+package body Aho.Inventory_Job_Grippers is
 
   function ID is new Pace.Log.Unit_ID;
 
@@ -25,4 +25,4 @@ package body Aho.Inventory_Loader_Grippers is
     Pace.Log.Trace (Obj);
   end Input;
 
-end Aho.Inventory_Loader_Grippers;
+end Aho.Inventory_Job_Grippers;

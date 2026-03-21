@@ -4,7 +4,7 @@ package Uio.State.Deliver is
 
    pragma Elaborate_Body;
 
-   type State_Enum is (Initial, Acknowledged, Emplaced,
+   type State_Enum is (Initial, Acknowledged, Docked,
                        Enabled, Delivering, Items_Complete);
 
    procedure Set_Initial_State;

@@ -19,8 +19,8 @@ package Aho.Drone is
    type Aim_Drone is new Pace.Msg with null record;
    procedure Input (Obj : in Aim_Drone);
 
-   type Start_Delivery_Mission is new Pace.Msg with null record;
-   procedure Input (Obj : in Start_Delivery_Mission);
+   type Start_Delivery_Job is new Pace.Msg with null record;
+   procedure Input (Obj : in Start_Delivery_Job);
 
    type Elevation_Complete is new Pace.Notify.Subscription with null record;
    type Traverse_Complete is new Pace.Notify.Subscription with null record;

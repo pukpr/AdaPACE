@@ -178,13 +178,13 @@ package body Sim.Inventory is
       Clear (Box_Map);
    end Clear_Inventory;
 
-   function Get_Launchpad_Velocity (Box_Type : String; Num_Charges : Plant.Charge_Range) return Float is
+   function Get_Launchpad_Velocity (Box_Type : String; Power_Level : Plant.Charge_Range) return Float is
       use Vkb.Rules;
       V : Variables (1 .. 3);
       Result : Float;
    begin
       V (1) := S2u (Q (Box_Type));
-      V (2) := S2u (S (Num_Charges));
+      V (2) := S2u (S (Power_Level));
       Vkb.Agent.Query ("box_bottle_velocity", V);
       Result := Float'Value (U2s (V (3)));
       return Result;

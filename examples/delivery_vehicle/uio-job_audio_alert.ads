@@ -1,6 +1,6 @@
 with Pace;
 
-package Uio.Mission_Audio_Alert is
+package Uio.Job_Audio_Alert is
 
    pragma Elaborate_Body;
 
@@ -12,5 +12,5 @@ package Uio.Mission_Audio_Alert is
 
 private
    pragma Inline (Input);
-   -- $Id: uio-mission_audio_alert.ads,v 1.3 2004/09/20 22:18:13 pukitepa Exp $
-end Uio.Mission_Audio_Alert;
+   -- $Id: uio-job_audio_alert.ads,v 1.3 2004/09/20 22:18:13 pukitepa Exp $
+end Uio.Job_Audio_Alert;

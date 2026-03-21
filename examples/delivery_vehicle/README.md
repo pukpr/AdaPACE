@@ -5,7 +5,7 @@
 `demo_drone` simulates an autonomous delivery vehicle equipped with a drone launcher.
 The vehicle navigates to a delivery position, then uses a fully automated loading station
 to prepare and launch a drone carrying a box payload (i.e. the delivery)
-to each target in a delivery mission. The process repeats for every item in the mission
+to each customer in a delivery job. The process repeats for every item in the job
 at a cadence governed by `Time_Between_Items` (9 seconds).
 
 The simulation is built on the **PACE** (Patterned Agent-based Concurrent Execution)
@@ -20,12 +20,12 @@ notifications, and non-blocking surrogates).
 ```ada
 Wmi.Create (10, 500_000);          -- start 10-thread WMI server, 500 ms timeout
 Pace.Log.Agent_Id;                  -- log this process identity
-Wmi.Call ("eng.test.trigger_delivery_mission", id => "1");
+Wmi.Call ("eng.test.trigger_delivery_job", id => "1");
 ```
 
 The main procedure is deliberately minimal. It instantiates the PACE World-Model
 Interface (WMI), then issues a single WMI call that triggers `Eng.Test` to inject
-a scripted mission sequence. All subsequent work is performed by the concurrently
+a scripted job sequence. All subsequent work is performed by the concurrently
 running agent tasks that were elaborated at program startup.
 
 ---
@@ -34,22 +34,22 @@ running agent tasks that were elaborated at program startup.
 
 | Agent | Package | Role |
 |---|---|---|
-| **Eng.Test** | `eng-test` | Test harness: drives state machine transitions and injects the delivery mission |
+| **Eng.Test** | `eng-test` | Test harness: drives state machine transitions and injects the delivery job |
 | **Mxr.Delivery_Order** | `mxr-delivery_order` | Queues and dispatches an incoming delivery order |
-| **Ifc.Delivery_Mission** | `ifc-delivery_mission` | Translates the external delivery order into internal mission data; triggers flight solution calculation |
+| **Ifc.Delivery_Job** | `ifc-delivery_job` | Translates the external delivery order into internal job data; triggers flight solution calculation |
 | **Abk.Technical_Delivery_Direction** | `abk-technical_delivery_direction` | Computes per-item elevation, azimuth, launch velocity and delivery time for every destination |
-| **Ahd.Delivery_Mission** | `ahd-delivery_mission` | Persistent mission record; publishes coordination notifications (`Start_Delivery_Mission`, `Flight_Solution`, `Configure_Equipment`, `Execute_Delivery_Order`) |
+| **Ahd.Delivery_Job** | `ahd-delivery_job` | Persistent job record; publishes coordination notifications (`Start_Delivery_Job`, `Flight_Solution`, `Configure_Equipment`, `Execute_Delivery_Order`) |
 | **Aho.Delivery_Handling_Coordinator** | `aho-delivery_handling_coordinator` | Top-level orchestrator: fans out startup to shuttles, waits for flight solution, then signals the drone to begin |
 | **Aho.Drone** | `aho-drone` | Controls drone elevation/traverse drives, waits for load completion and `Clear_To_Delivery`, then executes launch |
-| **Aho.Inventory_Loader** | `aho-inventory_loader` | Raises/lowers the loader arm; coordinates transfer from both shuttles; calls stacker to chamber items; signals `Clear_To_Delivery` |
+| **Aho.Inventory_Job** | `aho-inventory_job` | Raises/lowers the loader arm; coordinates transfer from both shuttles; calls actuator to chamber items; signals `Clear_To_Delivery` |
 | **Aho.Box_Shuttle** | `aho-box_shuttle` | Rotates and extends to the box compartment, grips a box, spins to the tag station (removes ID tag), then delivers to the loader |
 | **Aho.Bottle_Shuttle** | `aho-bottle_shuttle` | Rotates and extends to the bottle compartment, grips a bottle, spins to the loader |
 | **Aho.Timer_Setter** | `aho-timer_setter` | Sets and counts down the delivery timer on the box; notifies completion (`Timer_Complete`) |
-| **Aho.Stacker** | `aho-stacker` | Hydraulic actuator: `Place_Box` pushes the box into the launch chamber; `Place_Bottle` pushes the bottle in |
+| **Aho.Actuator** | `aho-actuator` | Hydraulic actuator: `Place_Box` pushes the box into the launch chamber; `Place_Bottle` pushes the bottle in |
 | **Aho.Door** | `aho-door` | Opens and closes the launch chamber door; emits `Rotate_Done` notification when the door rotation is complete |
-| **Uio.State.Deliver** | `uio-state-deliver` | State machine: `Initial → Acknowledged → Emplaced → Enabled → Delivering → Items_Complete` |
+| **Uio.State.Deliver** | `uio-state-deliver` | State machine: `Initial → Acknowledged → Docked → Enabled → Delivering → Items_Complete` |
 | **Uio.State.Survive** | `uio-state-survive` | Parallel survival/operational-readiness state machine |
-| **Uio.Delivery_Order_Status** | `uio-delivery_order_status` | Tracks and broadcasts per-item status (`Ready → Timered → Rammed → Delivered`) |
+| **Uio.Job_Order_Status** | `uio-job_order_status` | Tracks and broadcasts per-item status (`Ready → Timered → Placed → Delivered`) |
 | **Acu.Vehicle** | `acu` | Updates 6-DOF vehicle dynamics every 1 s; provides heading and position |
 | **Nav.Route_Following** | `nav-route_following` | Drives the vehicle along a waypoint route; monitors progress every 0.5 s |
 
@@ -58,45 +58,45 @@ running agent tasks that were elaborated at program startup.
 
 ## Operational Flow
 
-### Phase 1 — Mission Injection (t = 0 – 3.5 s)
+### Phase 1 — Job Injection (t = 0 – 3.5 s)
 
 ```
 t=0.0  ENG.TEST  ──►  MXR.DELIVERY_ORDER.CALL_FOR_DELIVERY
 t=1.0  MXR.DELIVERY_ORDER queues the order internally (QUEUE_UPDATE)
 t=3.0  UIO.ROUTE sets waypoints → NAV.ROUTE_FOLLOWING.START
        NAV.ROUTE_FOLLOWING monitors progress every 0.5 s
-       ACU.VEHICLE.TRANSMISSION updates 6-DOF every 1 s
+       ACU.VEHICLE.TRANSJOB updates 6-DOF every 1 s
 ```
 
-`Eng.Test` submits mission id "1" to `Mxr.Delivery_Order`, which queues it.
+`Eng.Test` submits job id "1" to `Mxr.Delivery_Order`, which queues it.
 The vehicle simultaneously begins navigating its pre-planned route via
 `Uio.Route` → `Nav.Route_Following`.
 
 ---
 
-### Phase 2 — Mission Acceptance and Flight Solution (t = 3.0 – 6.55 s)
+### Phase 2 — Job Acceptance and Flight Solution (t = 3.0 – 6.55 s)
 
 ```
-t=3.0   MXR.DELIVERY_ORDER ──►  IFC.DELIVERY_MISSION.ACCEPT_DELIVERY_ORDER
+t=3.0   MXR.DELIVERY_ORDER ──►  IFC.DELIVERY_JOB.ACCEPT_DELIVERY_ORDER
          (takes 3 s to process; completes at t=6.0)
-t=3.5   IFC.DELIVERY_MISSION ──►  AHD.DELIVERY_MISSION.START_DELIVERY_MISSION
-         AHO.DELIVERY_HANDLING_COORDINATOR unblocks (was waiting on START_DELIVERY_MISSION)
+t=3.5   IFC.DELIVERY_JOB ──►  AHD.DELIVERY_JOB.START_DELIVERY_JOB
+         AHO.DELIVERY_HANDLING_COORDINATOR unblocks (was waiting on START_DELIVERY_JOB)
 t=3.5   COORDINATOR  ──►  AHO.BOX_SHUTTLE.BEGIN_DELIVERY_ORDER     (non-blocking)
 t=3.5   COORDINATOR  ──►  AHO.BOTTLE_SHUTTLE.BEGIN_DELIVERY_ORDER  (non-blocking)
          Both shuttles immediately begin spinning to their compartments.
-t=3.5–3.7  IFC.DELIVERY_MISSION → ABK.CALCULATE_FLIGHT_SOLUTION
+t=3.5–3.7  IFC.DELIVERY_JOB → ABK.CALCULATE_FLIGHT_SOLUTION
               (200 ms: computes elevation, azimuth, velocity, delivery time per item)
-t=3.7   IFC.DELIVERY_MISSION ──►  AHD.DELIVERY_MISSION.FLIGHT_SOLUTION
+t=3.7   IFC.DELIVERY_JOB ──►  AHD.DELIVERY_JOB.FLIGHT_SOLUTION
          COORDINATOR unblocks from FLIGHT_SOLUTION notification.
 ```
 
-In parallel with route navigation, `Ifc.Delivery_Mission` reads mission data from the
+In parallel with route navigation, `Ifc.Delivery_Job` reads job data from the
 knowledgebase (`get_fm_static` / `get_item` Prolog queries), then calls
 `Abk.Technical_Delivery_Direction.Calculate_Flight_Solution` (200 ms) to determine
 the launch parameters for each item. Results are published via the `Flight_Solution`
 notification so the coordinator can proceed.
 
-The coordinator also fires off the two shuttles non-blocking as soon as the mission
+The coordinator also fires off the two shuttles non-blocking as soon as the job
 starts, so compartment indexing overlaps with the flight computation.
 
 ---
@@ -105,16 +105,16 @@ starts, so compartment indexing overlaps with the flight computation.
 
 ```
 t=6.0   ENG.TEST → ACU.VEHICLE.EMPLACE
-t=6.0   ENG.TEST → IFC.DELIVERY_MISSION.CHECK_AZIMUTH  (×2: confirms drone is on-bearing)
-t=6.0   ENG.TEST → AHD.DELIVERY_MISSION.CONFIGURE_EQUIPMENT
+t=6.0   ENG.TEST → IFC.DELIVERY_JOB.CHECK_AZIMUTH  (×2: confirms drone is on-bearing)
+t=6.0   ENG.TEST → AHD.DELIVERY_JOB.CONFIGURE_EQUIPMENT
          COORDINATOR unblocks (was waiting on CONFIGURE_EQUIPMENT notification).
-t=3.5–6.55  IFC.DELIVERY_MISSION → ABK.PERFORM_TECHNICAL_DELIVERY_DIRECTION
+t=3.5–6.55  IFC.DELIVERY_JOB → ABK.PERFORM_TECHNICAL_DELIVERY_DIRECTION
               (full solution for all items; 3.05 s elapsed)
-t=6.55  IFC.DELIVERY_MISSION ──►  AHD.DELIVERY_MISSION.MISSION_IS_READY
-         COORDINATOR unblocks from MISSION_IS_READY notification.
+t=6.55  IFC.DELIVERY_JOB ──►  AHD.DELIVERY_JOB.JOB_IS_READY
+         COORDINATOR unblocks from JOB_IS_READY notification.
 ```
 
-`Eng.Test` drives the state machine to `Emplaced` then `Enabled`. Azimuth checks
+`Eng.Test` drives the state machine to `Docked` then `Enabled`. Azimuth checks
 verify the vehicle heading is within tolerance for the destination. The full technical
 delivery direction computation finalises at t=6.55 s.
 
@@ -124,10 +124,10 @@ delivery direction computation finalises at t=6.55 s.
 
 ```
 t=6.55  COORDINATOR  ──►  AHO.DRONE.INITIALIZE        (sends all per-item flight data)
-t=6.55  DRONE        ──►  AHO.INVENTORY_LOADER.INITIALIZE   (non-blocking)
+t=6.55  DRONE        ──►  AHO.INVENTORY_JOB.INITIALIZE   (non-blocking)
 t=6.55  COORDINATOR  ──►  AHO.DRONE.AIM_DRONE          (non-blocking)
-t=6.55  COORDINATOR  ──►  AHO.DRONE.START_DELIVERY_MISSION  (non-blocking, completes t=6.60)
-t=6.55  COORDINATOR  waits on AHD.DELIVERY_MISSION.EXECUTE_DELIVERY_ORDER
+t=6.55  COORDINATOR  ──►  AHO.DRONE.START_DELIVERY_JOB  (non-blocking, completes t=6.60)
+t=6.55  COORDINATOR  waits on AHD.DELIVERY_JOB.EXECUTE_DELIVERY_ORDER
            (ENG.TEST posts this at t=6.0; coordinator unblocks at t=6.55)
 t=6.60  TRAVERSE_DRIVE  ──►  DRONE.TRAVERSE_COMPLETE   (drone on azimuth)
 t=6.60  ELEVATION_DRIVE ──►  DRONE.ELEVATION_COMPLETE  (drone on elevation)
@@ -187,7 +187,7 @@ BOTTLE_SHUTTLE.SPIN_TO_LOADER         (~0.8 s) — rotates to align with loader
 
 ```
 TIMER_SETTER.SET_TIMER  (~2.5 s) — counts down delivery timer on box
-TIMER_SETTER → AHD.DELIVERY_ORDER_STATUS.MODIFY_BOX (status: Timered)
+TIMER_SETTER → AHD.JOB_ORDER_STATUS.MODIFY_BOX (status: Timered)
 TIMER_SETTER.TIMER_COMPLETE notification — unblocks BOX_SHUTTLE to continue
 ```
 
@@ -206,7 +206,7 @@ t=12.05  LOADER  ──►  BOTTLE_SHUTTLE.AWAIT_BOTTLE_TRANSFER       (loader w
 t=12.22  BOTTLE_SHUTTLE.TRANSFER_BOTTLE_FROM_SHUTTLE             (bottle released)
 t=12.22  LOADER  ──►  BOX_SHUTTLE.AWAIT_BOX_TRANSFER             (loader waits for box handoff)
 t=13.15  BOX_SHUTTLE.OPEN_BOX_SHUTTLE_GRIPPERS + TRANSFER_BOX_FROM_SHUTTLE (box released)
-t=13.15  LOADER  ──►  INVENTORY_LOADER.CLOSE_LOADER_RETAINER     (loader closes, sealing both items)
+t=13.15  LOADER  ──►  INVENTORY_JOB.CLOSE_LOADER_RETAINER     (loader closes, sealing both items)
 t=13.46  LOADER  ──►  BOTTLE_SHUTTLE.ACK_BOTTLE_TRANSFER
 t=13.46  LOADER  ──►  BOX_SHUTTLE.ACK_BOX_TRANSFER
 ```
@@ -229,11 +229,11 @@ t=14.48  LOADER  ──►  BOX_SHUTTLE.INDEX_COMPARTMENT     (advance box compa
 #### 6f — Stacking
 
 ```
-t=14.48  LOADER -> STACKER.PLACE_BOX           (0.7 s) — stacker pushes box into chamber
-t=15.18  LOADER → AHD.DELIVERY_ORDER_STATUS.MODIFY_BOX (status: Rammed)
-t=15.18  LOADER -> STACKER.RETRACT_STACKER     (0.7 s)
+t=14.48  LOADER -> ACTUATOR.PLACE_BOX           (0.7 s) — actuator pushes box into chamber
+t=15.18  LOADER → AHD.JOB_ORDER_STATUS.MODIFY_BOX (status: Placed)
+t=15.18  LOADER -> ACTUATOR.RETRACT_ACTUATOR     (0.7 s)
 t=15.88  LOADER -> SWING_TRAY_TO_BOTTLE        (0.6 s) — loader tray aligns for bottle
-t=16.48  LOADER -> STACKER.PLACE_BOTTLE        (0.7 s) — stacker pushes bottle in
+t=16.48  LOADER -> ACTUATOR.PLACE_BOTTLE        (0.7 s) — actuator pushes bottle in
 ```
 
 In parallel the door has been commanded closed:
@@ -261,7 +261,7 @@ posts only after the retainer has been closed and both shuttle transfers acknowl
 ```
 t=20.55  DRONE => AHO.DRONE.LAUNCH                 (100 ms: pyrotechnic ignition model)
 t=20.66  DRONE -> AHO.DRONE.LIFT_OFF               (0.9 s: drone rises after launch)
-t=20.55  DRONE => AHD.DELIVERY_ORDER_STATUS.MODIFY_BOX  (status: Delivered)
+t=20.55  DRONE => AHD.JOB_ORDER_STATUS.MODIFY_BOX  (status: Delivered)
 t=20.55  DRONE => SIM.INVENTORY.UPDATE_INVENTORY   (decrement simulated inventory)
 ```
 
@@ -283,20 +283,20 @@ t=21.56  LOADER  ──►  BOX_SHUTTLE.INDEX_COMPARTMENT     (next position)
 
 The shuttles retract, grippers open, and both compartments advance to the next
 position. The cycle from Phase 6a restarts for item 2 from approximately t=21.6 s,
-overlapping with the stacker retract of the preceding item.
+overlapping with the actuator retract of the preceding item.
 
 ---
 
-### Phase 8 — Mission Completion
+### Phase 8 — Job Completion
 
 After the last item is launched:
 
-1. `Aho.Drone.Finalize_Delivery_Mission` is called.
+1. `Aho.Drone.Finalize_Delivery_Job` is called.
 2. Drone slews to stow position (azimuth = 0°, elevation = standby).
-3. `Aho.Inventory_Loader.Stow_Equipment` lowers and secures the loader arm.
-4. `Ahd.Delivery_Mission.Delivery_Mission_Complete` notification is published.
+3. `Aho.Inventory_Job.Stow_Equipment` lowers and secures the loader arm.
+4. `Ahd.Delivery_Job.Delivery_Job_Complete` notification is published.
 5. State machine transitions: `Delivering → Items_Complete → Initial`.
-6. `Uio.State.Deliver` resets, ready for the next mission order.
+6. `Uio.State.Deliver` resets, ready for the next job order.
 
 ---
 
@@ -314,7 +314,7 @@ The system uses three distinct PACE synchronization primitives:
 Key synchronization points that enforce correctness:
 
 - **`FLIGHT_SOLUTION`** — coordinator must not start drone aim until flight data is ready.
-- **`MISSION_IS_READY`** — coordinator must not start mission execution until the full per-item solution set is available.
+- **`JOB_IS_READY`** — coordinator must not start job execution until the full per-item solution set is available.
 - **`COMPARTMENT.INDEX_COMPLETE`** — shuttle must not extend to retrieve until the rotary compartment has stopped.
 - **`TIMER_COMPLETE`** — box shuttle must not deliver to loader until the timer has been set.
 - **`AWAIT_BOTTLE_TRANSFER` / `AWAIT_BOX_TRANSFER`** — loader enforces a strict two-phase handshake with each shuttle before closing the retainer.
@@ -324,15 +324,15 @@ Key synchronization points that enforce correctness:
 
 ## Knowledge Base Integration
 
-Mission destinations and item parameters are stored in Prolog-syntax files under `../../kbase/`.
+Job destinations and item parameters are stored in Prolog-syntax files under `../../kbase/`.
 At startup the following queries are issued against the knowledgebase:
 
 | Query | Purpose |
 |---|---|
-| `get_fm_static` | Retrieves mission header (target, mission type, control, phase, item count) |
-| `get_item` | Retrieves per-item target coordinates, elevation, azimuth, box type, timer type/setting, on-target time |
+| `get_fm_static` | Retrieves job header (customer, job type, control, phase, item count) |
+| `get_item` | Retrieves per-item customer coordinates, elevation, azimuth, box type, timer type/setting, on-customer time |
 | `box_bottle_velocity` | Maps (box type, charge zone) → launch velocity |
-| `mission_alert` | Audio file for mission-received alert |
+| `job_alert` | Audio file for job-received alert |
 
 ---
 
@@ -342,12 +342,12 @@ At startup the following queries are issued against the knowledgebase:
 # Build
 gprbuild dv.gpr
 
-# Run (30 second simulation, mission id 1)
+# Run (30 second simulation, job id 1)
 env PACE_SIM=1 PACE_RUN_TIME=30.0 PACE=../.. obj/demo_drone
 
 # Run with full knowledgebase debug output
 env GKB_DEBUG=1 PACE_SIM=1 PACE_RUN_TIME=30.0 PACE=../.. obj/demo_drone
 
-# Select a different mission
+# Select a different job
 env PACE_SIM=1 PACE_RUN_TIME=60.0 PACE=../.. obj/demo_drone -id 2
 ```

@@ -5,7 +5,7 @@ with Hal;
 with Hal.Sms;
 with Ada.Numerics;
 
-with Aho.Inventory_Loader;
+with Aho.Inventory_Job;
 with Plant.Drone;
 with Plant;
 
@@ -60,7 +60,7 @@ package body Traverse_Drive is
             -- traversal so that the shuttles can transfer their inventory at anytime
             -- to the loader.
             declare
-               use Aho.Inventory_Loader;
+               use Aho.Inventory_Job;
                Msg : Counter_Rotate;
             begin
                Msg.Offset := -Traverse_Angle;

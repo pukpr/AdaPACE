@@ -8,7 +8,7 @@ with Pace.Surrogates;
 
 with Aho.Box_Shuttle_Grippers;
 with Aho.Box_Compartment;
-with Ahd.Delivery_Order_Status;
+with Ahd.Job_Order_Status;
 with Aho.Timer_Setter;
 with Aho.Resupply_Shuttle;
 

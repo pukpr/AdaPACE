@@ -7,7 +7,7 @@ with Hal.Sms;
 with Pace.Command_Line;
 with Plant.Drone;
 
-separate (Aho.Inventory_Loader)
+separate (Aho.Inventory_Job)
 package body Jack_Track is
 
    procedure Check (Pos : Hal.Position) is

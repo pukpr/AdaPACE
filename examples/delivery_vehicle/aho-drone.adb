@@ -14,10 +14,10 @@ with Pace.Strings;
 with Ada.Numerics;
 with Ada.Numerics.Elementary_Functions;
 
-with Aho.Inventory_Loader;
+with Aho.Inventory_Job;
 with Aho.Door;
-with Ahd.Delivery_Order_Status;
-with Ahd.Delivery_Mission;
+with Ahd.Job_Order_Status;
+with Ahd.Delivery_Job;
 with Plant.Drone;
 
 with Vsn.Orientation_Position;
@@ -61,12 +61,12 @@ package body Aho.Drone is
    Total_Items : Integer;
    Items : Ahd.Items_Array;
    Items_Delivered : Integer := 0;
-   Mission : Ahd.Mission_Record;
+   Job : Ahd.Job_Record;
 
    task Agent is
       entry Input (Obj : in Initialize);
       entry Input (Obj : in Aim_Drone);
-      entry Input (Obj : in Start_Delivery_Mission);
+      entry Input (Obj : in Start_Delivery_Job);
       entry Input (Obj : in Test_Drone_Movement);
    end Agent;
 
@@ -209,9 +209,9 @@ package body Aho.Drone is
       Pace.Log.Put_Line ("DELIVERY");
    end Delivery;
 
-   type Chamber_Air_Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Chamber_Air_Spray);
-   procedure Input (Obj : Chamber_Air_Spray) is
+   type Photo is new Pace.Msg with null record;
+   procedure Input (Obj : Photo);
+   procedure Input (Obj : Photo) is
    begin
       Pace.Log.Wait (0.7);
       Pace.Log.Trace (Obj);
@@ -221,16 +221,16 @@ package body Aho.Drone is
 
       procedure Wait_To_Delivery (Item_Index : Integer) is
       begin
-         if Ahd.Delivery_Mission.Is_Time_On_Target then
+         if Ahd.Delivery_Job.Is_Time_On_Customer then
             declare
                use Ifc.Fm_Data;
-               Msg : Ahd.Delivery_Mission.Get_Delivery_Mission;
+               Msg : Ahd.Delivery_Job.Get_Delivery_Job;
                Delivery_Time : Duration;
                Start_Time : Duration;
             begin
                Pace.Dispatching.Output (Msg);
-               Start_Time := Msg.Mission.Data.Start_Time;
-               Delivery_Time := Msg.Mission.Items (Item_Index).Delivery_Time;
+               Start_Time := Msg.Job.Data.Start_Time;
+               Delivery_Time := Msg.Job.Items (Item_Index).Delivery_Time;
                -- Wait to appointed time to delivery the item
                if (Start_Time + Delivery_Time) < Pace.Now then
                   Pace.Log.Put_Line ("!!!!!!!!!!!!!!!!!Delivery: Immediately.. missed desired delivery time by " & Duration'Image (Pace.Now - (Start_Time + Delivery_Time)));
@@ -246,10 +246,10 @@ package body Aho.Drone is
          end if;
       end Wait_To_Delivery;
 
-      procedure Finalize_Delivery_Mission is
+      procedure Finalize_Delivery_Job is
       begin
          declare
-            use Aho.Inventory_Loader;
+            use Aho.Inventory_Job;
             Msg : Stow_Equipment;
          begin
             Pace.Dispatching.Input (Msg);
@@ -271,11 +271,11 @@ package body Aho.Drone is
             Pace.Dispatching.Inout (Msg);
          end;
 
-         -- notify that mission is complete
-         Ahd.Delivery_Mission.Publish_Delivery_Mission_Complete;
-         Pace.Log.Put_Line ("Delivery Mission Complete");
+         -- notify that job is complete
+         Ahd.Delivery_Job.Publish_Delivery_Job_Complete;
+         Pace.Log.Put_Line ("Delivery Job Complete");
 
-      end Finalize_Delivery_Mission;
+      end Finalize_Delivery_Job;
 
       procedure Adjust_For_Terrain is
       begin
@@ -310,15 +310,15 @@ package body Aho.Drone is
       procedure Recalculate_Vel_And_Az is
       begin
          declare
-            Msg : Ahd.Delivery_Mission.Get_Delivery_Mission;
-            Modified_Mission : Ahd.Mission_Record;
+            Msg : Ahd.Delivery_Job.Get_Delivery_Job;
+            Modified_Job : Ahd.Job_Record;
          begin
             Pace.Dispatching.Output (Msg);
-            Modified_Mission := Msg.Mission;
-            Abk.Technical_Delivery_Direction.Calculate_Vel_And_Az (Modified_Mission);
-            Items := Modified_Mission.Items;
+            Modified_Job := Msg.Job;
+            Abk.Technical_Delivery_Direction.Calculate_Vel_And_Az (Modified_Job);
+            Items := Modified_Job.Items;
             declare
-               Msg2 : Ahd.Delivery_Mission.Adjust_Items;
+               Msg2 : Ahd.Delivery_Job.Adjust_Items;
             begin
                Msg2.Items := Items;
                Pace.Dispatching.Input (Msg2);
@@ -334,13 +334,13 @@ package body Aho.Drone is
                Total_Items := Obj.Num_Items;
                Items := Obj.Items;
                Pace.Log.Put_Line ("!!!!!!! elevation of the first item is " & Items(1).Elevation'Img);
-               if Ahd.Delivery_Mission.Has_Target then
+               if Ahd.Delivery_Job.Has_Customer then
                   Adjust_For_Terrain;
                end if;
                Pace.Log.Trace (Obj);
             end Input;
             declare
-               Msg : Aho.Inventory_Loader.Initialize;
+               Msg : Aho.Inventory_Job.Initialize;
             begin
                Msg.Total_Items := Total_Items;
                Pace.Dispatching.Input (Msg);
@@ -351,11 +351,11 @@ package body Aho.Drone is
                Move_Drone (1);
                Pace.Log.Trace (Obj);
             end Input;
-            accept Input (Obj : in Start_Delivery_Mission) do
+            accept Input (Obj : in Start_Delivery_Job) do
                Items_Delivered := 0;
                Pace.Log.Put_Line ("Total Items" &
                                   Integer'Image (Total_Items));
-               if Ahd.Delivery_Mission.Has_Target then
+               if Ahd.Delivery_Job.Has_Customer then
                   Recalculate_Vel_And_Az;
                   Adjust_For_Terrain;
                   -- clear out the first move_drone above
@@ -379,15 +379,15 @@ package body Aho.Drone is
             end Input;
 
             declare
-               Msg : Ahd.Delivery_Mission.Get_Delivery_Mission;
+               Msg : Ahd.Delivery_Job.Get_Delivery_Job;
             begin
                Pace.Dispatching.Output (Msg);
-               Mission := Msg.Mission;
+               Job := Msg.Job;
             end;
 
             loop
                declare
-                  use Aho.Inventory_Loader;
+                  use Aho.Inventory_Job;
                   Msg : Load_Drone;
                begin
                   Msg.Item_Index := Items_Delivered + 1;
@@ -406,7 +406,7 @@ package body Aho.Drone is
                end if;
 
                declare
-                  use Aho.Inventory_Loader;
+                  use Aho.Inventory_Job;
                   Msg : Ack_Load_Drone_Complete;
                begin
                   Pace.Dispatching.Input (Msg);
@@ -428,7 +428,7 @@ package body Aho.Drone is
 
                -- Wait for Clear_To_Delivery
                declare
-                   Msg : Aho.Inventory_Loader.Clear_To_Delivery;
+                   Msg : Aho.Inventory_Job.Clear_To_Delivery;
                 begin
                    Pace.Dispatching.Inout (Msg);
                 end;
@@ -438,7 +438,7 @@ package body Aho.Drone is
                Items_Delivered := Items_Delivered + 1;
 
                declare
-                  use Ahd.Delivery_Order_Status;
+                  use Ahd.Job_Order_Status;
                   Msg : Modify_Box;
                begin
                   Msg.Index := Items_Delivered;
@@ -446,11 +446,11 @@ package body Aho.Drone is
                   Pace.Dispatching.Input (Msg);
                end;
                -- remove 1 box and 1 bottle
-               Sim.Inventory.Remove_Box (Ifc.Fm_Data.Item_Vector.Element (Mission.Data.Items, Items_Delivered).Box);
-               if Mission.Items (Items_Delivered).Num_Charges <= 2 then
-                  null; -- Sim.Inventory.Remove_Bottle (Sim.Inventory.Half, Mission.Items (Items_Delivered).Num_Charges);
+               Sim.Inventory.Remove_Box (Ifc.Fm_Data.Item_Vector.Element (Job.Data.Items, Items_Delivered).Box);
+               if Job.Items (Items_Delivered).Power_Level <= 2 then
+                  null; -- Sim.Inventory.Remove_Bottle (Sim.Inventory.Half, Job.Items (Items_Delivered).Power_Level);
                else
-                  Sim.Inventory.Remove_Bottle (Sim.Inventory.Full, Mission.Items (Items_Delivered).Num_Charges);
+                  Sim.Inventory.Remove_Bottle (Sim.Inventory.Full, Job.Items (Items_Delivered).Power_Level);
                end if;
 
                Pace.Log.Put_Line ("Items Delivered : " &
@@ -460,7 +460,7 @@ package body Aho.Drone is
                Move_Drone (Items_Delivered + 1);
             end loop;
 
-            Finalize_Delivery_Mission;
+            Finalize_Delivery_Job;
          or
             accept Input (Obj : in Test_Drone_Movement) do
                Move_Drone (Obj.Elevation, Obj.Azimuth);
@@ -503,7 +503,7 @@ package body Aho.Drone is
       Pace.Log.Trace (Obj);
    end Input;
 
-   procedure Input (Obj : in Start_Delivery_Mission) is
+   procedure Input (Obj : in Start_Delivery_Job) is
    begin
       Agent.Input (Obj);
    end Input;

@@ -2,7 +2,7 @@ with Pace;
 with Hal;
 with Ada.Strings.Unbounded;
 
-package Aho.Stacker is
+package Aho.Actuator is
    pragma Elaborate_Body;
 
    type Place_Box is new Pace.Msg with null record;
@@ -11,12 +11,12 @@ package Aho.Stacker is
    type Place_Bottle is new Pace.Msg with null record;
    procedure Input (Obj : in Place_Bottle);
 
-   type Retract_Stacker is new Pace.Msg with
+   type Retract_Actuator is new Pace.Msg with
       record
          Unloaded : Boolean :=
-           False;  -- true if stacker has neither bottle or box in it
+           False;  -- true if actuator has neither bottle or box in it
       end record;
-   procedure Input (Obj : in Retract_Stacker);
+   procedure Input (Obj : in Retract_Actuator);
 
    type Retract_Bottle_Retainer is new Pace.Msg with null record;
    procedure Input (Obj : in Retract_Bottle_Retainer);
@@ -27,5 +27,5 @@ package Aho.Stacker is
 private
    pragma Inline (Input);
 
--- $id: aho-stacker.ads,v 1.4 12/22/2003 14:17:43 ludwiglj Exp $
-end Aho.Stacker;
+-- $id: aho-actuator.ads,v 1.4 12/22/2003 14:17:43 ludwiglj Exp $
+end Aho.Actuator;

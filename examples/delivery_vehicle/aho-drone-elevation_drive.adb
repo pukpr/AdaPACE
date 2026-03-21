@@ -5,7 +5,7 @@ with Hal;
 with Hal.Sms;
 with Hal.Audio.Mixer;
 with Ada.Numerics;
-with Aho.Inventory_Loader;
+with Aho.Inventory_Job;
 with Aho.Morph_Track;
 with Aho.Demonstrator_Track;
 with Plant.Drone;
@@ -55,7 +55,7 @@ package body Elevation_Drive is
             -- if using the morph loader or the demonstrator loader then
             -- their tracks must move also!
 --              declare
---                 use Aho.Inventory_Loader;
+--                 use Aho.Inventory_Job;
 --              begin
 --                 if Get_Which_Loader = Morph_Loader then
 --                    declare

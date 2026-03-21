@@ -176,7 +176,7 @@ package body Aho.Bottle_Shuttle is
                Pace.Dispatching.Input (Msg);
             end;
             Pace.Log.Wait (4.0);
-            Pace.Log.Put_Line ("bottle shuttle completed mission");
+            Pace.Log.Put_Line ("bottle shuttle completed job");
 
          or
 

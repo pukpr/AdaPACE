@@ -4,7 +4,7 @@ with Pace.Surrogates;
 with Pace.Server.Dispatch;
 
 with Ifc.Fm_Data;
-with Ahd.Delivery_Mission;
+with Ahd.Delivery_Job;
 with Ahd;
 with Aho.Drone;
 with Aho.Bottle_Shuttle;
@@ -34,7 +34,7 @@ package body Aho.Delivery_Handling_Coordinator is
          begin
             -- wait on this notify
             declare
-               Msg : Ahd.Delivery_Mission.Start_Delivery_Mission;
+               Msg : Ahd.Delivery_Job.Start_Delivery_Job;
             begin
                Pace.Dispatching.Inout (Msg);
                -- start shuttles here
@@ -56,7 +56,7 @@ package body Aho.Delivery_Handling_Coordinator is
             -- must wait until flight solution has been calculated before
             -- beginning the indexing of the bottle compartment
             declare
-               Msg : Ahd.Delivery_Mission.Flight_Solution;
+               Msg : Ahd.Delivery_Job.Flight_Solution;
             begin
                Pace.Dispatching.Inout (Msg);
             end;
@@ -74,18 +74,18 @@ package body Aho.Delivery_Handling_Coordinator is
 
             -- wait for configure signal through Ahd interface
             declare
-               Msg : Ahd.Delivery_Mission.Configure_Equipment;
+               Msg : Ahd.Delivery_Job.Configure_Equipment;
             begin
                Pace.Dispatching.Inout (Msg);
             end;
 
-            -- go and get delivery mission data
+            -- go and get delivery job data
             declare
-               Msg : Ahd.Delivery_Mission.Get_Delivery_Mission;
+               Msg : Ahd.Delivery_Job.Get_Delivery_Job;
             begin
                Pace.Dispatching.Output (Msg);
-               Num_Items := Integer (Ifc.Fm_Data.Item_Vector.Length (Msg.Mission.Data.Items));
-               Items := Msg.Mission.Items;
+               Num_Items := Integer (Ifc.Fm_Data.Item_Vector.Length (Msg.Job.Data.Items));
+               Items := Msg.Job.Items;
             end;
 
 --             declare
@@ -113,13 +113,13 @@ package body Aho.Delivery_Handling_Coordinator is
 
             -- wait for execute signal through Ahd interface
             declare
-               Msg : Ahd.Delivery_Mission.Execute_Delivery_Order;
+               Msg : Ahd.Delivery_Job.Execute_Delivery_Order;
             begin
                Pace.Dispatching.Inout (Msg);
             end;
             declare
                use Aho.Drone;
-               Msg : Start_Delivery_Mission;
+               Msg : Start_Delivery_Job;
             begin
                Pace.Dispatching.Input (Msg);
             end;

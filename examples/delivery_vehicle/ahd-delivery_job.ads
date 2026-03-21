@@ -2,23 +2,23 @@ with Pace;
 with Pace.Notify;
 with Ifc.Fm_Data;
 
-package Ahd.Delivery_Mission is
+package Ahd.Delivery_Job is
 
    pragma Elaborate_Body;
 
-   -- the data for the delivery mission comes down through this
+   -- the data for the delivery job comes down through this
    type Delivery_Solution is new Pace.Msg with
       record
-         Mission : Mission_Record;
+         Job : Job_Record;
       end record;
    procedure Input (Obj : in Delivery_Solution);
 
    type Configure is new Pace.Msg with null record;
    procedure Input (Obj : in Configure);
 
-   -- triggers the inventory handling to start the delivery mission to anyone
+   -- triggers the inventory handling to start the delivery job to anyone
    -- who is listening
-   type Start_Delivery_Mission is new Pace.Notify.Subscription with
+   type Start_Delivery_Job is new Pace.Notify.Subscription with
       record
          Num_Items : Integer;
       end record;
@@ -32,23 +32,23 @@ package Ahd.Delivery_Mission is
    -- triggers the execution of the delivery order
    type Execute_Delivery_Order is new Pace.Notify.Subscription with null record;
 
-   -- communication between aho/ahm to tell ahd to publish that mission is complete
-   type Delivery_Mission_Done is new Pace.Notify.Subscription with null record;
+   -- communication between aho/ahm to tell ahd to publish that job is complete
+   type Delivery_Job_Done is new Pace.Notify.Subscription with null record;
 
-   -- subscription message triggered when delivery mission is complete
-   type Delivery_Mission_Complete is new Pace.Msg with null record;
-   procedure Input (Obj : in Delivery_Mission_Complete);
+   -- subscription message triggered when delivery job is complete
+   type Delivery_Job_Complete is new Pace.Msg with null record;
+   procedure Input (Obj : in Delivery_Job_Complete);
 
-   -- accessible for publishing the Delivery_Mission_Complete list
-   procedure Publish_Delivery_Mission_Complete;
+   -- accessible for publishing the Delivery_Job_Complete list
+   procedure Publish_Delivery_Job_Complete;
 
-   -- note that the mission data here is preliminary.. the velocity and azimuth are
+   -- note that the job data here is preliminary.. the velocity and azimuth are
    -- recalculated directly before delivery and may be different than what is stored here!
-   type Get_Delivery_Mission is new Pace.Msg with
+   type Get_Delivery_Job is new Pace.Msg with
       record
-         Mission : Mission_Record;
+         Job : Job_Record;
       end record;
-   procedure Output (Obj : out Get_Delivery_Mission);
+   procedure Output (Obj : out Get_Delivery_Job);
 
    type Adjust_Items is new Pace.Msg with
       record
@@ -58,14 +58,14 @@ package Ahd.Delivery_Mission is
 
    function Get_Fms_Completed return Integer;
 
-   function Has_Target return Boolean;
+   function Has_Customer return Boolean;
 
    -- returns when the specified item will delivery (in simulation time)
    function Get_Delivery_Time (Index : Integer) return Duration;
 
-   function Is_Time_On_Target return Boolean;
+   function Is_Time_On_Customer return Boolean;
 
 private
    pragma Inline (Input);
 
-end Ahd.Delivery_Mission;
+end Ahd.Delivery_Job;

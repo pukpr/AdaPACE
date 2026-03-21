@@ -3,15 +3,15 @@ with Pace.Log;
 with Hal.Morph_Loader;
 with hal.bounded_Assembly;
 
-separate (Aho.Inventory_Loader)
-package body Morph is
+separate (Aho.Inventory_Job)
+package body Demonstrator is
 
    use hal.bounded_Assembly;
 
    package Morph_Loader is
      new Hal.Morph_Loader (Track_Radius => 0.203,
-                           Center_Point_Z => 0.3051,
-                           Center_Point_Y_At_Zero_Theta => 0.4319,
+                           Center_Point_Z => 0.281,
+                           Center_Point_Y_At_Zero_Theta => 0.410,
                            Liftbox_Rising_Velocity => 0.65,
                            Liftbox_Lowering_Velocity => 1.0,
                            Distance_Between_Wheels => 0.661,
@@ -19,8 +19,8 @@ package body Morph is
                            Arm1_Assembly => To_Bounded_String ("axis_arm1"),
                            Arm2_Assembly => To_Bounded_String ("axis_arm2"),
                            Liftbox_Assembly => To_Bounded_String ("Liftbox"),
-                           Rear_Pos_Standoff => (0.0, -1.2838, 0.1021),
-                           Breech_Z_Stopping_Point => 1.00945);
+                           Rear_Pos_Standoff => (0.0, -1.3977, 0.08),
+                           Breech_Z_Stopping_Point => 1.0035);
 
    procedure Input (Obj : Raise_Loader) is
    begin
@@ -35,4 +35,4 @@ package body Morph is
       Pace.Log.Trace (Obj);
    end Input;
 
-end Morph;
+end Demonstrator;

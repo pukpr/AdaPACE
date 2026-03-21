@@ -10,12 +10,12 @@ with Pace.Strings; use Pace.Strings;
 with Aho.Door;
 with Aho.Bottle_Shuttle;
 with Aho.Box_Shuttle;
-with Aho.Inventory_Loader_Grippers;
-with Aho.Stacker;
-with Ahd.Delivery_Order_Status;
+with Aho.Inventory_Job_Grippers;
+with Aho.Actuator;
+with Ahd.Job_Order_Status;
 with Vkb.Db;
 
-package body Aho.Inventory_Loader is
+package body Aho.Inventory_Job is
 
    function Id is new Pace.Log.Unit_Id;
 
@@ -137,13 +137,13 @@ package body Aho.Inventory_Loader is
    begin
       Pace.Log.Put_Line ("loading inventory");
       declare
-         use Aho.Stacker;
+         use Aho.Actuator;
          Msg : Place_Box;
       begin
          Pace.Dispatching.Input (Msg);
       end;
       declare
-         use Ahd.Delivery_Order_Status;
+         use Ahd.Job_Order_Status;
          Msg : Modify_Box;
       begin
          Msg.Index := Current_Item;
@@ -151,30 +151,30 @@ package body Aho.Inventory_Loader is
          Pace.Dispatching.Input (Msg);
       end;
       declare
-         Msg : Aho.Stacker.Retract_Stacker;
+         Msg : Aho.Actuator.Retract_Actuator;
       begin
          Msg.Unloaded := False;
          Pace.Dispatching.Input (Msg);
       end;
-      Aho.Stacker.Reset_Box;
+      Aho.Actuator.Reset_Box;
       declare
          Msg : Swing_Tray_To_Bottle;
       begin
          Pace.Dispatching.Input (Msg);
       end;
       declare
-         Msg : Aho.Stacker.Place_Bottle;
+         Msg : Aho.Actuator.Place_Bottle;
       begin
          Pace.Dispatching.Input (Msg);
       end;
-      Aho.Stacker.Reset_Bottle;
+      Aho.Actuator.Reset_Bottle;
       declare
-         Msg : Aho.Stacker.Retract_Stacker;
+         Msg : Aho.Actuator.Retract_Actuator;
       begin
          Msg.Unloaded := True;
          Pace.Surrogates.Input (Msg);
       end;
-      -- loader lowers .25 seconds after stacker begins retracting!  synchronization unnecessary here.
+      -- loader lowers .25 seconds after actuator begins retracting!  synchronization unnecessary here.
       Pace.Log.Wait (0.25);
    end Load_Inventory;
 
@@ -261,33 +261,33 @@ package body Aho.Inventory_Loader is
       end;
    end Transfer_Inventory_To_Loader;
 
-   type Laser_Water_Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Laser_Water_Spray);
-   procedure Input (Obj : Laser_Water_Spray) is
+   type Scan is new Pace.Msg with null record;
+   procedure Input (Obj : Scan);
+   procedure Input (Obj : Scan) is
    begin
       Pace.Log.Wait (0.05);
       Pace.Log.Trace (Obj);
    end Input;
 
-   type Laser_Air_Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Laser_Air_Spray);
-   procedure Input (Obj : Laser_Air_Spray) is
+   type Laser_Range is new Pace.Msg with null record;
+   procedure Input (Obj : Laser_Range);
+   procedure Input (Obj : Laser_Range) is
    begin
       Pace.Log.Wait (1.0);
       Pace.Log.Trace (Obj);
    end Input;
 
-   type Ember_Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Ember_Spray);
-   procedure Input (Obj : Ember_Spray) is
+   type Camera is new Pace.Msg with null record;
+   procedure Input (Obj : Camera);
+   procedure Input (Obj : Camera) is
    begin
       Pace.Log.Wait (1.5);
       Pace.Log.Trace (Obj);
    end Input;
 
-   type Door_Block_Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Door_Block_Spray);
-   procedure Input (Obj : Door_Block_Spray) is
+   type Extinguish is new Pace.Msg with null record;
+   procedure Input (Obj : Extinguish);
+   procedure Input (Obj : Extinguish) is
    begin
       Pace.Log.Wait (0.25);
       Pace.Log.Trace (Obj);
@@ -301,18 +301,18 @@ package body Aho.Inventory_Loader is
       Pace.Log.Trace (Obj);
    end Input;
 
-   type Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Spray);
-   procedure Input (Obj : Spray) is
+   type Clean is new Pace.Msg with null record;
+   procedure Input (Obj : Clean);
+   procedure Input (Obj : Clean) is
    begin
       declare
-         Msg : Laser_Water_Spray;
+         Msg : Scan;
       begin
          Pace.Surrogates.Input (Msg);
       end;
       if Current_Item /= 1 then
          declare
-            Msg : Door_Block_Spray;
+            Msg : Extinguish;
          begin
             Pace.Surrogates.Input (Msg);
          end;
@@ -322,14 +322,14 @@ package body Aho.Inventory_Loader is
                     Pace.Surrogates.Input (Msg);
                  end;
          declare
-            Msg : Ember_Spray;
+            Msg : Camera;
          begin
             Pace.Surrogates.Input (Msg);
          end;
       end if;
       Pace.Log.Wait (0.05);
       declare
-         Msg : Laser_Air_Spray;
+         Msg : Laser_Range;
       begin
          Pace.Surrogates.Input (Msg);
       end;
@@ -350,7 +350,7 @@ package body Aho.Inventory_Loader is
       -- bottle retainer is retracted 0.1 seconds after door door begins to close
       Pace.Log.Wait (0.1);
       declare
-         Msg : Aho.Stacker.Retract_Bottle_Retainer;
+         Msg : Aho.Actuator.Retract_Bottle_Retainer;
       begin
          Pace.Dispatching.Input (Msg);
       end;
@@ -398,7 +398,7 @@ package body Aho.Inventory_Loader is
             end;
 
             declare
-               Msg : Spray;
+               Msg : Clean;
             begin
                Pace.Surrogates.Input (Msg);
             end;
@@ -518,7 +518,7 @@ package body Aho.Inventory_Loader is
 
       -- Jack Loader
       declare
-         Msg : Aho.Inventory_Loader.Jack_Track.Raise_Loader;
+         Msg : Aho.Inventory_Job.Jack_Track.Raise_Loader;
       begin
          Msg.Elevation := Hal.Rads (Elevation);
          Pace.Dispatching.Input (Msg);
@@ -571,7 +571,7 @@ package body Aho.Inventory_Loader is
 
       -- Jack Loader
       declare
-         Msg : Aho.Inventory_Loader.Jack_Track.Lower_Loader;
+         Msg : Aho.Inventory_Job.Jack_Track.Lower_Loader;
       begin
          Msg.Elevation := Hal.Rads (Elevation);
          Pace.Dispatching.Input (Msg);
@@ -750,4 +750,4 @@ package body Aho.Inventory_Loader is
 --        Pace.Log.Put_Line
 --          ("Kbase query for which_loader failed.  Assigning loader type to Morph_Loader");
 --      Which_Loader := Jack_Loader;
-end Aho.Inventory_Loader;
+end Aho.Inventory_Job;

@@ -4,7 +4,7 @@ package Uio.State.Sustain is
 
    pragma Elaborate_Body;
 
-   type State_Enum is (Initial, Emplaced, Sustaining);
+   type State_Enum is (Initial, Docked, Sustaining);
 
    procedure Set_Initial_State;
 

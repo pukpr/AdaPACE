@@ -2,7 +2,7 @@ with Pace.Log;
 with Hal.Audio.Mixer;
 with Vkb;
 
-package body Uio.Mission_Audio_Alert is
+package body Uio.Job_Audio_Alert is
 
    function Id is new Pace.Log.Unit_Id;
 
@@ -24,7 +24,7 @@ package body Uio.Mission_Audio_Alert is
                Audio_Msg : Hal.Audio.Mixer.Play_Mix;
                V : Variables (1 .. 2);
             begin
-               Vkb.Agent.Query ("mission_alert", V);
+               Vkb.Agent.Query ("job_alert", V);
                Audio_Msg.File := V(1);
                Audio_Msg.Volume := Integer'Value (+V(2));
                Pace.Dispatching.Inout (Audio_Msg);
@@ -52,4 +52,4 @@ package body Uio.Mission_Audio_Alert is
    end Input;
 
 
-end Uio.Mission_Audio_Alert;
+end Uio.Job_Audio_Alert;

@@ -3,7 +3,7 @@ with Ada.Containers.Doubly_Linked_Lists;
 with Ada.Numerics;
 with Hal;
 
-package body Abk.Time_On_Target is
+package body Abk.Time_On_Customer is
 
    type Solution_Item_Pair is
       record
@@ -63,19 +63,19 @@ package body Abk.Time_On_Target is
    begin
 
       -- calculate the horizontal and vertical distances
-      for I in Obj.Target_Locations'Range loop
-         Hdist (I) := Get_Horizontal_Distance (Obj.Target_Locations (I).Easting, Obj.Target_Locations (I).Northing);
-         Vdist (I) := Get_Vertical_Distance (Obj.Target_Locations (I).Easting, Obj.Target_Locations (I).Northing);
+      for I in Obj.Customer_Locations'Range loop
+         Hdist (I) := Get_Horizontal_Distance (Obj.Customer_Locations (I).Easting, Obj.Customer_Locations (I).Northing);
+         Vdist (I) := Get_Vertical_Distance (Obj.Customer_Locations (I).Easting, Obj.Customer_Locations (I).Northing);
          Pace.Log.Put_Line ("hdist: " & Hdist (I)'Img & " vdist: " & Vdist (I)'Img, 4);
       end loop;
 
       -- find all velocity and theta combinations that satisfy
-      -- the min and max theta constraints for each target
+      -- the min and max theta constraints for each customer
       declare
          Success : Boolean;
          Elevation : Float;
       begin
-         for J in Obj.Target_Locations'Range loop
+         for J in Obj.Customer_Locations'Range loop
             for I in Obj.Possible_Velocities'Range loop
                Elevation_Calculation (Obj.Possible_Velocities (I),
                                       Hdist (J),
@@ -136,4 +136,4 @@ package body Abk.Time_On_Target is
    end Inout;
 
 
-end Abk.Time_On_Target;
+end Abk.Time_On_Customer;

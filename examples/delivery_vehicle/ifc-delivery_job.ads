@@ -2,19 +2,19 @@ with Pace;
 with Pace.Notify;
 with Str;
 
-package Ifc.Delivery_Mission is
+package Ifc.Delivery_Job is
 
    pragma Elaborate_Body;
 
-   -- setting a delivery mission through the kbase
+   -- setting a delivery job through the kbase
    type Accept_Delivery_Order is new Pace.Msg with
       record
          Id : Str.Bstr.Bounded_String;
-         Mission_Accepted : Boolean;  -- output .. true means mission was accepted, false it was denied
+         Job_Accepted : Boolean;  -- output .. true means job was accepted, false it was denied
       end record;
    procedure Inout (Obj : in out Accept_Delivery_Order);
 
-   function Get_Delivery_Mission_Id return Str.Bstr.Bounded_String;
+   function Get_Delivery_Job_Id return Str.Bstr.Bounded_String;
 
    type Check_Azimuth is new Pace.Msg with
       record
@@ -24,7 +24,7 @@ package Ifc.Delivery_Mission is
 
 private
    pragma Inline (Inout);
-   pragma Inline (Get_Delivery_Mission_Id);
+   pragma Inline (Get_Delivery_Job_Id);
 
--- $id: ifc-delivery_mission.ads,v 1.9 12/22/2003 14:14:53 ludwiglj Exp $
-end Ifc.Delivery_Mission;
+-- $id: ifc-delivery_job.ads,v 1.9 12/22/2003 14:14:53 ludwiglj Exp $
+end Ifc.Delivery_Job;

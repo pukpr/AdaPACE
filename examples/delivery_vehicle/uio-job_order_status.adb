@@ -2,19 +2,19 @@ with Ada.Strings.Unbounded;
 with Pace.Server.Xml;
 with Pace.Server.Kbase_Utilities;
 with Pace.Log;
-with Ahd.Delivery_Order_Status;
-with Ahd.Delivery_Mission;
+with Ahd.Job_Order_Status;
+with Ahd.Delivery_Job;
 with Vkb;
-with Ifc.Delivery_Mission;
+with Ifc.Delivery_Job;
 with Str;
 with Plant;
 
 -- Is currently grabbing data straight from the kbase
--- as opposed to from some ada delivery mission controller class.  Should
--- be okay.. only accessing kbase once for each delivery mission.
+-- as opposed to from some ada delivery job controller class.  Should
+-- be okay.. only accessing kbase once for each delivery job.
 
-package body Uio.Delivery_Order_Status is
-   use Ahd.Delivery_Order_Status;
+package body Uio.Job_Order_Status is
+   use Ahd.Job_Order_Status;
    use Pace.Server.Dispatch;
    use Str;
 
@@ -24,10 +24,10 @@ package body Uio.Delivery_Order_Status is
 
    Num_Items : Integer;
    Boxs : array (1 .. Plant.Max_Boxs) of Box_Status;
-   Mission_In_Progress : Boolean := False;
+   Job_In_Progress : Boolean := False;
 
    Current_Item : Integer := 0;
-   Mission_Static_Xml : Asu.Unbounded_String;
+   Job_Static_Xml : Asu.Unbounded_String;
    Items_Xml : array (0 .. Plant.Max_Boxs) of Asu.Unbounded_String;
 
    Last_Delivery_Time : Duration;
@@ -59,24 +59,24 @@ package body Uio.Delivery_Order_Status is
       return Item_Status;
    end Get_Item_Status_Xml;
 
-   procedure Set_Mission_Static_Xml is
+   procedure Set_Job_Static_Xml is
       use Asu;
-      use Ifc.Delivery_Mission;
-      Mission_Static_Query : String :=
-        "get_fm_static(" & Vkb.Rules.Q (+Get_Delivery_Mission_Id) &
-          ", Target, Mission_Type, Control, Start_Time, Phase, Num_Items)";
+      use Ifc.Delivery_Job;
+      Job_Static_Query : String :=
+        "get_fm_static(" & Vkb.Rules.Q (+Get_Delivery_Job_Id) &
+          ", Customer, Job_Type, Control, Start_Time, Phase, Num_Items)";
    begin
-      Mission_Static_Xml := +Pace.Server.Kbase_Utilities.Kbase_To_Xml
+      Job_Static_Xml := +Pace.Server.Kbase_Utilities.Kbase_To_Xml
                                (Agent => Vkb.Agent,
-                                Query => +Mission_Static_Query,
+                                Query => +Job_Static_Query,
                                 Is_Xml_Tree => False,
                                 Remove_Quotes => True);
-   end Set_Mission_Static_Xml;
+   end Set_Job_Static_Xml;
 
    procedure Set_Items_Xml is
       use Asu;
       use Pace.Server.Xml;
-      use Ifc.Delivery_Mission;
+      use Ifc.Delivery_Job;
       Current_Item_Xml : Unbounded_String := Asu.Null_Unbounded_String;
       Item_Query : Unbounded_String;
    begin
@@ -86,9 +86,9 @@ package body Uio.Delivery_Order_Status is
 
       for I in 1 .. Num_Items loop
          Current_Item_Xml := Asu.Null_Unbounded_String;
-         Item_Query := +("get_item(" & Vkb.Rules.Q (+Get_Delivery_Mission_Id) &
+         Item_Query := +("get_item(" & Vkb.Rules.Q (+Get_Delivery_Job_Id) &
                           "," & Integer'Image (I) &
-                          ",Zone,Box_type,Timer_type,Bottle_Type,Elev,Azim,Timer_Setting,On_Target,Easting,Northing,Zone_Num,Hemisphere)");
+                          ",Zone,Box_type,Timer_type,Bottle_Type,Elev,Azim,Timer_Setting,On_Customer,Easting,Northing,Zone_Num,Hemisphere)");
 
          Append (Current_Item_Xml, Item ("item_num", Trim (I)));
          Append (Current_Item_Xml, Pace.Server.Kbase_Utilities.Kbase_To_Xml
@@ -104,14 +104,14 @@ package body Uio.Delivery_Order_Status is
    function Get_Time_To_Delivery return String is
       Time_To_Delivery : Integer;
    begin
-      if Current_Item = 0 or not Mission_In_Progress then
+      if Current_Item = 0 or not Job_In_Progress then
          return " ";
       end if;
 
       declare
-         Delivery_Time : Duration := Ahd.Delivery_Mission.Get_Delivery_Time (Current_Item);
+         Delivery_Time : Duration := Ahd.Delivery_Job.Get_Delivery_Time (Current_Item);
       begin
-         if Ahd.Delivery_Mission.Is_Time_On_Target then
+         if Ahd.Delivery_Job.Is_Time_On_Customer then
             -- then have specific time to deliver
             Time_To_Delivery := Integer (Delivery_Time - Pace.Now);
          else
@@ -137,14 +137,14 @@ package body Uio.Delivery_Order_Status is
       use Asu;
    begin
       return Pace.Server.Xml.Item
-        ("delivery_mission", +(Mission_Static_Xml &
+        ("delivery_job", +(Job_Static_Xml &
                            Items_Xml (Current_Item) &
                            Get_Item_Status_Xml &
                            Pace.Server.Xml.Item
                            ("time_to_delivery", Get_Time_To_Delivery)));
    end Create_Delivery_Order_Xml;
 
-   procedure Inout (Obj : in out Update_Delivery_Mission) is
+   procedure Inout (Obj : in out Update_Delivery_Job) is
       -- can be overriden using the style cgi parameter.  if no stylesheet
       -- is wanted then set style parameter to empty string
       Default_Stylesheet : String := "/eng/deliver/item_status.xsl";
@@ -180,7 +180,7 @@ package body Uio.Delivery_Order_Status is
 
 
    task Agent is
-      entry Input (Obj : Clear_Delivery_Mission);
+      entry Input (Obj : Clear_Delivery_Job);
    end Agent;
 
    task body Agent is
@@ -192,14 +192,14 @@ package body Uio.Delivery_Order_Status is
             Setup : Box_Setup;
          begin
             -- Wait for start signal and how many boxs are ready
-            Mission_In_Progress := False;
+            Job_In_Progress := False;
             Inout (Setup);
             Num_Items := Setup.Num_Boxs;
             Initialize_Boxs;
             Set_Items_Xml;
             Current_Item := 1;
-            Set_Mission_Static_Xml;
-            Mission_In_Progress := True;
+            Set_Job_Static_Xml;
+            Job_In_Progress := True;
 
             while Current_Item <= Num_Items loop
                -- Wait to be notified
@@ -219,8 +219,8 @@ package body Uio.Delivery_Order_Status is
             end loop;
             Current_Item := 0;
 
-            accept Input (Obj : Clear_Delivery_Mission) do
-               Mission_Static_Xml := +"";
+            accept Input (Obj : Clear_Delivery_Job) do
+               Job_Static_Xml := +"";
                Num_Items := 0;
                for I in Items_Xml'Range loop
                   Items_Xml (I) := Asu.Null_Unbounded_String;
@@ -236,14 +236,14 @@ package body Uio.Delivery_Order_Status is
          Pace.Log.Ex (E);
    end Agent;
 
-   procedure Input (Obj : in Clear_Delivery_Mission) is
+   procedure Input (Obj : in Clear_Delivery_Job) is
    begin
       Agent.Input (Obj);
    end Input;
 
 
 begin
-   Save_Action (Update_Delivery_Mission'(Pace.Msg with Set => Xml_Set));
+   Save_Action (Update_Delivery_Job'(Pace.Msg with Set => Xml_Set));
    Save_Action (Get_Current_Item'(Pace.Msg with Set => Xml_Set));
 --   Save_Action (Order_Completed'(Pace.Msg with Set => Xml_Set));
-end Uio.Delivery_Order_Status;
+end Uio.Job_Order_Status;

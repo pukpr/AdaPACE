@@ -14,7 +14,7 @@ begin
 
    --Pace.Log.Wait (4.0);
 
-   Wmi.Call (Query => "eng.test.trigger_delivery_mission", Params => Pace.Command_Line.Argument ("-id", "1"));
+   Wmi.Call (Query => "eng.test.trigger_delivery_job", Params => Pace.Command_Line.Argument ("-id", "1"));
 
 exception
    when E: others =>

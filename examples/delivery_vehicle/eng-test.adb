@@ -7,9 +7,9 @@ with Pace.Strings; use Pace.Strings;
 
 with Uio.State.Deliver;
 with Mxr.Delivery_Order;
-with Ahd.Delivery_Mission;
+with Ahd.Delivery_Job;
 with Ahd;
-with Ahd.Delivery_Order_Status;
+with Ahd.Job_Order_Status;
 with Wmi;
 with Vkb;
 
@@ -27,11 +27,11 @@ package body Eng.Test is
    -- used internally when a publish occurs.. essentially makes the publish/subscribe synchronous
    type Fm_Done is new Pace.Notify.Subscription with null record;
 
-   -- used for publishing to Delivery_Mission_Complete subscription
-   type Eng_Delivery_Mission_Complete is new
-     Ahd.Delivery_Mission.Delivery_Mission_Complete with null record;
-   procedure Input (Obj : in Eng_Delivery_Mission_Complete);
-   procedure Input (Obj : in Eng_Delivery_Mission_Complete) is
+   -- used for publishing to Delivery_Job_Complete subscription
+   type Eng_Delivery_Job_Complete is new
+     Ahd.Delivery_Job.Delivery_Job_Complete with null record;
+   procedure Input (Obj : in Eng_Delivery_Job_Complete);
+   procedure Input (Obj : in Eng_Delivery_Job_Complete) is
    begin
       declare
          Msg : Fm_Done;
@@ -40,14 +40,14 @@ package body Eng.Test is
       end;
    end Input;
 
-   type Trigger_Delivery_Mission is new
+   type Trigger_Delivery_Job is new
      Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Trigger_Delivery_Mission);
+   procedure Inout (Obj : in out Trigger_Delivery_Job);
 
-   procedure Do_Trigger_Delivery_Mission (Mission_Id : Integer) is
+   procedure Do_Trigger_Delivery_Job (Job_Id : Integer) is
    begin
       Wmi.Call (Query => "mxr.delivery_order.call_for_delivery",
-                Params => Vkb.Rules.S (Mission_Id));
+                Params => Vkb.Rules.S (Job_Id));
 
       declare
          Msg : Mxr.Delivery_Order.Is_Delivery_Order_Received;
@@ -55,7 +55,7 @@ package body Eng.Test is
          Pace.Dispatching.Inout (Msg);
          if not Msg.Val then
             declare
-               Msg : Mxr.Delivery_Order.Wait_For_Mission_Received;
+               Msg : Mxr.Delivery_Order.Wait_For_Job_Received;
             begin
                Pace.Dispatching.Inout (Msg);
             end;
@@ -90,11 +90,11 @@ package body Eng.Test is
          Pace.Dispatching.Inout (Msg);
       end;
 
-      -- wait for end of delivery mission from ahd before moving on
+      -- wait for end of delivery job from ahd before moving on
       declare
          Msg : Fm_Done;
       begin
-         Pace.Log.Put_Line ("Eng.Test is waiting for delivery mission to complete");
+         Pace.Log.Put_Line ("Eng.Test is waiting for delivery job to complete");
          Inout (Msg);
          Pace.Log.Put_Line ("eng is done waiting for fm to complete");
       end;
@@ -113,27 +113,27 @@ package body Eng.Test is
          Pace.Dispatching.Inout (Msg);
       end;
 
-   end Do_Trigger_Delivery_Mission;
+   end Do_Trigger_Delivery_Job;
 
    task Agent is
-      entry Inout (Obj : in out Trigger_Delivery_Mission);
+      entry Inout (Obj : in out Trigger_Delivery_Job);
    end Agent;
 
    task body Agent is
    begin
       Pace.Log.Agent_Id (Id);
 
-      -- subscribe to Delivery_Mission_Complete subscription
+      -- subscribe to Delivery_Job_Complete subscription
       declare
-         use Ahd.Delivery_Mission;
-         Msg : Eng_Delivery_Mission_Complete;
+         use Ahd.Delivery_Job;
+         Msg : Eng_Delivery_Job_Complete;
       begin
-         Ahd.Delivery_Mission.Input (Delivery_Mission_Complete (Msg));
+         Ahd.Delivery_Job.Input (Delivery_Job_Complete (Msg));
       end;
 
       loop
-         accept Inout (Obj : in out Trigger_Delivery_Mission) do
-            Do_Trigger_Delivery_Mission (Integer'Value (+Obj.Set));
+         accept Inout (Obj : in out Trigger_Delivery_Job) do
+            Do_Trigger_Delivery_Job (Integer'Value (+Obj.Set));
          end Inout;
       end loop;
 
@@ -142,12 +142,12 @@ package body Eng.Test is
          Pace.Log.Ex (E);
    end Agent;
 
-   procedure Inout (Obj : in out Trigger_Delivery_Mission) is
+   procedure Inout (Obj : in out Trigger_Delivery_Job) is
    begin
       Agent.Inout (Obj);
    end Inout;
 
 
 begin
-   Save_Action (Trigger_Delivery_Mission'(Pace.Msg with Set => +""));
+   Save_Action (Trigger_Delivery_Job'(Pace.Msg with Set => +""));
 end Eng.Test;

@@ -9,28 +9,28 @@ with Ada.Strings.Unbounded;
 
 with Pace.Server.dispatch;
 
-package body Aho.Stacker is
+package body Aho.Actuator is
 
-   Stacker_Standoff : Hal.Orientation := (0.0, 0.0, 0.0);
-   Stacker_Standoff_Pos : Hal.Position := (0.0, 0.0, 0.0);
+   Actuator_Standoff : Hal.Orientation := (0.0, 0.0, 0.0);
+   Actuator_Standoff_Pos : Hal.Position := (0.0, 0.0, 0.0);
 
-   Stacker_Pos : Hal.Position := Stacker_Standoff_Pos;
+   Actuator_Pos : Hal.Position := Actuator_Standoff_Pos;
    Bottle_Pos : Hal.Position := (0.0, 0.0, 0.0);
    Box_Pos : Hal.Position := (0.0, 0.0, 0.0);
-   Stacker_Orn : Hal.Orientation := Stacker_Standoff;
+   Actuator_Orn : Hal.Orientation := Actuator_Standoff;
    Spin_Rate : constant Float := Hal.Rads (300.0);
 
 
-   type Rotate_Stacker is new Pace.Msg with
+   type Rotate_Actuator is new Pace.Msg with
       record
          Final : Hal.Orientation;
-         Stacker_Flag : Boolean;
+         Actuator_Flag : Boolean;
          Assembly : Ada.Strings.Unbounded.Unbounded_String;
          Speed : Float;
       end record;
-   procedure Input (Obj : in Rotate_Stacker);
+   procedure Input (Obj : in Rotate_Actuator);
 
-   type Translate_Stacker is new Pace.Msg with
+   type Translate_Actuator is new Pace.Msg with
       record
          Final : Hal.Position;
          Assembly : Ada.Strings.Unbounded.Unbounded_String;
@@ -38,7 +38,7 @@ package body Aho.Stacker is
          Ramp_Up : Duration;
          Ramp_Down : Duration;
       end record;
-   procedure Input (Obj : in Translate_Stacker);
+   procedure Input (Obj : in Translate_Actuator);
 
    type Load_Inventory is new Pace.Msg with
       record
@@ -51,7 +51,7 @@ package body Aho.Stacker is
    procedure Input (Obj : in Load_Inventory);
 
    procedure Input (Obj : in Place_Box) is
-      Audio_Msg : Hal.Audio.Mixer.Play_Mix := Make_Audio ("stacker");
+      Audio_Msg : Hal.Audio.Mixer.Play_Mix := Make_Audio ("actuator");
    begin
       declare
          Msg : Load_Inventory;
@@ -65,7 +65,7 @@ package body Aho.Stacker is
          Pace.Surrogates.Input (Msg);
       end;
       declare
-         Msg : Translate_Stacker;
+         Msg : Translate_Actuator;
       begin
          Msg.Total_Time := 0.7;
          Msg.Final := (0.0, 0.0, 1.8);
@@ -113,12 +113,12 @@ package body Aho.Stacker is
    end Input;
 
    procedure Input (Obj : in Place_Bottle) is
-      Audio_Msg : Hal.Audio.Mixer.Play_Mix := Make_Audio ("stacker");
+      Audio_Msg : Hal.Audio.Mixer.Play_Mix := Make_Audio ("actuator");
    begin
 
 
       declare
-         Msg : Translate_Stacker;
+         Msg : Translate_Actuator;
       begin
          Msg.Total_Time := 0.7;
          Msg.Final := (0.0, 0.0, 0.32);
@@ -161,7 +161,7 @@ package body Aho.Stacker is
       end;
 
       declare
-         Msg : Translate_Stacker;
+         Msg : Translate_Actuator;
       begin
          Msg.Total_Time := 0.7;
          Msg.Final := (0.0, 0.0, 1.4);
@@ -202,24 +202,24 @@ package body Aho.Stacker is
    type Check_Retract is new Pace.Server.Dispatch.Action with null record;
    procedure Inout (Obj : in out Check_Retract);
    procedure Inout (Obj : in out Check_Retract) is
-      Msg : Retract_Stacker;
+      Msg : Retract_Actuator;
    begin
       Msg.Unloaded := True;
       Pace.Dispatching.Input (Msg);
    end;
 
-   procedure Input (Obj : Retract_Stacker) is
-      Audio_Msg : Hal.Audio.Mixer.Play_Mix := Make_Audio ("stacker_retract");
+   procedure Input (Obj : Retract_Actuator) is
+      Audio_Msg : Hal.Audio.Mixer.Play_Mix := Make_Audio ("actuator_retract");
    begin
       declare
-         Msg : Translate_Stacker;
+         Msg : Translate_Actuator;
       begin
          if Obj.Unloaded then
             Msg.Total_Time := 0.5;
          else
             Msg.Total_Time := 0.7;
          end if;
-         Msg.Final := Stacker_Standoff_Pos;
+         Msg.Final := Actuator_Standoff_Pos;
          Msg.Assembly :=
            Ada.Strings.Unbounded.To_Unbounded_String ("axis_pawl");
          Msg.Ramp_Up := 0.1166;
@@ -237,31 +237,31 @@ package body Aho.Stacker is
       Pace.Log.Trace (Obj);
    end Input;
 
-   procedure Input (Obj : in Rotate_Stacker) is
+   procedure Input (Obj : in Rotate_Actuator) is
       Stopped : Boolean;
       End_Orn : Hal.Orientation;
       Rate : Hal.Rate;
    begin
       End_Orn := (Hal.Rads (Obj.Final.A), 0.0, Hal.Rads (Obj.Final.C));
       Rate.Units := Obj.Speed;
-      if Obj.Stacker_Flag then
+      if Obj.Actuator_Flag then
          Hal.Sms.Rotation (Ada.Strings.Unbounded.To_String (Obj.Assembly),
-                           (Hal.Rads (Stacker_Orn.A), 0.0, 0.0),
+                           (Hal.Rads (Actuator_Orn.A), 0.0, 0.0),
                            End_Orn, Rate, Stopped, 0.0, 0.0);
 
-         Stacker_Orn.A := Obj.Final.A;
+         Actuator_Orn.A := Obj.Final.A;
       end if;
    end Input;
 
-   procedure Input (Obj : in Translate_Stacker) is
+   procedure Input (Obj : in Translate_Actuator) is
       Stopped : Boolean;
       End_Pos : Hal.Position;
    begin
       End_Pos := (0.0, 0.0, Obj.Final.Z);
       Hal.Sms.Translation (Ada.Strings.Unbounded.To_String (Obj.Assembly),
-                           (0.0, 0.0, Stacker_Pos.Z), End_Pos, Obj.Total_Time,
+                           (0.0, 0.0, Actuator_Pos.Z), End_Pos, Obj.Total_Time,
                            Stopped, Obj.Ramp_Up, Obj.Ramp_Down);
-      Stacker_Pos.Z := End_Pos.Z;
+      Actuator_Pos.Z := End_Pos.Z;
    end Input;
 
    procedure Input (Obj : in Load_Inventory) is
@@ -283,4 +283,4 @@ package body Aho.Stacker is
    use Pace.Server.Dispatch;
 begin
    Save_Action (Check_Retract'(Pace.Msg with Set => Default));
-end Aho.Stacker;
+end Aho.Actuator;

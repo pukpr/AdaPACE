@@ -19,16 +19,16 @@ package body Plant.Drone is
    
 
    
-   -- the launchpad velocity of each item shot during a delivery mission
+   -- the launchpad velocity of each item shot during a delivery job
    -- and the time that each shot was delivered at is kept until the next
-   -- delivery mission
+   -- delivery job
    Delivered_Items : array (1 .. 60) of Delivered_Data;
 
    Time_Last_Delivered : Float;
    -- the drone temperature increases with each shot geometrically
    Geometric_Rate : constant Float := 0.5;
 
-   -- resets Delivered_Items to avoid confusion when multiple delivery missions
+   -- resets Delivered_Items to avoid confusion when multiple delivery jobs
    -- are taking place
    procedure Init_Delivered_Data is
    begin

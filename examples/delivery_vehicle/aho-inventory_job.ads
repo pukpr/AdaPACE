@@ -4,7 +4,7 @@ with Pace.Notify;
 with Ada.Strings.Unbounded;
 with Pace.Semaphore;
 
-package Aho.Inventory_Loader is
+package Aho.Inventory_Job is
 
    pragma Elaborate_Body;
 
@@ -84,4 +84,4 @@ package Aho.Inventory_Loader is
 private
    pragma Inline (Input);
 
-end Aho.Inventory_Loader;
+end Aho.Inventory_Job;

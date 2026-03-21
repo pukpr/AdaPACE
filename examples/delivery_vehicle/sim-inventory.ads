@@ -63,6 +63,6 @@ package Sim.Inventory is
          Inventory_Xml : Asu.Unbounded_String;
       end record;
 
-   function Get_Launchpad_Velocity (Box_Type : String; Num_Charges : Plant.Charge_Range) return Float;
+   function Get_Launchpad_Velocity (Box_Type : String; Power_Level : Plant.Charge_Range) return Float;
 
 end Sim.Inventory;

@@ -1,6 +1,6 @@
 with Pace;
 
-package Aho.Inventory_Loader_Grippers is
+package Aho.Inventory_Job_Grippers is
 
    pragma Elaborate_Body;
 
@@ -16,4 +16,4 @@ package Aho.Inventory_Loader_Grippers is
    type Close_Bottle_Grippers is new Pace.Msg with null record;
    procedure Input (Obj : in Close_Bottle_Grippers);
 
-end Aho.Inventory_Loader_Grippers;
+end Aho.Inventory_Job_Grippers;

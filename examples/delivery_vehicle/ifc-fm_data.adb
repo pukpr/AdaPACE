@@ -21,8 +21,8 @@ package body Ifc.Fm_Data is
       Pace.Dispatching.Inout (Msg);
    end Set_Zoning;
 
-   procedure Add_Delivery_Mission (Id : Bstr.Bounded_String;
-                               Data : Delivery_Mission_Data;
+   procedure Add_Delivery_Job (Id : Bstr.Bounded_String;
+                               Data : Delivery_Job_Data;
                                Description : Bstr.Bounded_String := Bstr.To_Bounded_String("No Description")) is
 
       function Get_Items_Prolog (Items : Item_Vector.Vector) return String is
@@ -35,13 +35,13 @@ package body Ifc.Fm_Data is
                Append (Result, ", ");
             end if;
             Append (Result, F ("item", "n=" & Q (S (I)) & "," &
-                               F ("location", "easting=" & Q (S (Element (Items, I).Target.Easting)) &
-                                  ", northing=" & Q (S (Element (Items, I).Target.Northing)) &
-                                  ", zone_num=" & Q (S (Element (Items, I).Target.Zone_Num)) &
-                                  ", hemisphere=" & Q (Element (Items, I).Target.Hemisphere'Img)) & ", " &
+                               F ("location", "easting=" & Q (S (Element (Items, I).Customer.Easting)) &
+                                  ", northing=" & Q (S (Element (Items, I).Customer.Northing)) &
+                                  ", zone_num=" & Q (S (Element (Items, I).Customer.Zone_Num)) &
+                                  ", hemisphere=" & Q (Element (Items, I).Customer.Hemisphere'Img)) & ", " &
                                F ("el", S (Element (Items, I).Elevation)) & ", " &
                                F ("az", S (Element (Items, I).Azimuth)) & ", " &
-                               F ("on_target", S (Float (Element (Items, I).On_Target_Time))) & ", " &
+                               F ("on_customer", S (Float (Element (Items, I).On_Customer_Time))) & ", " &
                                F ("box", Q (+Element (Items, I).Box)) & ", " &
                                F ("timer", "type=" & Q (+Element (Items, I).Timer) &
                                   ", setting=" & Q (+Element (Items, I).Timer_Setting))
@@ -57,8 +57,8 @@ package body Ifc.Fm_Data is
       Msg.Set := Str.S2u(F ("assert",
                       F ("fm", F ("id", Q (+Id)) & ", " &
                          Q (+Description) & ", " &
-                         F ("data", F("target", Q (+Data.Target_Description)) & ", " &
-                            F ("mission_type", Q (+Data.Mission_Description)) & ", " &
+                         F ("data", F("customer", Q (+Data.Customer_Description)) & ", " &
+                            F ("job_type", Q (+Data.Job_Description)) & ", " &
                             F ("control", "type=" & Q (+Data.Control) &
                                ", start_time=" & Q (S (Float (Data.Start_Time)))) & ", " &
                             F ("phase", Q (+Data.Phase)) & ", " &
@@ -66,20 +66,20 @@ package body Ifc.Fm_Data is
                             F ("item_list", Get_Items_Prolog (Data.Items))
                             ))));
       Pace.Dispatching.Inout (Msg);
-   end Add_Delivery_Mission;
+   end Add_Delivery_Job;
 
-   procedure Remove_Delivery_Mission (Id : Bstr.Bounded_String) is
+   procedure Remove_Delivery_Job (Id : Bstr.Bounded_String) is
       use Vkb.Rules;
       Msg : Vkb.Query;
    begin
       Msg.Set := Str.S2u(F ("retract",
                       F ("fm", F ("id", Q (+Id)) & ", _, _")));
       Pace.Dispatching.Inout (Msg);
-   end Remove_Delivery_Mission;
+   end Remove_Delivery_Job;
 
-   procedure Get_Delivery_Mission (Id : in Bstr.Bounded_String;
+   procedure Get_Delivery_Job (Id : in Bstr.Bounded_String;
                                Found_It : out Boolean;
-                               Data : out Delivery_Mission_Data) is
+                               Data : out Delivery_Job_Data) is
       use Vkb.Rules;
       use Bstr;
       Num_Items : Integer;
@@ -106,8 +106,8 @@ package body Ifc.Fm_Data is
       begin
          V (1) := Str.S2u(+Query_Id);
          Vkb.Agent.Query ("get_fm_static", V);
-         Data.Target_Description := +V (2);
-         Data.Mission_Description := +V (3);
+         Data.Customer_Description := +V (2);
+         Data.Job_Description := +V (3);
          Data.Control := +V (4);
          Data.Start_Time := Duration'Value (Asu.To_String (V (5)));
          Data.Phase := +V (6);
@@ -127,11 +127,11 @@ package body Ifc.Fm_Data is
             R.Elevation := Float'Value (Asu.To_String (V (7)));
             R.Azimuth := Float'Value (Asu.To_String (V (8)));
             R.Timer_Setting := +V (9);
-            R.On_Target_Time := Duration'Value (Asu.To_String (V (10)));
-            R.Target.Easting := Float'Value (Asu.To_String (V (11)));
-            R.Target.Northing := Float'Value (Asu.To_String (V (12)));
-            R.Target.Zone_Num := Integer'Value (Asu.To_String (V (13)));
-            R.Target.Hemisphere := Gis.Hemisphere_Type'Value (Asu.To_String (V (14)));
+            R.On_Customer_Time := Duration'Value (Asu.To_String (V (10)));
+            R.Customer.Easting := Float'Value (Asu.To_String (V (11)));
+            R.Customer.Northing := Float'Value (Asu.To_String (V (12)));
+            R.Customer.Zone_Num := Integer'Value (Asu.To_String (V (13)));
+            R.Customer.Hemisphere := Gis.Hemisphere_Type'Value (Asu.To_String (V (14)));
             Item_Vector.Append (Data.Items, R);
          end;
       end loop;
@@ -142,16 +142,16 @@ package body Ifc.Fm_Data is
          Found_It := False;
       when E : others =>
          Pace.Log.Ex (E);
-   end Get_Delivery_Mission;
+   end Get_Delivery_Job;
 
-   function Has_Target (Data : Delivery_Mission_Data) return Boolean is
+   function Has_Customer (Data : Delivery_Job_Data) return Boolean is
       use Bstr;
    begin
-      if Data.Target_Description = "None" then
+      if Data.Customer_Description = "None" then
          return False;
       else
          return True;
       end if;
-   end Has_Target;
+   end Has_Customer;
 
 end Ifc.Fm_Data;

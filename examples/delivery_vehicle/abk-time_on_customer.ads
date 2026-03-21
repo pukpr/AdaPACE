@@ -1,11 +1,11 @@
 with Gis;
 with Pace;
 
-package Abk.Time_On_Target is
+package Abk.Time_On_Customer is
 
    pragma Elaborate_Body;
 
-   -- a time on target solution for a single item
+   -- a time on customer solution for a single item
    type Tot_Solution is
       record
          Velocity : Float;  -- m/s
@@ -17,7 +17,7 @@ package Abk.Time_On_Target is
    type Coord_Arr is array (Integer range <>) of Gis.Utm_Coordinate;
    type Sol_Arr is array (Integer range <>) of Tot_Solution;
 
-   -- Finds a Time On Target solution given the input and returns the solution
+   -- Finds a Time On Customer solution given the input and returns the solution
    -- including the velocity, elevation, and time of flight for each item.
    -- When there are multiple solutions will return the one which minimizes
    -- time of flight... ie. the speediest solution
@@ -28,7 +28,7 @@ package Abk.Time_On_Target is
       record
          -- inputs
          -- the altitudes for each location will be determined from ctdb or queried from the ve
-         Target_Locations : Coord_Arr (1 .. Num_Items);
+         Customer_Locations : Coord_Arr (1 .. Num_Items);
          Possible_Velocities : Float_Arr (1 .. Num_Velocities);  -- m/s
          -- this is the amount of time that must be between each item in the solution
          Delta_Time_Constraint : Duration; -- seconds
@@ -44,4 +44,4 @@ package Abk.Time_On_Target is
       end record;
    procedure Inout (Obj : in out Find_Tot_Solution);
 
-end Abk.Time_On_Target;
+end Abk.Time_On_Customer;

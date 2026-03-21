@@ -1,8 +1,8 @@
 
 with Pace.Log;
 with Pace.Surrogates;
-with Ahd.Delivery_Order_Status;
-with Ahd.Delivery_Mission;
+with Ahd.Job_Order_Status;
+with Ahd.Delivery_Job;
 with Ahd;
 with Vkb;
 with Nav.Location;
@@ -13,7 +13,7 @@ with Str;
 with Ifc.Fm_Data;
 with Plant;
 
-package body Ifc.Delivery_Mission is
+package body Ifc.Delivery_Job is
 
    function Id is new Pace.Log.Unit_Id;
 
@@ -21,16 +21,16 @@ package body Ifc.Delivery_Mission is
 
    use Str;
 
-   Delivery_Mission_Id : Bstr.Bounded_String := +"1";
+   Delivery_Job_Id : Bstr.Bounded_String := +"1";
 
    -- used internally when a publish occurs.. essentially makes the publish/subscribe synchronous
    type Fm_Done is new Pace.Notify.Subscription with null record;
 
-   -- used for publishing to Delivery_Mission_Complete subscription
-   type Ifc_Delivery_Mission_Complete is new
-     Ahd.Delivery_Mission.Delivery_Mission_Complete with null record;
-   procedure Input (Obj : in Ifc_Delivery_Mission_Complete);
-   procedure Input (Obj : in Ifc_Delivery_Mission_Complete) is
+   -- used for publishing to Delivery_Job_Complete subscription
+   type Ifc_Delivery_Job_Complete is new
+     Ahd.Delivery_Job.Delivery_Job_Complete with null record;
+   procedure Input (Obj : in Ifc_Delivery_Job_Complete);
+   procedure Input (Obj : in Ifc_Delivery_Job_Complete) is
    begin
       declare
          Msg : Fm_Done;
@@ -50,7 +50,7 @@ package body Ifc.Delivery_Mission is
          Pace.Dispatching.Input (Msg);
       end;
       declare
-         Msg : Ahd.Delivery_Mission.Flight_Solution;
+         Msg : Ahd.Delivery_Job.Flight_Solution;
       begin
          -- don't block here since there may be no one waiting
          Msg.Ack := False;
@@ -59,36 +59,36 @@ package body Ifc.Delivery_Mission is
    end Input;
 
 
-   procedure Delivery_Order_Status_Setup (Num_Items : Integer) is
-      Msg : Ahd.Delivery_Order_Status.Box_Setup;
+   procedure Job_Order_Status_Setup (Num_Items : Integer) is
+      Msg : Ahd.Job_Order_Status.Box_Setup;
    begin
       Msg.Num_Boxs := Num_Items;
       Pace.Dispatching.Input (Msg);
-   end Delivery_Order_Status_Setup;
+   end Job_Order_Status_Setup;
 
-   -- accesses kbase with Delivery_Mission_Id and sends data to
-   -- ahd.delivery_mission
+   -- accesses kbase with Delivery_Job_Id and sends data to
+   -- ahd.delivery_job
    procedure Send_Data_To_Ahd is
       use Vkb.Rules;
 
-      Mission : Ahd.Mission_Record;
+      Job : Ahd.Job_Record;
       Found_It : Boolean;
    begin
 
-      Ifc.Fm_Data.Get_Delivery_Mission (Delivery_Mission_Id, Found_It, Mission.Data);
+      Ifc.Fm_Data.Get_Delivery_Job (Delivery_Job_Id, Found_It, Job.Data);
       if not Found_It then
-         Pace.Log.Put_Line ("Delivery Mission " & (+Delivery_Mission_Id) & " could not be found!");
+         Pace.Log.Put_Line ("Delivery Job " & (+Delivery_Job_Id) & " could not be found!");
          raise Vkb.Rules.No_Match;
       end if;
 
       declare
-         Msg : Ahd.Delivery_Mission.Start_Delivery_Mission;
+         Msg : Ahd.Delivery_Job.Start_Delivery_Job;
       begin
-         Msg.Num_Items := Natural (Ifc.Fm_Data.Item_Vector.Length (Mission.Data.Items));
+         Msg.Num_Items := Natural (Ifc.Fm_Data.Item_Vector.Length (Job.Data.Items));
          Pace.Dispatching.Input (Msg);
       end;
 
-      Delivery_Order_Status_Setup (Natural (Ifc.Fm_Data.Item_Vector.Length (Mission.Data.Items)));
+      Job_Order_Status_Setup (Natural (Ifc.Fm_Data.Item_Vector.Length (Job.Data.Items)));
 
       -- do flight calculations
       declare
@@ -99,16 +99,16 @@ package body Ifc.Delivery_Mission is
       declare
          Msg : Abk.Technical_Delivery_Direction.Perform_Technical_Delivery_Direction;
       begin
-         Msg.Mission := Mission;
+         Msg.Job := Job;
          Pace.Dispatching.Inout (Msg);
-         Mission := Msg.Mission;
+         Job := Msg.Job;
       end;
 
       -- trigger the Ahd layer to start
       declare
-         Msg : Ahd.Delivery_Mission.Delivery_Solution;
+         Msg : Ahd.Delivery_Job.Delivery_Solution;
       begin
-         Msg.Mission := Mission;
+         Msg.Job := Job;
          Pace.Dispatching.Input (Msg);
       end;
 
@@ -118,40 +118,40 @@ package body Ifc.Delivery_Mission is
       when E: No_Match =>
          Pace.Log.Ex (E);
          Pace.Log.Put_Line
-           ("Kbase error during accessing of delivery_mission.pro.");
+           ("Kbase error during accessing of delivery_job.pro.");
    end Send_Data_To_Ahd;
 
 
-   function Get_Delivery_Mission_Id return Str.Bstr.Bounded_String is
+   function Get_Delivery_Job_Id return Str.Bstr.Bounded_String is
    begin
-      return Delivery_Mission_Id;
-   end Get_Delivery_Mission_Id;
+      return Delivery_Job_Id;
+   end Get_Delivery_Job_Id;
 
 
    procedure Output (Obj : out Check_Azimuth) is
       use Ifc.Fm_Data.Item_Vector;
-      Mission : Ifc.Fm_Data.Delivery_Mission_Data;
+      Job : Ifc.Fm_Data.Delivery_Job_Data;
       Found_It : Boolean;
       I : Integer;
    begin
-      -- must go and get the target locations.. may or may not be in mission data
+      -- must go and get the customer locations.. may or may not be in job data
       -- in ahd yet
-      Ifc.Fm_Data.Get_Delivery_Mission (Delivery_Mission_Id, Found_It, Mission);
+      Ifc.Fm_Data.Get_Delivery_Job (Delivery_Job_Id, Found_It, Job);
       if not Found_It then
-         Pace.Log.Put_Line ("Delivery Mission " & (+Delivery_Mission_Id) & " could not be found!");
+         Pace.Log.Put_Line ("Delivery Job " & (+Delivery_Job_Id) & " could not be found!");
          raise Vkb.Rules.No_Match;
       end if;
 
-      if Ifc.Fm_Data.Has_Target (Mission) then
+      if Ifc.Fm_Data.Has_Customer (Job) then
          -- check it for each item
          Obj.Within_Azimuth := True;
-         I := First_Index (Mission.Items);
-         while Obj.Within_Azimuth = True and I <= Last_Index (Mission.Items) loop
+         I := First_Index (Job.Items);
+         while Obj.Within_Azimuth = True and I <= Last_Index (Job.Items) loop
             declare
                Msg : Nav.Location.Track_Heading;
             begin
-               Msg.Target_Easting := Element (Mission.Items, I).Target.Easting;
-               Msg.Target_Northing := Element (Mission.Items, I).Target.Northing;
+               Msg.Target_Easting := Element (Job.Items, I).Customer.Easting;
+               Msg.Target_Northing := Element (Job.Items, I).Customer.Northing;
                Pace.Dispatching.Inout (Msg);
                -- Msg.Heading_Difference is always positive
                if Msg.Heading_Difference > Hal.Rads (Plant.Max_Traverse_Angle) then
@@ -163,7 +163,7 @@ package body Ifc.Delivery_Mission is
             I := I + 1;
          end loop;
       else
-         -- if there is no target then always within azimuth
+         -- if there is no customer then always within azimuth
          Obj.Within_Azimuth := True;
       end if;
       Pace.Log.Trace (Obj);
@@ -180,36 +180,36 @@ package body Ifc.Delivery_Mission is
    begin
       Pace.Log.Agent_Id (Id);
 
-      -- subscribe to Delivery_Mission_Complete subscription
+      -- subscribe to Delivery_Job_Complete subscription
       declare
-         use Ahd.Delivery_Mission;
-         Msg : Ifc_Delivery_Mission_Complete;
+         use Ahd.Delivery_Job;
+         Msg : Ifc_Delivery_Job_Complete;
       begin
-         Ahd.Delivery_Mission.Input (Delivery_Mission_Complete (Msg));
+         Ahd.Delivery_Job.Input (Delivery_Job_Complete (Msg));
       end;
 
       loop
 
          -- wait to be triggered by ui
          accept Inout (Obj : in out Accept_Delivery_Order) do
-            Delivery_Mission_Id := Obj.Id;
+            Delivery_Job_Id := Obj.Id;
          end Inout;
          Send_Data_To_Ahd;
 
-         -- wait for end of delivery mission from ahd before moving on
+         -- wait for end of delivery job from ahd before moving on
          declare
             Msg : Fm_Done;
          begin
             Pace.Dispatching.Inout (Msg);
          end;
 
-         -- assert to kbase that delivery mission is done
+         -- assert to kbase that delivery job is done
          declare
             Msg : Vkb.Query;
          begin
             Msg.Set := Ada.Strings.Unbounded.To_Unbounded_String
                          ("assert(fm_completed(" &
-                          (+Delivery_Mission_Id) & "))");
+                          (+Delivery_Job_Id) & "))");
             Pace.Dispatching.Inout (Msg);
          end;
 
@@ -228,7 +228,7 @@ package body Ifc.Delivery_Mission is
       Pace.Log.Trace (Obj);
    end Input;
 
-   -- all delivery missions are accepted at the moment
+   -- all delivery jobs are accepted at the moment
    -- should deny those that don't have a valid kbase id
    procedure Inout (Obj : in out Accept_Delivery_Order) is
    begin
@@ -239,9 +239,9 @@ package body Ifc.Delivery_Mission is
 --          Pace.Surrogates.Input (Msg);
 --       end;
       Pace.Log.Wait (3.0);
-      Obj.Mission_Accepted := True;
+      Obj.Job_Accepted := True;
       Pace.Log.Trace (Obj);
    end Inout;
 
 
-end Ifc.Delivery_Mission;
+end Ifc.Delivery_Job;

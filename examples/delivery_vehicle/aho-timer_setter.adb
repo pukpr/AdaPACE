@@ -1,6 +1,6 @@
 with Pace;
 with Pace.Log;
-with Ahd.Delivery_Order_Status;
+with Ahd.Job_Order_Status;
 
 package body Aho.Timer_Setter is
 
@@ -36,7 +36,7 @@ package body Aho.Timer_Setter is
             Input (Msg);
          end;
       	declare
-        	use Ahd.Delivery_Order_Status;
+        	use Ahd.Job_Order_Status;
          	Msg : Modify_Box;
       	begin
          	Msg.Index := Item_Number;

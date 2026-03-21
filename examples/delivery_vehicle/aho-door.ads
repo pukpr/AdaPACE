@@ -20,7 +20,7 @@ package Aho.Door is
       end record;
    procedure Input (Obj : in Rotate_Door);
 
-   -- communicates to drone that rotate portion of door is done so the chamber can be sprayed
+   -- communicates to drone that rotate portion of door is done so the chamber can be cleaned
    type Rotate_Done is new Pace.Notify.Subscription with null record;
 
 private

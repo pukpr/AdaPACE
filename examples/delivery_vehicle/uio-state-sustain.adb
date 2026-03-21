@@ -14,7 +14,7 @@ package body Uio.State.Sustain is
    function Do_Emplacement return Boolean;
    procedure Call (Val : in Boolean; Info : String := "");
 
-   -- overall state of the sustain mission
+   -- overall state of the sustain job
    Current_State : State_Enum := Initial;
 
 
@@ -38,7 +38,7 @@ package body Uio.State.Sustain is
          begin
             Pace.Dispatching.Input (Msg);
          end;
-         Current_State := Emplaced;
+         Current_State := Docked;
          declare
             Msg : Vehicle_State;
          begin
@@ -53,7 +53,7 @@ package body Uio.State.Sustain is
 
    function Do_Enable return Boolean is
    begin
-      if Current_State = Emplaced then
+      if Current_State = Docked then
          Current_State := Sustaining;
          return True;
       else
@@ -63,7 +63,7 @@ package body Uio.State.Sustain is
 
    function Do_Reemplacement return Boolean is
    begin
-      if Current_State = Emplaced then
+      if Current_State = Docked then
          declare
             Msg : Uio.State.Move.Next_State;
          begin

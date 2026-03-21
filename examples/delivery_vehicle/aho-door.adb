@@ -33,9 +33,9 @@ package body Aho.Door is
       Pace.Log.Trace (Obj);
    end Input;
 
-   type Chamber_Air_Spray is new Pace.Msg with null record;
-   procedure Input (Obj : Chamber_Air_Spray);
-   procedure Input (Obj : Chamber_Air_Spray) is
+   type Photo is new Pace.Msg with null record;
+   procedure Input (Obj : Photo);
+   procedure Input (Obj : Photo) is
    begin
       Pace.Log.Wait (0.7);
       Pace.Log.Trace (Obj);
@@ -59,7 +59,7 @@ package body Aho.Door is
          Input (Msg);
       end;
           declare
-            Msg : Chamber_Air_Spray;
+            Msg : Photo;
           begin
             Pace.Surrogates.Input (Msg);
           end;

@@ -5,12 +5,12 @@ package Ahd is
    -- Inventory Handling & Delivery
 
    -- extra item info that is not in kbase
-   -- as well as elevation and azimuth.... see mission_record comments below
+   -- as well as elevation and azimuth.... see job_record comments below
    type Item_Extra is
       record
          Elevation : Float; -- degrees
          Azimuth : Float; -- degrees
-         Num_Charges : Plant.Charge_Range;
+         Power_Level : Plant.Charge_Range;
          Launchpad_Velocity : Float; -- m/s
          -- seconds from beginning of simulation start when the item should be delivered..
          -- see pace.config.to_sim_time and pace.config.to_calendar_time
@@ -27,11 +27,11 @@ package Ahd is
    -- items has extra data on each item as well as the calculated flight data
    -- i.e. values of Data will never change, whereas Items values are recalculated
    -- by flights kernel immediately before delivery
-   type Mission_Record is
+   type Job_Record is
       record
-         -- set to false during flight calculations if any of the targets are out of range
+         -- set to false during flight calculations if any of the customers are out of range
          Within_Range : Boolean := True;
-         Data : Ifc.Fm_Data.Delivery_Mission_Data;
+         Data : Ifc.Fm_Data.Delivery_Job_Data;
          Items : Items_Array;
       end record;
 

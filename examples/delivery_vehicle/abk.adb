@@ -30,7 +30,7 @@ package body Abk is
    exception
       when E: Ada.Numerics.Argument_Error =>
          Pace.Log.Put_Line
-           ("Argument Error thrown inside Total_Time_In_Air.  Sqrt of a negative number.  The angle of the drone is not high enough to hit the target.");
+           ("Argument Error thrown inside Total_Time_In_Air.  Sqrt of a negative number.  The angle of the drone is not high enough to hit the customer.");
          raise Bad_Elevation_Angle;
    end Total_Time_In_Air;
 
@@ -58,7 +58,7 @@ package body Abk is
    exception
       when E: Ada.Numerics.Argument_Error =>
          Pace.Log.Put_Line
-           ("Argument Error thrown inside Initial_Velocity.  Sqrt of a negative number.  The angle of the drone is not high enough to hit the target.");
+           ("Argument Error thrown inside Initial_Velocity.  Sqrt of a negative number.  The angle of the drone is not high enough to hit the customer.");
          raise Bad_Elevation_Angle;
    end Initial_Velocity;
 
@@ -85,23 +85,23 @@ package body Abk is
    begin
       Pace.Dispatching.Output (Msg);
       Pace.Log.Put_Line ("vehicle easting is " & Msg.Coordinate.Easting'Img & " and northing is " & Msg.Coordinate.Northing'Img, 8);
-      Pace.Log.Put_Line ("target easting is " & Target_Easting'Img & " and northing is " & Target_Northing'Img, 8);
+      Pace.Log.Put_Line ("customer easting is " & Target_Easting'Img & " and northing is " & Target_Northing'Img, 8);
       Delta_A := abs (Target_Northing - Msg.Coordinate.Northing);
       Delta_B := abs (Target_Easting - Msg.Coordinate.Easting);
       return (Sqrt (Delta_A * Delta_A + Delta_B * Delta_B));
    end Get_Horizontal_Distance;
 
-   -- returns the difference between the target's elevation and the vehicle's elevation
+   -- returns the difference between the customer's elevation and the vehicle's elevation
    function Get_Vertical_Distance
      (Target_Easting, Target_Northing : Float) return Float is
-      Target_Msg : Tsa.Terrain_Following.Get_Terrain_Elevation;
+      Customer_Msg : Tsa.Terrain_Following.Get_Terrain_Elevation;
    begin
-      Target_Msg.Northing := Target_Northing;
-      Target_Msg.Easting := Target_Easting;
-      Pace.Dispatching.Inout (Target_Msg);
-      Pace.Log.Put_Line ("target elevation is " & Float'Image (Target_Msg.Elevation), 8);
+      Customer_Msg.Northing := Target_Northing;
+      Customer_Msg.Easting := Target_Easting;
+      Pace.Dispatching.Inout (Customer_Msg);
+      Pace.Log.Put_Line ("customer elevation is " & Float'Image (Customer_Msg.Elevation), 8);
       Pace.Log.Put_Line ("vehicle elevation is " & Float'Image (Acu.Altitude), 8);
-      return (Target_Msg.Elevation - Acu.Altitude);
+      return (Customer_Msg.Elevation - Acu.Altitude);
    end Get_Vertical_Distance;
 
 end Abk;

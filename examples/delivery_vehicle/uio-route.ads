@@ -11,8 +11,8 @@ package Uio.Route is
 
    -- moved to spec so that a route can be loaded through the url pattern
    -- or simply by calling Inout on a Load_Route
-   type Load_Target is new Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Load_Target);
+   type Load_Customer is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Load_Customer);
 
    type Update_Move_Plan is new Pace.Server.Dispatch.Action with null record;
    procedure Inout (Obj : in out Update_Move_Plan);

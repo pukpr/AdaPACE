@@ -5,7 +5,7 @@ with Ada.Strings.Unbounded;
 with Ada.Numerics.Elementary_Functions;
 with Hal.Sms;
 
-separate (Aho.Inventory_Loader)
+separate (Aho.Inventory_Job)
 package body Four_Bar is
 
    package Asu renames Ada.Strings.Unbounded;

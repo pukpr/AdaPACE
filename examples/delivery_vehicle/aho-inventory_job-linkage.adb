@@ -1,6 +1,6 @@
 with Pace.Log;
 
-separate (Aho.Inventory_Loader)
+separate (Aho.Inventory_Job)
 package body Linkage is
 
    procedure Input (Obj : in Raise_Loader) is

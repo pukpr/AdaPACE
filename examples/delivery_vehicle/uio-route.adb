@@ -79,13 +79,13 @@ package body Uio.Route is
       return Asu.To_String (Result);
    end Get_East_North_Xml;
 
-   procedure Add_Target_Point (Fm_Id : in String) is
-      Mission : Ifc.Fm_Data.Delivery_Mission_Data;
+   procedure Add_Customer_Point (Fm_Id : in String) is
+      Job : Ifc.Fm_Data.Delivery_Job_Data;
       Found_It : Boolean;
    begin
-      Ifc.Fm_Data.Get_Delivery_Mission (S2b(Fm_Id), Found_It, Mission);
+      Ifc.Fm_Data.Get_Delivery_Job (S2b(Fm_Id), Found_It, Job);
       if not Found_It then
-         Pace.Log.Put_Line ("Delivery Mission " & Fm_Id & " could not be found!");
+         Pace.Log.Put_Line ("Delivery Job " & Fm_Id & " could not be found!");
          raise Vkb.Rules.No_Match;
       end if;
 
@@ -94,8 +94,8 @@ package body Uio.Route is
          Msg : Nav.Route_Following.Add_Point;
       begin
          Msg.Index := 1;
-         -- use the first target as the one to emplace by
-         Msg.Point.Coord := Ifc.Fm_Data.Item_Vector.Element (Mission.Items, 1).Target;
+         -- use the first customer as the one to emplace by
+         Msg.Point.Coord := Ifc.Fm_Data.Item_Vector.Element (Job.Items, 1).Customer;
          Msg.Heading_restriction := Plant.Max_Traverse_Angle;
          Msg.Point.Kind := Tp;
 
@@ -119,7 +119,7 @@ package body Uio.Route is
             (Element => "datapoints",
              Value => Asu.To_String (Route_Xml)));
       end;
-   end Add_Target_Point;
+   end Add_Customer_Point;
 
    procedure Add_Points (Route_Name : in Bstr.Bounded_String) is
       use Pace.Server.Xml;
@@ -165,7 +165,7 @@ package body Uio.Route is
    end Add_Points;
 
    procedure Route_Load_And_Follow
-               (Following_Target_Point : Boolean := False;
+               (Following_Customer_Point : Boolean := False;
                 Plan_Id : Bstr.Bounded_String := S2b("")) is
    begin
       declare
@@ -180,7 +180,7 @@ package body Uio.Route is
             Msg : Nav.Route_Following.Monitor_Progress;
          begin
             Pace.Dispatching.Inout (Msg);
-            if Msg.Reached_Control_Point and not Following_Target_Point then
+            if Msg.Reached_Control_Point and not Following_Customer_Point then
                declare
                   Way_Msg : Waypoint_Acknowledge_Signal;
                begin
@@ -193,8 +193,8 @@ package body Uio.Route is
             exit when Msg.Complete;
             Pace.Log.Put_Line ("Index:" & Integer'Image (Msg.Index), 8);
             -- An audio message occurs when a point is reached and the point is not
-            -- a target point (of type tp for delivery mission headings)
-            if Msg.Reached_Control_Point and not Following_Target_Point then
+            -- a customer point (of type tp for delivery job headings)
+            if Msg.Reached_Control_Point and not Following_Customer_Point then
                Hal.Audio.Mixer.Say ("Reached waypoint" &
                                     Integer'Image (Msg.Index - 1));
             end if;
@@ -202,14 +202,14 @@ package body Uio.Route is
       end loop;
       Route_Xml := Asu.To_Unbounded_String ("");
       Pace.Log.Put_Line ("DONE", 8);
-      if not Following_Target_Point then
+      if not Following_Customer_Point then
          Hal.Audio.Mixer.Say ("Final waypoint reached.  Move plan finished.");
       end if;
    end Route_Load_And_Follow;
 
    task Agent is
       entry Load_Route (Plan_Id : in Bstr.Bounded_String);
-      entry Inout (Obj : in out Load_Target);
+      entry Inout (Obj : in out Load_Customer);
    end Agent;
 
    task body Agent is
@@ -221,17 +221,17 @@ package body Uio.Route is
             accept Load_Route (Plan_Id : in Bstr.Bounded_String) do
                Add_Points (Plan_Id);
                Is_Route_Loaded := True;
-               Route_Load_And_Follow (Following_Target_Point => False,
+               Route_Load_And_Follow (Following_Customer_Point => False,
                                       Plan_Id => Plan_Id);
             end Load_Route;
 
          or
 
-            accept Inout (Obj : in out Load_Target) do
-               Add_Target_Point (Asu.To_String (Obj.Set));
+            accept Inout (Obj : in out Load_Customer) do
+               Add_Customer_Point (Asu.To_String (Obj.Set));
             end Inout;
             Is_Route_Loaded := True;
-            Route_Load_And_Follow (Following_Target_Point => True);
+            Route_Load_And_Follow (Following_Customer_Point => True);
          end select;
       end loop;
    exception
@@ -284,13 +284,13 @@ package body Uio.Route is
          Pace.Log.Ex (E);
    end Inout;
 
-   procedure Inout (Obj : in out Load_Target) is
-      Mission : Ifc.Fm_Data.Delivery_Mission_Data;
+   procedure Inout (Obj : in out Load_Customer) is
+      Job : Ifc.Fm_Data.Delivery_Job_Data;
       Found_It : Boolean;
    begin
-      Ifc.Fm_Data.Get_Delivery_Mission (U2b(Obj.Set), Found_It, Mission);
-      -- if there isn't a target in this mission then don't load it!
-      if Ifc.Fm_Data.Has_Target (Mission) then
+      Ifc.Fm_Data.Get_Delivery_Job (U2b(Obj.Set), Found_It, Job);
+      -- if there isn't a customer in this job then don't load it!
+      if Ifc.Fm_Data.Has_Customer (Job) then
          Agent.Inout (Obj);
       end if;
    end Inout;
@@ -370,7 +370,7 @@ package body Uio.Route is
 
 begin
    Save_Action (Load_Route'(Pace.Msg with Set => S2u("'POC1'")));
-   Save_Action (Load_Target'(Pace.Msg with Set => S2u("(integer template)")));
+   Save_Action (Load_Customer'(Pace.Msg with Set => S2u("(integer template)")));
    Save_Action (List_Move_Plans'(Pace.Msg with Set => Xml_Set));
    Save_Action (Get_Current_Route'(Pace.Msg with Set => Xml_Set));
    Save_Action (Update_Move_Plan'(Pace.Msg with Set => Xml_Set));
