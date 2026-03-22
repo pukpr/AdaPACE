@@ -43,12 +43,9 @@ package Tugbot is
    --
    --  Revolute joints controlled via Set_Pose (JointPosition in Gazebo).
    --  Note: "warnign" matches the typo present in the real tugbot SDF.
-   --  Note: warnign_light_joint is present in the SDF but the light is spun
-   --  via Set_Rot on the warnign_light link (angular velocity), not Set_Pose,
-   --  to avoid the position/physics-solver conflict that causes slow rotation.
    --
    type Joints is (
-      warnign_light_joint,   -- revolute: spinning warning beacon (SDF joint)
+      warnign_light_joint,   -- revolute: spinning warning beacon
       gripper_joint,         -- revolute: gripper arm
       gripper_hand_joint,    -- revolute: gripper fingers
       wheel_left_joint,      -- revolute: left  drive wheel
