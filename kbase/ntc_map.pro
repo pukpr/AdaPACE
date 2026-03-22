@@ -1,9 +1,9 @@
-%% National Training Center
+%% Example Terrain Area - Mojave Desert (Trona-East)
 %% Trona-East 1:250000
-%% Northwest corner 36.0000ºN, -117.0000ºW
-%% Northeast corner 36.0000ºN, -116.0000ºW
-%% Southwest corner 35.0000ºN, -117.0000ºW
-%% Southeast corner 35.0000ºN, -116.0000ºW
+%% Northwest corner 36.0000ï¿½N, -117.0000ï¿½W
+%% Northeast corner 36.0000ï¿½N, -116.0000ï¿½W
+%% Southwest corner 35.0000ï¿½N, -117.0000ï¿½W
+%% Southeast corner 35.0000ï¿½N, -116.0000ï¿½W
 
 zone (11).
 hemisphere ("North").

@@ -1,7 +1,7 @@
 %% $id: terrain.pro,v 1.2 06/27/2003 13:10:27 ludwiglj Exp $
 
 
-dted_default("/maps/dted/w116/n35.dt1",   % NTC
+dted_default("/maps/dted/w116/n35.dt1",   % example terrain area
              535000.0, 3925000.0,         % SouthWest Corner: Easting,Northing
              92.6889259, 92.6889259).     % Span: East-West, North-South
 
