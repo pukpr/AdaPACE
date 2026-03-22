@@ -20,7 +20,7 @@ package body PBM.Trajectory is
       Altitude : out Long_Float;
       Speed    : out Long_Float;
       Landed   : out Boolean;
-      Attack   : out Long_Float)
+      Descent_Angle : out Long_Float)
    is
       DT         : Long_Float       := Long_Float (Target.Delta_T);
       Num        : constant Integer :=
@@ -59,11 +59,11 @@ package body PBM.Trajectory is
       Altitude        := U;
       Target.Altitude := U;
       if SU = 0.0 then
-         Attack := 0.0;
+         Descent_Angle := 0.0;
       else
-         Attack := Arctan (X => Sqrt (SE * SE + SN * SN), Y => SU);
+         Descent_Angle := Arctan (X => Sqrt (SE * SE + SN * SN), Y => SU);
       end if;
-      Target.Elevation := Attack;
+      Target.Elevation := Descent_Angle;
       Speed            := Sqrt (SE * SE + SN * SN + SU * SU);
       Target.Speed     := Speed;
       Landed           := Isection (E, N, U, SU<0.0);
@@ -75,12 +75,12 @@ package body PBM.Trajectory is
    -- Complex Drag-Induced Ballistics -- no coriolis
    --------------------------------------------------------------
 
-   procedure Calculate_Firing_Angle (Theta           : out Long_Float;
+   procedure Calculate_Launch_Angle (Theta           : out Long_Float;
                                      Actual_Distance : out Long_Float;
                                      Cycles          : out Integer;
                                      Radial_Distance : in Long_Float;
                                      Altitude_Change : in Long_Float;
-                                     Muzzle_Velocity : in Long_Float;
+                                     Initial_Speed   : in Long_Float;
                                      Low_El, High_El : in Long_Float;
                                      Air_Drag        : in Long_Float := 0.0;
                                      Delta_Time      : in Duration := 0.01;
@@ -100,8 +100,8 @@ package body PBM.Trajectory is
       procedure Constraint (Theta : in Long_Float; 
                             Dist : out Long_Float) is
          Landed : Boolean;
-         Attack : Long_Float := Theta;
-         Speed : Long_Float := Muzzle_Velocity;
+         Descent_Angle : Long_Float := Theta;
+         Speed : Long_Float := Initial_Speed;
          Alt : Long_Float := 0.0;
          E : Long_Float := 0.0; -- This is relative
          N : Long_Float := 0.0;
@@ -116,7 +116,7 @@ package body PBM.Trajectory is
             Traj.Easting :=  E;
             Traj.Northing := N;
             Traj.Heading := 0.0;
-            Traj.Elevation := Attack;
+            Traj.Elevation := Descent_Angle;
             Traj.Time := Time;
             Traj.Delta_T := Delta_Time;
             Time := Time + 1000.0; -- Need loop if this time is not sufficient
@@ -129,9 +129,9 @@ package body PBM.Trajectory is
                Altitude  => Alt,
                Speed     => Speed,
                Landed    => Landed,
-               Attack    => Attack); -- attack angle in radians
+               Descent_Angle => Descent_Angle); -- descent angle in radians
             Dist := Sqrt(E*E + N*N);
-            exit when Attack < 0.0 and Landed;
+            exit when Descent_Angle < 0.0 and Landed;
          end loop;
          -- pragma Debug (Text_IO.Put_Line (Landed'Img & Dist'Img & Alt'Img));
       end Constraint;

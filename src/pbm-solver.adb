@@ -4,17 +4,17 @@ with Pace.Strings;
 with Pace.Log;
 with Ada.Numerics.Elementary_Functions;
 
-package body PBM.NABK is
+package body PBM.Solver is
 
-   Server : constant String := Pace.Getenv ("NABK", "");
-   Port : constant Integer := Pace.Getenv ("NABK_Port", 5651); --5651
-   
-   function Is_Using_NABK_Server return Boolean is
+   Server : constant String := Pace.Getenv ("TRAJ_SERVER", "");
+   Port : constant Integer := Pace.Getenv ("TRAJ_SERVER_PORT", 5651);
+
+   function Is_Using_External_Server return Boolean is
    begin
       return Server /= "";
-   end Is_Using_NABK_Server;
-   
-   
+   end Is_Using_External_Server;
+
+
    function ToF (S : String) return Float is
    begin
       begin
@@ -27,26 +27,28 @@ package body PBM.NABK is
       when others =>
          Pace.Log.Put_Line ("! Format error on numeric conversion: " & S);
          return 0.0;
-   end ToF;          
+   end ToF;
 
 
-   procedure FM (Projo, Fuze, Unit, Vehicle: in String;
-                 Zone : in Integer;
-                 SW_Extent, NE_Extent : in UTM;
-                 Src, Tgt : in UTM;
-                 El, Az : out Float;
-                 Prop : out Integer;
-                 Setting : out Duration;
-                 Charge : out Integer) is
+   procedure Compute (Item_Type, Mode, Unit, Vehicle: in String;
+                      Zone : in Integer;
+                      SW_Extent, NE_Extent : in UTM;
+                      Src, Tgt : in UTM;
+                      El, Az : out Float;
+                      Config_Value : out Integer;
+                      Setting : out Duration;
+                      Power_Level : out Integer) is
    begin
-      if Is_Using_NABK_Server then
-         declare      
+      if Is_Using_External_Server then
+         declare
             use Pace.XML;
 
-            FM_Cmd : constant String := 
-               "NATO_ABK.DISPATCHER.FM?set=" & T("xml", 
-                                                T("projo", Projo) &
-                                                T("fuze", Fuze) &
+            -- External server API endpoint and XML field names below must remain
+            -- unchanged for compatibility with the remote trajectory calculation server.
+            Query_Cmd : constant String :=
+               "NATO_ABK.DISPATCHER.FM?set=" & T("xml",
+                                                T("projo", Item_Type) &
+                                                T("fuze", Mode) &
                                                 T("unit", Unit) &
                                                 T("vehicle", Vehicle) &
                                                 T("zone", Zone) &
@@ -62,38 +64,38 @@ package body PBM.NABK is
                                                 T("tgt",
                                                   T("target_easting", Tgt.E) &
                                                   T("target_northing", Tgt.N) &
-                                                  T("target_altitude", Tgt.Alt)) 
+                                                  T("target_altitude", Tgt.Alt))
                                                 );
          begin
             Pace.Log.Put_Line ("GETTING BALLISTIC SOLUTION");
-            Pace.Log.Put_Line (FM_Cmd);
+            Pace.Log.Put_Line (Query_Cmd);
             declare
                S : constant String :=  Pace.Tcp.Http.Get
                    (Host => Server,
                     Port => Port,
-                    Item => FM_Cmd);
+                    Item => Query_Cmd);
             begin
                Pace.Log.Put_Line ("RESULT:" & S);
                El := ToF (Pace.Xml.Search_Xml(S, "el"));
                Az := ToF (Pace.Xml.Search_Xml(S, "az"));
-               Prop := Integer'Value (Pace.Xml.Search_Xml(S, "prop"));
+               Config_Value := Integer'Value (Pace.Xml.Search_Xml(S, "prop"));
                Setting := Duration (ToF (Pace.Xml.Search_Xml(S, "setting")));
-               Charge := Integer'Value (Pace.Xml.Search_Xml(S, "charge"));
+               Power_Level := Integer'Value (Pace.Xml.Search_Xml(S, "charge"));
             end;
             Pace.Log.Put_Line ("E" & El'Img);
             Pace.Log.Put_Line ("A" & Az'Img);
-            Pace.Log.Put_Line ("P" & Prop'Img);
+            Pace.Log.Put_Line ("P" & Config_Value'Img);
             Pace.Log.Put_Line ("S" & Setting'Img);
-            Pace.Log.Put_Line ("C" & Charge'Img);
+            Pace.Log.Put_Line ("C" & Power_Level'Img);
          end;
       else
          El := 0.0;
          Az := 0.0;
-         Prop := 231;
+         Config_Value := 231;
          Setting := 0.0;
-         Charge := 0;
+         Power_Level := 0;
       end if;
    end;
-                 
 
-end PBM.NABK;
+
+end PBM.Solver;

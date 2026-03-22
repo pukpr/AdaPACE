@@ -7,7 +7,7 @@ package HLA.Articulation is
 
 private
 
-   type Articulated_Kind is (Invalid, Main_Gun, Small_Gun, Turret, Cupola, Mast);
+   type Articulated_Kind is (Invalid, Primary_Arm, Secondary_Arm, Turret, Cupola, Mast);
    type Station_Type is new Natural;
    type Parameter_Type is (Articulated_Part, Attached_Part);
    

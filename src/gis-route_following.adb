@@ -33,7 +33,7 @@ package body Gis.Route_Following is
    procedure Input (Obj : in Recover) is
    begin
       -- this is a bit different than the other recovers, since
-      -- we can't check aho.check_fire from a Common file
+      -- we can't check aho.check_action from a Common file
       -- so we rely on the continue_following boolean
       declare
          Msg : Stop;

@@ -262,7 +262,7 @@ package body Hal.Sms_Lib.Sounds is
                   Active      => Active,
                   Is_Absolute => False,
                   Scale       => Scale,
-                  Entity      => "nlosc_ammo_handling");
+                  Entity      => "machine_sounds");
                Moved := Has_Moved (Id, Pos, Rot);
                -- Moved := True;
                Check_Sound(Id, Pos, Moved); -- the actual call

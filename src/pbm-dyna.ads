@@ -20,7 +20,7 @@ package PBM.Dyna is
    type VisOwn_Array is array (Positive range 1 .. N) of DOF6;
 
    --             0, 1, 2, 3, 4,      5, 6, 7
-   type Input is (S0,S1,S2,S3,S4, Azimuth, Elevation, Fire);
+   type Input is (S0,S1,S2,S3,S4, Azimuth, Elevation, Launch);
    type drivers is array (Input) of Long_Float;
 
    procedure run
