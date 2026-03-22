@@ -1,1 +1,1 @@
-env PACE_SIM=1 PACE_RUN_TIME=30.0  PACE=../.. obj/demo_drone
+env  GKB_DEBUG=0 PACE_SIM=1 PACE_NODE=0 PACE_RUN_TIME=30.0  PACE=../.. obj/demo_drone

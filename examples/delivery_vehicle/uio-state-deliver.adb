@@ -32,9 +32,9 @@ package body Uio.State.Deliver is
    function Do_Clear_Items_Complete return Boolean;
    procedure Call (Val : in Boolean; Info : String := "");
 
-   -- this is used to compare against ahd.delivery_job.fms_completed to know if the
+   -- this is used to compare against ahd.delivery_job.jobs_completed to know if the
    -- delivery job has completed
-   Fms_Completed : Integer := 0;
+   Jobs_Completed : Integer := 0;
 
    Equipment_Configured : Boolean := False;
 
@@ -67,7 +67,7 @@ package body Uio.State.Deliver is
    function Is_Items_Complete return Boolean is
       Result : Boolean := False;
    begin
-      if Ahd.Delivery_Job.Get_Fms_Completed > Fms_Completed then
+      if Ahd.Delivery_Job.Get_Jobs_Completed > Jobs_Completed then
          Result := True;
       end if;
       return Result;
@@ -228,7 +228,7 @@ package body Uio.State.Deliver is
    begin
       if Current_State = Items_Complete then
          Current_State := Docked;
-         Fms_Completed := Fms_Completed + 1;
+         Jobs_Completed := Jobs_Completed + 1;
          -- the next two declare blocks could potentially be replaced by a publish/subscribe
          -- mechanism..
          declare
@@ -349,5 +349,4 @@ begin
    Save_Action (Next_State'(Pace.Msg with Default));
    Save_Action (State'(Pace.Msg with Default));
 
--- $Id: uio-state-deliver.adb,v 1.32 2005/04/08 15:44:17 ludwiglj Exp $ --
 end Uio.State.Deliver;

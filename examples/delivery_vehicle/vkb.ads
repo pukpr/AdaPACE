@@ -1,6 +1,5 @@
 with Gkb;
 with Pace;
--- $Id: vkb.ads,v 1.4 2005/01/12 18:07:31 ludwiglj Exp $
 package Vkb is new Gkb (Task_Stack_Size => 100_000,
                         Prolog_File => Pace.Getenv ("VKB_FILE", "/kbase/ntc_vkb.pro"),
                         Allocation_Data => (Clause => 10000,

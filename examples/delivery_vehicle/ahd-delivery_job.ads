@@ -1,6 +1,6 @@
 with Pace;
 with Pace.Notify;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 
 package Ahd.Delivery_Job is
 
@@ -56,7 +56,7 @@ package Ahd.Delivery_Job is
       end record;
    procedure Input (Obj : in Adjust_Items);
 
-   function Get_Fms_Completed return Integer;
+   function Get_Jobs_Completed return Integer;
 
    function Has_Customer return Boolean;
 

@@ -26,6 +26,5 @@ package ANS is
      end record;
    procedure Output (Obj : out Position_Msg);
 
-   -- $Id: ans.ads,v 1.6 2004/12/09 13:18:10 ludwiglj Exp $
 end;
 

@@ -7,7 +7,6 @@ with Pace.Surrogates;
 
 with Hal;
 with Hal.Sms;
-with Hal.Ve_Lib.Box_Motion;
 with Hal.Audio.Mixer;
 with Pace.Strings;
 
@@ -25,7 +24,7 @@ with Abk.Technical_Delivery_Direction;
 with Veh.Delivery_Motion;
 with Vkb;
 with Acu;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 
 with Sim.Inventory;
 
@@ -94,27 +93,16 @@ package body Aho.Drone is
    end Move_Drone;
 
    procedure Delivery_Box (Item_Num : Integer) is
-      use Hal.Ve_Lib.Box_Motion;
-      use Ifc.Fm_Data.Item_Vector;
+      use Ifc.Job_Data.Item_Vector;
       use Pace.Strings;
       Start_Pos : Hal.Position := (0.0, 0.0, 0.0);
       Dummy_Ori : Hal.Orientation;
       Dummy_Scale : Hal.Position;
       Active : Boolean := True;
-      Lp : Launch_Box;
    begin
 
-      -- ask VE where the tip of the barrel is at to know where to launch box from
-      Hal.Sms.Get_Coordinate ("Barrel_Tip", Start_Pos, Dummy_Ori, Active, True, Dummy_Scale);
+      Hal.Sms.Get_Coordinate ("inore", Start_Pos, Dummy_Ori, Active, True, Dummy_Scale);
 
-      if Active then
-         Lp.Theta := Hal.Rads (Items (Item_Num).Elevation);
-         Lp.Initial_Velocity := Items (Item_Num).Launchpad_Velocity;
-         Lp.Start_Pos := Start_Pos;
-         Lp.Heading := -Acu.Heading + Hal.Rads (Items (Item_Num).Azimuth);
-         Lp.Munition := S2b("One55mm");
-         Hal.Ve_Lib.Box_Motion.Input (Lp);
-      end if;
    end Delivery_Box;
 
 
@@ -147,16 +135,16 @@ package body Aho.Drone is
    -- exists so can be called in a surrogate task since
    -- this sound isn't tied to any mechanical motion and need
    -- to reclaim the memory with the ending inout
-   type Play_Boom is new Pace.Msg with null record;
-   procedure Input (Obj : Play_Boom);
-   procedure Input (Obj : Play_Boom) is
+   type Play_Sound is new Pace.Msg with null record;
+   procedure Input (Obj : Play_Sound);
+   procedure Input (Obj : Play_Sound) is
       use Hal.Audio.Mixer;
       use Vkb.Rules;
 
       Audio_Msg : Hal.Audio.Mixer.Play_Mix;
       V : Variables (1 .. 2);
    begin
-      Vkb.Agent.Query ("drone_boom", V);
+      Vkb.Agent.Query ("drone_sound", V);
       Audio_Msg.File := V(1);
       Audio_Msg.Volume := Integer'Value (+V(2));
       Pace.Dispatching.Inout (Audio_Msg);
@@ -199,7 +187,7 @@ package body Aho.Drone is
       end;
 
       declare
-         Msg : Play_Boom;
+         Msg : Play_Sound;
       begin
          Pace.Surrogates.Input (Msg);
       end;
@@ -223,7 +211,7 @@ package body Aho.Drone is
       begin
          if Ahd.Delivery_Job.Is_Time_On_Customer then
             declare
-               use Ifc.Fm_Data;
+               use Ifc.Job_Data;
                Msg : Ahd.Delivery_Job.Get_Delivery_Job;
                Delivery_Time : Duration;
                Start_Time : Duration;
@@ -280,29 +268,7 @@ package body Aho.Drone is
       procedure Adjust_For_Terrain is
       begin
          -- adjust drone elev and azimuth for terrain
-         for I in 1 .. Total_Items loop
-            declare
-               Msg : Vsn.Orientation_Position.Get_Barrel_Orientation;
-            begin
-               Msg.Abs_El := Hal.Rads (Items (I).Elevation);
-               Msg.Abs_Az := -Acu.Heading +
-                 Hal.Rads (Items (I).Azimuth);
-               Pace.Dispatching.Inout (Msg);
-               Items (I).Elevation := Hal.Degs (Msg.Rel_El);
-               Items (I).Azimuth := Hal.Degs (Msg.Rel_Az);
-               Pace.Log.Put_Line ("Abs El adjusted from " & Float'Image (Hal.Degs (Msg.Abs_El)) & " to " & Float'Image (Items (I).Elevation));
-               Pace.Log.Put_Line (" and Abs Az adjusted from " & Float'Image (Hal.Degs (Msg.Abs_Az)) & " to " & Float'Image (Items(I).Azimuth) & "due to terrain");
-               if Items (I).Elevation > Plant.Max_Elevation_Angle then
-                  Items (I).Elevation := Plant.Max_Elevation_Angle;
-                  Pace.Log.Put_Line
-                    ("WARNING: Desired elevation angle is more than the max elevation angle.  Using max elevation angle");
-               elsif Items (I).Elevation < Plant.Min_Elevation_Angle then
-                  Items (I).Elevation := Plant.Min_Elevation_Angle;
-                  Pace.Log.Put_Line
-                    ("WARNING: Desired elevation angle is less than the min elevation angle.  Using min elevation angle");
-               end if;
-            end;
-         end loop;
+         null;
       end Adjust_For_Terrain;
 
       -- we do this because the vehicle may have moved between when this was
@@ -446,7 +412,7 @@ package body Aho.Drone is
                   Pace.Dispatching.Input (Msg);
                end;
                -- remove 1 box and 1 bottle
-               Sim.Inventory.Remove_Box (Ifc.Fm_Data.Item_Vector.Element (Job.Data.Items, Items_Delivered).Box);
+               Sim.Inventory.Remove_Box (Ifc.Job_Data.Item_Vector.Element (Job.Data.Items, Items_Delivered).Box);
                if Job.Items (Items_Delivered).Power_Level <= 2 then
                   null; -- Sim.Inventory.Remove_Bottle (Sim.Inventory.Half, Job.Items (Items_Delivered).Power_Level);
                else

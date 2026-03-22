@@ -25,7 +25,7 @@ package body Eng.Test is
    function Id is new Pace.Log.Unit_Id;
 
    -- used internally when a publish occurs.. essentially makes the publish/subscribe synchronous
-   type Fm_Done is new Pace.Notify.Subscription with null record;
+   type Job_Done is new Pace.Notify.Subscription with null record;
 
    -- used for publishing to Delivery_Job_Complete subscription
    type Eng_Delivery_Job_Complete is new
@@ -34,7 +34,7 @@ package body Eng.Test is
    procedure Input (Obj : in Eng_Delivery_Job_Complete) is
    begin
       declare
-         Msg : Fm_Done;
+         Msg : Job_Done;
       begin
          Pace.Dispatching.Input (Msg);
       end;
@@ -92,11 +92,11 @@ package body Eng.Test is
 
       -- wait for end of delivery job from ahd before moving on
       declare
-         Msg : Fm_Done;
+         Msg : Job_Done;
       begin
          Pace.Log.Put_Line ("Eng.Test is waiting for delivery job to complete");
          Inout (Msg);
-         Pace.Log.Put_Line ("eng is done waiting for fm to complete");
+         Pace.Log.Put_Line ("eng is done waiting for job to complete");
       end;
 
       declare

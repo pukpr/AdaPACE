@@ -9,5 +9,4 @@ package ANS.Monitor is
 
    procedure Position (Easting, Northing, Heading : out Float);
 
-   -- $Id: ans-monitor.ads,v 1.4 2004/12/09 13:18:10 ludwiglj Exp $
 end;

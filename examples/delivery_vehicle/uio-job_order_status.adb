@@ -63,7 +63,7 @@ package body Uio.Job_Order_Status is
       use Asu;
       use Ifc.Delivery_Job;
       Job_Static_Query : String :=
-        "get_fm_static(" & Vkb.Rules.Q (+Get_Delivery_Job_Id) &
+        "get_job_static(" & Vkb.Rules.Q (+Get_Delivery_Job_Id) &
           ", Customer, Job_Type, Control, Start_Time, Phase, Num_Items)";
    begin
       Job_Static_Xml := +Pace.Server.Kbase_Utilities.Kbase_To_Xml

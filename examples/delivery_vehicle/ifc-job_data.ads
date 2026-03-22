@@ -3,7 +3,7 @@ with Str; use Str;
 with Ada.Containers.Vectors;
 with Vkb;
 
-package Ifc.Fm_Data is
+package Ifc.Job_Data is
 
    pragma Elaborate_Body;
 
@@ -46,7 +46,7 @@ package Ifc.Fm_Data is
                                Data : out Delivery_Job_Data);
 
    -- Regularly delivery jobs have a customer and the azimuth and velocity are calculated
-   -- in order to hit that customer, but sometimes we just want to deliver at a specific
+   -- in order to "hit" that customer, but sometimes we just want to deliver at a specific
    -- elevation and azimuth and there is no customer.
    function Has_Customer (Data : Delivery_Job_Data) return Boolean;
 
@@ -58,4 +58,4 @@ package Ifc.Fm_Data is
                          Item_Num : Integer;
                          Zone_Num : Integer);
 
-end Ifc.Fm_Data;
+end Ifc.Job_Data;

@@ -18,5 +18,4 @@ package body Aho.Bottle_Shuttle_Grippers is
       Pace.Log.Trace (Obj);
    end Input;
 
--- $id: aho-bottle_shuttle_grippers.adb,v 1.2 12/22/2003 14:17:53 ludwiglj Exp $
 end Aho.Bottle_Shuttle_Grippers;

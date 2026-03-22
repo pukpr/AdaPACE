@@ -216,5 +216,4 @@ begin
    Save_Action (Reset_Wait'(Pace.Msg with Set => +"0.0"));
    Save_Action (Wait_Time'(Pace.Msg with Set => +"0.0"));
 
--- $Id: uio-timekeeper.adb,v 1.17 2003/08/04 19:29:01 ludwiglj Exp $ --
 end Uio.Timekeeper;

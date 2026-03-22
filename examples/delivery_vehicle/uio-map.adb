@@ -106,5 +106,4 @@ begin
 
 --   Update_Entity_List;
 
--- $Id: uio-map.adb,v 1.5 2004/09/17 14:22:25 ludwiglj Exp $
 end Uio.Map;

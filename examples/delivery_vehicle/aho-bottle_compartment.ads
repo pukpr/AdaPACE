@@ -27,5 +27,4 @@ package Aho.Bottle_Compartment is
 private
    pragma Inline (Input);
 
--- $id: aho-bottle_compartment.ads,v 1.3 12/22/2003 14:17:46 ludwiglj Exp $
 end Aho.Bottle_Compartment;

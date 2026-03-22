@@ -121,5 +121,4 @@ begin
    Save_Action (Next_State'(Pace.Msg with Default));
    Save_Action (State'(Pace.Msg with Default));
 
--- $Id: uio-state-move.adb,v 1.16 2005/01/07 22:50:17 ludwiglj Exp $ --
 end Uio.State.Move;

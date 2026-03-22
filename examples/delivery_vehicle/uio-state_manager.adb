@@ -78,5 +78,4 @@ package body Uio.State_Manager is
 begin
    Save_Action (Get_State'(Pace.Msg with Default));
 
--- $Id: uio-state_manager.adb,v 1.11 2005/02/17 15:51:38 ludwiglj Exp $ --
 end Uio.State_Manager;

@@ -11,5 +11,4 @@ package Uio.State is
          State : Vehicle_State_Enum := Undefined_State;
       end record;
 
-   -- $Id: uio-state.ads,v 1.8 2004/09/20 22:18:15 pukitepa Exp $
 end Uio.State;

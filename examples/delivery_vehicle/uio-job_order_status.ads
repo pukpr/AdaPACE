@@ -21,5 +21,4 @@ package Uio.Job_Order_Status is
 
 private
    pragma Inline (Output);
-   -- $Id: uio-job_order_status.ads,v 1.10 2004/09/20 22:18:13 pukitepa Exp $
 end Uio.Job_Order_Status;

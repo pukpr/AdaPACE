@@ -21,7 +21,7 @@ with Plant;
 with Nav.Location;
 with Nav.Move_Plan;
 with Nav.Route_Following;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 
 package body Uio.Route is
 
@@ -79,13 +79,13 @@ package body Uio.Route is
       return Asu.To_String (Result);
    end Get_East_North_Xml;
 
-   procedure Add_Customer_Point (Fm_Id : in String) is
-      Job : Ifc.Fm_Data.Delivery_Job_Data;
+   procedure Add_Customer_Point (Job_Id : in String) is
+      Job : Ifc.Job_Data.Delivery_Job_Data;
       Found_It : Boolean;
    begin
-      Ifc.Fm_Data.Get_Delivery_Job (S2b(Fm_Id), Found_It, Job);
+      Ifc.Job_Data.Get_Delivery_Job (S2b(Job_Id), Found_It, Job);
       if not Found_It then
-         Pace.Log.Put_Line ("Delivery Job " & Fm_Id & " could not be found!");
+         Pace.Log.Put_Line ("Delivery Job " & Job_Id & " could not be found!");
          raise Vkb.Rules.No_Match;
       end if;
 
@@ -95,7 +95,7 @@ package body Uio.Route is
       begin
          Msg.Index := 1;
          -- use the first customer as the one to emplace by
-         Msg.Point.Coord := Ifc.Fm_Data.Item_Vector.Element (Job.Items, 1).Customer;
+         Msg.Point.Coord := Ifc.Job_Data.Item_Vector.Element (Job.Items, 1).Customer;
          Msg.Heading_restriction := Plant.Max_Traverse_Angle;
          Msg.Point.Kind := Tp;
 
@@ -285,12 +285,12 @@ package body Uio.Route is
    end Inout;
 
    procedure Inout (Obj : in out Load_Customer) is
-      Job : Ifc.Fm_Data.Delivery_Job_Data;
+      Job : Ifc.Job_Data.Delivery_Job_Data;
       Found_It : Boolean;
    begin
-      Ifc.Fm_Data.Get_Delivery_Job (U2b(Obj.Set), Found_It, Job);
+      Ifc.Job_Data.Get_Delivery_Job (U2b(Obj.Set), Found_It, Job);
       -- if there isn't a customer in this job then don't load it!
-      if Ifc.Fm_Data.Has_Customer (Job) then
+      if Ifc.Job_Data.Has_Customer (Job) then
          Agent.Inout (Obj);
       end if;
    end Inout;

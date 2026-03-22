@@ -141,5 +141,4 @@ package body Uio.State.Sustain is
 begin
    Save_Action (Next_State'(Pace.Msg with Default));
    Save_Action (State'(Pace.Msg with Default));
--- $Id: uio-state-sustain.adb,v 1.12 2005/02/17 16:17:26 ludwiglj Exp $ --
 end Uio.State.Sustain;

@@ -16,7 +16,7 @@ package Abk.Technical_Delivery_Direction is
    -- used to recalculate the vel and az before delivering
    procedure Calculate_Vel_And_Az (Job : in out Ahd.Job_Record);
 
-   -- returns correct azimuth for drone (in radians) to hit customer in a 2D-world
+   -- returns correct azimuth for drone (in radians) to reach customer in a 2D-world
    -- azimuth will be positive for rotating drone counter-clockwise and negative for rotating
    -- clockwise
    function Get_Azimuth (Target_Easting, Target_Northing : Float) return Float;

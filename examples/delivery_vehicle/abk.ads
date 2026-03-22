@@ -69,6 +69,5 @@ package Abk is
    function Get_Vertical_Distance
      (Target_Easting, Target_Northing : Float) return Float;
 
-   -- $Id: abk.ads,v 1.9 2005/01/10 21:18:07 ludwiglj Exp $
 end Abk;
 

@@ -45,6 +45,5 @@ package Plant.Met is
 private
    pragma Inline (Get_Current_Conditions);
 
--- $id: plant-met.ads,v 1.4 04/16/2003 17:51:09 pukitepa Exp $
 end Plant.Met;
 

@@ -26,5 +26,4 @@ private
    pragma Inline (Inout);
    pragma Inline (Get_Delivery_Job_Id);
 
--- $id: ifc-delivery_job.ads,v 1.9 12/22/2003 14:14:53 ludwiglj Exp $
 end Ifc.Delivery_Job;

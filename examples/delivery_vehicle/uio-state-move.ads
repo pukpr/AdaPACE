@@ -19,5 +19,4 @@ private
    pragma Inline (Inout);
    pragma Inline (Set_Initial_State);
 
--- $Id: uio-state-move.ads,v 1.3 2003/03/31 13:55:25 pukitepa Exp $ --
 end Uio.State.Move;

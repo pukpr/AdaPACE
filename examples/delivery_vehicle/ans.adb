@@ -25,5 +25,4 @@ package body ANS is
    end;
 
 
-   -- $Id: ans.adb,v 1.6 2004/12/09 13:18:09 ludwiglj Exp $
 end;

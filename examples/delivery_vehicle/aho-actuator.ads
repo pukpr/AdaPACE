@@ -27,5 +27,4 @@ package Aho.Actuator is
 private
    pragma Inline (Input);
 
--- $id: aho-actuator.ads,v 1.4 12/22/2003 14:17:43 ludwiglj Exp $
 end Aho.Actuator;

@@ -1,5 +1,5 @@
 with Plant;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 
 package Ahd is
    -- Inventory Handling & Delivery
@@ -31,10 +31,9 @@ package Ahd is
       record
          -- set to false during flight calculations if any of the customers are out of range
          Within_Range : Boolean := True;
-         Data : Ifc.Fm_Data.Delivery_Job_Data;
+         Data : Ifc.Job_Data.Delivery_Job_Data;
          Items : Items_Array;
       end record;
 
-   -- $Id: ahd.ads,v 1.16 2005/04/21 16:18:37 ludwiglj Exp $
 end Ahd;
 

@@ -244,8 +244,8 @@ package Hal.Generic_Sms is
    procedure Set_Switch (Entity : String; Switch_Name : String; State : Integer);
 
    -- use impact and launch to interface to the damage "server"
-   procedure Impact (Munition : String; Pos : Position);
-   procedure Launch (Munition : String; Entity : String := "");
+   procedure Impact (Label : String; Pos : Position);
+   procedure Launch (Label : String; Entity : String := "");
 
    procedure Rot_Order (Entity : String; Dof : String; Rot_Order : String);
 
@@ -475,14 +475,14 @@ package Hal.Generic_Sms is
 
       type Set_Impact is new Pace.Msg with
          record
-            Munition : Name;
+            Label : Name;
             Pos : Position;
          end record;
       procedure Input (Obj : in Set_Impact);
 
       type Set_Launch is new Pace.Msg with
          record
-            Munition : Name;
+            Label : Name;
             Entity : Name;
          end record;
       procedure Input (Obj : in Set_Launch);

@@ -3,7 +3,7 @@ with Pace.Log;
 with Pace.Surrogates;
 with Pace.Server.Dispatch;
 
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 with Ahd.Delivery_Job;
 with Ahd;
 with Aho.Drone;
@@ -84,7 +84,7 @@ package body Aho.Delivery_Handling_Coordinator is
                Msg : Ahd.Delivery_Job.Get_Delivery_Job;
             begin
                Pace.Dispatching.Output (Msg);
-               Num_Items := Integer (Ifc.Fm_Data.Item_Vector.Length (Msg.Job.Data.Items));
+               Num_Items := Integer (Ifc.Job_Data.Item_Vector.Length (Msg.Job.Data.Items));
                Items := Msg.Job.Items;
             end;
 

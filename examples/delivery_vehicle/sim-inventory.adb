@@ -207,7 +207,7 @@ package body Sim.Inventory is
       Append (Result, Item ("bottle_list", Item ("bottle",
                                                Item ("type", "Half") &
                                                Item ("num", Trim (Half_Count))) &
-                                         Item ("bottle",
+                                               Item ("bottle",
                                                Item ("type", "Full") &
                                                Item ("num", Trim (Full_Count)))
                             ));
@@ -230,8 +230,8 @@ begin
    begin
       Sim.Inventory.Add_Bottle (Half, 32, Success);
       Sim.Inventory.Add_Bottle (Full, 64, Success);
-      Sim.Inventory.Add_Boxs (+"M107", 16, Success);
-      Sim.Inventory.Add_Boxs (+"M864", 8, Success);
+      Sim.Inventory.Add_Boxs (+"ABCD", 16, Success);
+      Sim.Inventory.Add_Boxs (+"A1", 8, Success);
    end;
 end Sim.Inventory;
 

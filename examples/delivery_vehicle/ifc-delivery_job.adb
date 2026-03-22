@@ -10,7 +10,7 @@ with Hal;
 with Ada.Strings.Unbounded;
 with Abk.Technical_Delivery_Direction;
 with Str;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 with Plant;
 
 package body Ifc.Delivery_Job is
@@ -24,7 +24,7 @@ package body Ifc.Delivery_Job is
    Delivery_Job_Id : Bstr.Bounded_String := +"1";
 
    -- used internally when a publish occurs.. essentially makes the publish/subscribe synchronous
-   type Fm_Done is new Pace.Notify.Subscription with null record;
+   type Job_Done is new Pace.Notify.Subscription with null record;
 
    -- used for publishing to Delivery_Job_Complete subscription
    type Ifc_Delivery_Job_Complete is new
@@ -33,7 +33,7 @@ package body Ifc.Delivery_Job is
    procedure Input (Obj : in Ifc_Delivery_Job_Complete) is
    begin
       declare
-         Msg : Fm_Done;
+         Msg : Job_Done;
       begin
          Pace.Dispatching.Input (Msg);
       end;
@@ -75,7 +75,7 @@ package body Ifc.Delivery_Job is
       Found_It : Boolean;
    begin
 
-      Ifc.Fm_Data.Get_Delivery_Job (Delivery_Job_Id, Found_It, Job.Data);
+      Ifc.Job_Data.Get_Delivery_Job (Delivery_Job_Id, Found_It, Job.Data);
       if not Found_It then
          Pace.Log.Put_Line ("Delivery Job " & (+Delivery_Job_Id) & " could not be found!");
          raise Vkb.Rules.No_Match;
@@ -84,11 +84,11 @@ package body Ifc.Delivery_Job is
       declare
          Msg : Ahd.Delivery_Job.Start_Delivery_Job;
       begin
-         Msg.Num_Items := Natural (Ifc.Fm_Data.Item_Vector.Length (Job.Data.Items));
+         Msg.Num_Items := Natural (Ifc.Job_Data.Item_Vector.Length (Job.Data.Items));
          Pace.Dispatching.Input (Msg);
       end;
 
-      Job_Order_Status_Setup (Natural (Ifc.Fm_Data.Item_Vector.Length (Job.Data.Items)));
+      Job_Order_Status_Setup (Natural (Ifc.Job_Data.Item_Vector.Length (Job.Data.Items)));
 
       -- do flight calculations
       declare
@@ -129,20 +129,20 @@ package body Ifc.Delivery_Job is
 
 
    procedure Output (Obj : out Check_Azimuth) is
-      use Ifc.Fm_Data.Item_Vector;
-      Job : Ifc.Fm_Data.Delivery_Job_Data;
+      use Ifc.Job_Data.Item_Vector;
+      Job : Ifc.Job_Data.Delivery_Job_Data;
       Found_It : Boolean;
       I : Integer;
    begin
       -- must go and get the customer locations.. may or may not be in job data
       -- in ahd yet
-      Ifc.Fm_Data.Get_Delivery_Job (Delivery_Job_Id, Found_It, Job);
+      Ifc.Job_Data.Get_Delivery_Job (Delivery_Job_Id, Found_It, Job);
       if not Found_It then
          Pace.Log.Put_Line ("Delivery Job " & (+Delivery_Job_Id) & " could not be found!");
          raise Vkb.Rules.No_Match;
       end if;
 
-      if Ifc.Fm_Data.Has_Customer (Job) then
+      if Ifc.Job_Data.Has_Customer (Job) then
          -- check it for each item
          Obj.Within_Azimuth := True;
          I := First_Index (Job.Items);
@@ -198,7 +198,7 @@ package body Ifc.Delivery_Job is
 
          -- wait for end of delivery job from ahd before moving on
          declare
-            Msg : Fm_Done;
+            Msg : Job_Done;
          begin
             Pace.Dispatching.Inout (Msg);
          end;

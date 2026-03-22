@@ -2,7 +2,7 @@ with Pace;
 with Pace.Log;
 with Ada.Strings.Unbounded;
 
-package body Ifc.Fm_Data is
+package body Ifc.Job_Data is
 
    package Asu renames Ada.Strings.Unbounded;
 
@@ -55,7 +55,7 @@ package body Ifc.Fm_Data is
       Msg : Vkb.Query;
    begin
       Msg.Set := Str.S2u(F ("assert",
-                      F ("fm", F ("id", Q (+Id)) & ", " &
+                      F ("job", F ("id", Q (+Id)) & ", " &
                          Q (+Description) & ", " &
                          F ("data", F("customer", Q (+Data.Customer_Description)) & ", " &
                             F ("job_type", Q (+Data.Job_Description)) & ", " &
@@ -73,7 +73,7 @@ package body Ifc.Fm_Data is
       Msg : Vkb.Query;
    begin
       Msg.Set := Str.S2u(F ("retract",
-                      F ("fm", F ("id", Q (+Id)) & ", _, _")));
+                      F ("job", F ("id", Q (+Id)) & ", _, _")));
       Pace.Dispatching.Inout (Msg);
    end Remove_Delivery_Job;
 
@@ -105,7 +105,7 @@ package body Ifc.Fm_Data is
          V : Variables (1 .. 7);
       begin
          V (1) := Str.S2u(+Query_Id);
-         Vkb.Agent.Query ("get_fm_static", V);
+         Vkb.Agent.Query ("get_job_static", V);
          Data.Customer_Description := +V (2);
          Data.Job_Description := +V (3);
          Data.Control := +V (4);
@@ -154,4 +154,4 @@ package body Ifc.Fm_Data is
       end if;
    end Has_Customer;
 
-end Ifc.Fm_Data;
+end Ifc.Job_Data;

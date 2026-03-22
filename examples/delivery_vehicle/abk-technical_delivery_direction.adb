@@ -6,7 +6,7 @@ with Ada.Numerics;
 with Ada.Numerics.Elementary_Functions;
 with Acu;
 with Str;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 with Sim.Inventory;
 with Gis;
 with Plant;
@@ -18,7 +18,7 @@ package body Abk.Technical_Delivery_Direction is
    use Ada.Numerics;
    use Ada.Numerics.Elementary_Functions;
    use Ahd;
-   use Ifc.Fm_Data.Item_Vector;
+   use Ifc.Job_Data.Item_Vector;
 
    function Get_Azimuth (Target_Easting, Target_Northing : Float) return Float is
       Customer_Heading : Float; -- orientation that vehicle must be at to point directly at customer
@@ -128,7 +128,7 @@ package body Abk.Technical_Delivery_Direction is
                   Power_Level : Integer := Get_Power_Level (Msg.Solution (I).Velocity);
                begin
                   Job.Items (I).Power_Level := Power_Level;
-                  Ifc.Fm_Data.Set_Zoning (Job.Data.Id, I, Power_Level);
+                  Ifc.Job_Data.Set_Zoning (Job.Data.Id, I, Power_Level);
                end;
 
                -- the on_customer_time is relative to the start of the job,
@@ -198,7 +198,7 @@ package body Abk.Technical_Delivery_Direction is
                   Job.Items (I).Elevation := Hal.Degs (Elevation);
                   Job.Items (I).Launchpad_Velocity := Velocity;
                   Job.Items (I).Power_Level := Zone;
-                  Ifc.Fm_Data.Set_Zoning (Job.Data.Id, I, Zone);
+                  Ifc.Job_Data.Set_Zoning (Job.Data.Id, I, Zone);
                   Job.Within_Range := True;
                   exit;  -- found a solution, so exit loop
                end if;
@@ -239,7 +239,7 @@ package body Abk.Technical_Delivery_Direction is
    procedure Calculate_Vel_And_Az (Job : in out Job_Record) is
       use Bstr;
    begin
-      if Ifc.Fm_Data.Has_Customer (Job.Data) then
+      if Ifc.Job_Data.Has_Customer (Job.Data) then
          if Bstr.To_String (Job.Data.Control) = "Time On Customer" then
             Pace.Log.Put_Line ("processing customer_on_time", 4);
             Process_To_Hit_Customer_On_Time (Job);

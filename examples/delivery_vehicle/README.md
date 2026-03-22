@@ -91,7 +91,7 @@ t=3.7   IFC.DELIVERY_JOB ──►  AHD.DELIVERY_JOB.FLIGHT_SOLUTION
 ```
 
 In parallel with route navigation, `Ifc.Delivery_Job` reads job data from the
-knowledgebase (`get_fm_static` / `get_item` Prolog queries), then calls
+knowledgebase (`get_job_static` / `get_item` Prolog queries), then calls
 `Abk.Technical_Delivery_Direction.Calculate_Flight_Solution` (200 ms) to determine
 the launch parameters for each item. Results are published via the `Flight_Solution`
 notification so the coordinator can proceed.
@@ -329,7 +329,7 @@ At startup the following queries are issued against the knowledgebase:
 
 | Query | Purpose |
 |---|---|
-| `get_fm_static` | Retrieves job header (customer, job type, control, phase, item count) |
+| `get_job_static` | Retrieves job header (customer, job type, control, phase, item count) |
 | `get_item` | Retrieves per-item customer coordinates, elevation, azimuth, box type, timer type/setting, on-customer time |
 | `box_bottle_velocity` | Maps (box type, charge zone) → launch velocity |
 | `job_alert` | Audio file for job-received alert |
@@ -351,3 +351,12 @@ env GKB_DEBUG=1 PACE_SIM=1 PACE_RUN_TIME=30.0 PACE=../.. obj/demo_drone
 # Select a different job
 env PACE_SIM=1 PACE_RUN_TIME=60.0 PACE=../.. obj/demo_drone -id 2
 ```
+
+
+DOT representation of trace.out
+
+[trace.pdf](trace.pdf)
+
+
+
+

@@ -25,5 +25,4 @@ private
    pragma Inline (Inout);
    pragma Inline (Set_Initial_State);
 
--- $Id: uio-state-deliver.ads,v 1.5 2003/05/22 20:46:00 ludwiglj Exp $ --
 end Uio.State.Deliver;

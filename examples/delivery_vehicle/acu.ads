@@ -39,7 +39,6 @@ package Acu is
                                        Viscosity,
                                        Load_Weight,
                                        Vkb);
-   -- $Id: acu.ads,v 1.7 2005/04/08 15:44:14 ludwiglj Exp $
 
 end Acu;
 

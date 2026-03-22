@@ -18,5 +18,4 @@ private
    pragma Inline (Inout);
    pragma Inline (Set_Initial_State);
 
--- $Id: uio-state-sustain.ads,v 1.7 2005/02/17 15:51:21 ludwiglj Exp $ --
 end Uio.State.Sustain;

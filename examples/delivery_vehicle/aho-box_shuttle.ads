@@ -83,5 +83,4 @@ package Aho.Box_Shuttle is
 private
    pragma Inline (Input);
 
--- $Id: aho-box_shuttle.ads,v 1.13 2005/01/25 22:39:56 peterswk Exp $ --
 end Aho.Box_Shuttle;

@@ -13,5 +13,4 @@ package Uio.Dbw is
 
 private
     pragma Inline (Inout);
-   -- $Id: uio-dbw.ads,v 1.8 2004/09/20 22:18:12 pukitepa Exp $
 end Uio.Dbw;

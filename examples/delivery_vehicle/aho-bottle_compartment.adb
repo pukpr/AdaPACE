@@ -48,5 +48,4 @@ package body Aho.Bottle_Compartment is
       Pace.Log.Trace (Obj);
    end;
 
--- $id: aho-bottle_compartment.adb,v 1.5 12/22/2003 14:17:44 ludwiglj Exp $
 end Aho.Bottle_Compartment;

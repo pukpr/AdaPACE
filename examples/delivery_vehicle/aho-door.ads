@@ -26,5 +26,4 @@ package Aho.Door is
 private
    pragma Inline (Input);
 
--- $id: aho-door.ads,v 1.4 12/22/2003 14:11:09 ludwiglj Exp $
 end Aho.Door;

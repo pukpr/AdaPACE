@@ -126,5 +126,4 @@ package body ANS.Monitor is
       Debug_Toggle := True;
    end;
 
-   -- $Id: ans-monitor.adb,v 1.8 2004/12/09 13:18:10 ludwiglj Exp $
 end;

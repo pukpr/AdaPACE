@@ -1133,18 +1133,18 @@ package body Hal.Generic_Sms is
       P_S_Send (Msg);
    end Set_Switch;
 
-   procedure Impact (Munition : String; Pos : Position) is
+   procedure Impact (Label : String; Pos : Position) is
       Msg : Proxy.Set_Impact;
    begin
-      Msg.Munition := To_Name (Munition);
+      Msg.Label := To_Name (Label);
       Msg.Pos := Pos;
       P_S_Send (Msg);
    end Impact;
 
-   procedure Launch (Munition : String; Entity : String := "") is
+   procedure Launch (Label : String; Entity : String := "") is
       Msg : Proxy.Set_Launch;
    begin
-      Msg.Munition := To_Name (Munition);
+      Msg.Label := To_Name (Label);
       Msg.Entity := To_Name (Entity);
       P_S_Send (Msg);
    end Launch;

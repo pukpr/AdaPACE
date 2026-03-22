@@ -16,7 +16,7 @@ with Acu;
 with Vkb;
 with Ahd;
 with Ahd.Delivery_Job;
-with Ifc.Fm_Data;
+with Ifc.Job_Data;
 
 package body Mxr.Delivery_Order is
 
@@ -42,7 +42,7 @@ package body Mxr.Delivery_Order is
    type Queue_Update is new Pace.Notify.Subscription with null record;
 
    -- used internally when a publish occurs.. essentially makes the publish/subscribe synchronous
-   type Fm_Done is new Pace.Notify.Subscription with null record;
+   type Job_Done is new Pace.Notify.Subscription with null record;
 
    -- used for publishing to Delivery_Job_Complete subscription
    type Mxr_Delivery_Job_Complete is new
@@ -51,7 +51,7 @@ package body Mxr.Delivery_Order is
    procedure Input (Obj : in Mxr_Delivery_Job_Complete) is
    begin
       declare
-         Msg : Fm_Done;
+         Msg : Job_Done;
       begin
          Pace.Dispatching.Input (Msg);
       end;
@@ -191,22 +191,22 @@ package body Mxr.Delivery_Order is
 
       -- WAIT UNTIL DELIVERY JOB IS COMPLETED!
       declare
-         Msg : Fm_Done;
+         Msg : Job_Done;
       begin
          Pace.Log.Put_Line ("Job surrogate within mxr is waiting for delivery job to complete");
          Inout (Msg);
-         Pace.Log.Put_Line ("Job surrogate within mxr is done waiting for fm to complete");
+         Pace.Log.Put_Line ("Job surrogate within mxr is done waiting for job to complete");
       end;
 
    end Input;
 
    procedure Inout (Obj : in out Call_For_Delivery) is
       Job_Id : Bstr.Bounded_String := +Pace.Server.Keys.Value ("set", U2s (Obj.Set));
-      Job : Ifc.Fm_Data.Delivery_Job_Data;
+      Job : Ifc.Job_Data.Delivery_Job_Data;
       Found_It : Boolean;
    begin
 
-      Ifc.Fm_Data.Get_Delivery_Job (Job_Id, Found_It, Job);
+      Ifc.Job_Data.Get_Delivery_Job (Job_Id, Found_It, Job);
       if not Found_It then
          Pace.Log.Put_Line ("Delivery Job " & (+Job_Id) & " could not be found!");
       else
@@ -215,10 +215,10 @@ package body Mxr.Delivery_Order is
             J : Pace.Jobs.Job;
             A : Execute_Delivery_Job;
          begin
-            J.Unique_Id := +("fm_" & (+Job_Id) & Pace.Jobs.Get_Next_Id_Counter);
+            J.Unique_Id := +("job_" & (+Job_Id) & Pace.Jobs.Get_Next_Id_Counter);
             J.Start_Time := Job.Start_Time;
             -- approximation
-            J.Expected_Duration := 10.0 + Duration (8.5 * Float (Ifc.Fm_Data.Item_Vector.Length (Job.Items)));
+            J.Expected_Duration := 10.0 + Duration (8.5 * Float (Ifc.Job_Data.Item_Vector.Length (Job.Items)));
             A.Job_Id := Job_Id;
             J.Action := Pace.To_Channel_Msg (A);
             Pace.Surrogates.Input (J);

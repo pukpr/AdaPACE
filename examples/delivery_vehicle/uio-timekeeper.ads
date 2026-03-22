@@ -17,5 +17,4 @@ package Uio.Timekeeper is
    type Reset_Time is new Pace.Msg with null record;
    procedure Input (Obj : in Reset_Time);
 
-   -- $Id: uio-timekeeper.ads,v 1.8 2004/09/20 22:18:15 pukitepa Exp $ --
 end Uio.Timekeeper;

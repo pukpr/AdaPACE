@@ -14,7 +14,7 @@ generic
    type Move_Plan_Data is
       record
          Id : Bstr.Bounded_String;
-         Plan : Bstr.Bounded_String := S2b ("fire");
+         Plan : Bstr.Bounded_String := S2b ("test");
          -- if start time is zero than start ASAP
          Start_Time : Duration;
          -- defines the width of the corridor that it is okay for the vehicle
