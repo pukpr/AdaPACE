@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+<!--
+  tugbot.sdf -- Gazebo Sim (Gz) world definition for the AdaPACE tugbot simulation.
+
+  Link / joint names match the Tugbot Ada enumeration types exactly so that the
+  TableControlPlugin (shared-memory bridge) can look up each entity by name.
+
+  Note: "warnign_light" / "warnign_light_joint" preserves the typo present in
+  the original tugbot Gazebo model to ensure compatibility.
+
+  Joint types:
+    fixed    -- imu, cameras, scanners (physics-inherited from base_link)
+    revolute -- warning light beacon, gripper arm, gripper hand, drive wheels
+    ball     -- front and back caster wheels (passive, physics-driven)
+-->
+<sdf version="1.7">
+  <world name="tugbot_world">
+
+    <!-- ============================================================
+         World plugins
+    ============================================================ -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics" />
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster" />
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands" />
+
+    <!-- ============================================================
+         Physics, scene, lighting
+    ============================================================ -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <gravity>0 0 -9.81</gravity>
+
+    <scene>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.7 0.8 0.9 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+    </light>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>50 50</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>50 50</size></plane></geometry>
+          <material>
+            <ambient>0.4 0.4 0.4 1</ambient>
+            <diffuse>0.6 0.6 0.6 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ============================================================
+         tugbot model
+         Chassis dimensions:  0.60 m (L) × 0.45 m (W) × 0.25 m (H)
+         Drive wheels (left/right, revolute): radius 0.10 m
+         Caster wheels (front/back, ball):    radius 0.06 m
+         Initial chassis height: wheel_radius + 0.005 clearance = 0.105 m
+    ============================================================ -->
+    <model name="tugbot">
+
+      <!-- ── base_link: main chassis ── -->
+      <link name="base_link">
+        <pose>0 0 0.105 0 0 0</pose>
+        <inertial>
+          <mass>20.0</mass>
+          <pose>0 0 0.125 0 0 0</pose>
+          <inertia>
+            <ixx>0.4167</ixx> <iyy>0.5417</iyy> <izz>0.5208</izz>
+            <ixy>0</ixy> <ixz>0</ixz> <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="base_collision">
+          <pose>0 0 0.125 0 0 0</pose>
+          <geometry>
+            <box><size>0.60 0.45 0.25</size></box>
+          </geometry>
+        </collision>
+        <visual name="base_visual">
+          <pose>0 0 0.125 0 0 0</pose>
+          <geometry>
+            <box><size>0.60 0.45 0.25</size></box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.2 0.8 1</ambient>
+            <diffuse>0.3 0.3 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- ── imu_link: inertial measurement unit (fixed to chassis top-centre) ── -->
+      <link name="imu_link">
+        <pose>0 0 0.365 0 0 0</pose>
+        <inertial>
+          <mass>0.05</mass>
+          <inertia><ixx>1e-5</ixx><iyy>1e-5</iyy><izz>1e-5</izz></inertia>
+        </inertial>
+        <visual name="imu_visual">
+          <geometry><box><size>0.04 0.04 0.02</size></box></geometry>
+          <material><ambient>0.8 0.8 0.0 1</ambient><diffuse>1 1 0 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="imu_link_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>imu_link</child>
+      </joint>
+
+      <!-- ── warnign_light: spinning amber beacon on chassis roof ── -->
+      <!-- Note: "warnign" matches the typo in the original tugbot model    -->
+      <link name="warnign_light">
+        <pose>0 0 0.395 0 0 0</pose>
+        <inertial>
+          <mass>0.15</mass>
+          <inertia><ixx>5e-5</ixx><iyy>5e-5</iyy><izz>8e-5</izz></inertia>
+        </inertial>
+        <visual name="light_visual">
+          <geometry><cylinder><radius>0.04</radius><length>0.08</length></cylinder></geometry>
+          <material><ambient>1 0.6 0 1</ambient><diffuse>1 0.7 0 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="warnign_light_joint" type="revolute">
+        <parent>base_link</parent>
+        <child>warnign_light</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit><lower>-1e+16</lower><upper>1e+16</upper><effort>5</effort><velocity>20</velocity></limit>
+          <dynamics><damping>0.01</damping></dynamics>
+        </axis>
+      </joint>
+
+      <!-- ── camera_front: forward-facing RGB camera ── -->
+      <link name="camera_front">
+        <pose>0.32 0 0.22 0 0 0</pose>
+        <inertial>
+          <mass>0.08</mass>
+          <inertia><ixx>1e-5</ixx><iyy>1e-5</iyy><izz>1e-5</izz></inertia>
+        </inertial>
+        <visual name="cam_front_visual">
+          <geometry><box><size>0.05 0.08 0.05</size></box></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+        <sensor name="camera_front_sensor" type="camera">
+          <camera><horizontal_fov>1.3962634</horizontal_fov><image><width>640</width><height>480</height></image></camera>
+          <always_on>true</always_on><update_rate>30</update_rate>
+        </sensor>
+      </link>
+      <joint name="camera_front_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>camera_front</child>
+      </joint>
+
+      <!-- ── camera_back: rear-facing RGB camera ── -->
+      <link name="camera_back">
+        <pose>-0.32 0 0.22 0 0 3.14159</pose>
+        <inertial>
+          <mass>0.08</mass>
+          <inertia><ixx>1e-5</ixx><iyy>1e-5</iyy><izz>1e-5</izz></inertia>
+        </inertial>
+        <visual name="cam_back_visual">
+          <geometry><box><size>0.05 0.08 0.05</size></box></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+        <sensor name="camera_back_sensor" type="camera">
+          <camera><horizontal_fov>1.3962634</horizontal_fov><image><width>640</width><height>480</height></image></camera>
+          <always_on>true</always_on><update_rate>30</update_rate>
+        </sensor>
+      </link>
+      <joint name="camera_back_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>camera_back</child>
+      </joint>
+
+      <!-- ── scan_front: front 2-D lidar ── -->
+      <link name="scan_front">
+        <pose>0.28 0 0.18 0 0 0</pose>
+        <inertial>
+          <mass>0.12</mass>
+          <inertia><ixx>2e-5</ixx><iyy>2e-5</iyy><izz>2e-5</izz></inertia>
+        </inertial>
+        <visual name="scan_front_visual">
+          <geometry><cylinder><radius>0.045</radius><length>0.06</length></cylinder></geometry>
+          <material><ambient>0.0 0.6 0.0 1</ambient><diffuse>0.0 0.8 0.0 1</diffuse></material>
+        </visual>
+        <sensor name="scan_front_sensor" type="gpu_lidar">
+          <ray><scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal></scan><range><min>0.1</min><max>30.0</max></range></ray>
+          <always_on>true</always_on><update_rate>10</update_rate>
+        </sensor>
+      </link>
+      <joint name="scan_front_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>scan_front</child>
+      </joint>
+
+      <!-- ── scan_back: rear 2-D lidar ── -->
+      <link name="scan_back">
+        <pose>-0.28 0 0.18 0 0 0</pose>
+        <inertial>
+          <mass>0.12</mass>
+          <inertia><ixx>2e-5</ixx><iyy>2e-5</iyy><izz>2e-5</izz></inertia>
+        </inertial>
+        <visual name="scan_back_visual">
+          <geometry><cylinder><radius>0.045</radius><length>0.06</length></cylinder></geometry>
+          <material><ambient>0.0 0.6 0.0 1</ambient><diffuse>0.0 0.8 0.0 1</diffuse></material>
+        </visual>
+        <sensor name="scan_back_sensor" type="gpu_lidar">
+          <ray><scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal></scan><range><min>0.1</min><max>30.0</max></range></ray>
+          <always_on>true</always_on><update_rate>10</update_rate>
+        </sensor>
+      </link>
+      <joint name="scan_back_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>scan_back</child>
+      </joint>
+
+      <!-- ── scan_omni: omnidirectional 3-D lidar on chassis roof ── -->
+      <link name="scan_omni">
+        <pose>0 0 0.37 0 0 0</pose>
+        <inertial>
+          <mass>0.20</mass>
+          <inertia><ixx>3e-5</ixx><iyy>3e-5</iyy><izz>3e-5</izz></inertia>
+        </inertial>
+        <visual name="scan_omni_visual">
+          <geometry><cylinder><radius>0.055</radius><length>0.07</length></cylinder></geometry>
+          <material><ambient>0.0 0.4 0.6 1</ambient><diffuse>0.0 0.5 0.8 1</diffuse></material>
+        </visual>
+        <sensor name="scan_omni_sensor" type="gpu_lidar">
+          <ray>
+            <scan>
+              <horizontal><samples>360</samples><resolution>1</resolution><min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal>
+              <vertical><samples>16</samples><resolution>1</resolution><min_angle>-0.2618</min_angle><max_angle>0.2618</max_angle></vertical>
+            </scan>
+            <range><min>0.1</min><max>100.0</max></range>
+          </ray>
+          <always_on>true</always_on><update_rate>10</update_rate>
+        </sensor>
+      </link>
+      <joint name="scan_omni_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>scan_omni</child>
+      </joint>
+
+      <!-- ── gripper: revolute arm link (base of end-effector) ── -->
+      <link name="gripper">
+        <pose>0.34 0 0.27 0 0 0</pose>
+        <inertial>
+          <mass>0.30</mass>
+          <inertia><ixx>5e-4</ixx><iyy>5e-4</iyy><izz>1e-4</izz></inertia>
+        </inertial>
+        <collision name="gripper_collision">
+          <geometry><box><size>0.06 0.04 0.12</size></box></geometry>
+        </collision>
+        <visual name="gripper_visual">
+          <geometry><box><size>0.06 0.04 0.12</size></box></geometry>
+          <material><ambient>0.6 0.2 0.0 1</ambient><diffuse>0.8 0.3 0.0 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="gripper_joint" type="revolute">
+        <parent>base_link</parent>
+        <child>gripper</child>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit><lower>-0.1</lower><upper>1.57</upper><effort>20</effort><velocity>2</velocity></limit>
+          <dynamics><damping>0.05</damping></dynamics>
+        </axis>
+      </joint>
+
+      <!-- ── gripper_hand: revolute finger link (tip of end-effector) ── -->
+      <link name="gripper_hand">
+        <pose>0.34 0 0.15 0 0 0</pose>
+        <inertial>
+          <mass>0.10</mass>
+          <inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>3e-5</izz></inertia>
+        </inertial>
+        <collision name="hand_collision">
+          <geometry><box><size>0.05 0.06 0.08</size></box></geometry>
+        </collision>
+        <visual name="hand_visual">
+          <geometry><box><size>0.05 0.06 0.08</size></box></geometry>
+          <material><ambient>0.5 0.15 0.0 1</ambient><diffuse>0.7 0.2 0.0 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="gripper_hand_joint" type="revolute">
+        <parent>gripper</parent>
+        <child>gripper_hand</child>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit><lower>-0.1</lower><upper>1.0</upper><effort>10</effort><velocity>2</velocity></limit>
+          <dynamics><damping>0.03</damping></dynamics>
+        </axis>
+      </joint>
+
+      <!-- ── wheel_front: front caster (ball joint, passive) ── -->
+      <link name="wheel_front">
+        <pose>0.25 0 0.06 0 0 0</pose>
+        <inertial>
+          <mass>0.30</mass>
+          <inertia><ixx>7e-4</ixx><iyy>7e-4</iyy><izz>7e-4</izz></inertia>
+        </inertial>
+        <collision name="wf_collision">
+          <geometry><sphere><radius>0.06</radius></sphere></geometry>
+          <surface><friction><ode><mu>0.8</mu><mu2>0.8</mu2></ode></friction></surface>
+        </collision>
+        <visual name="wf_visual">
+          <geometry><sphere><radius>0.06</radius></sphere></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="wheel_front_joint" type="ball">
+        <parent>base_link</parent>
+        <child>wheel_front</child>
+      </joint>
+
+      <!-- ── wheel_back: rear caster (ball joint, passive) ── -->
+      <link name="wheel_back">
+        <pose>-0.25 0 0.06 0 0 0</pose>
+        <inertial>
+          <mass>0.30</mass>
+          <inertia><ixx>7e-4</ixx><iyy>7e-4</iyy><izz>7e-4</izz></inertia>
+        </inertial>
+        <collision name="wb_collision">
+          <geometry><sphere><radius>0.06</radius></sphere></geometry>
+          <surface><friction><ode><mu>0.8</mu><mu2>0.8</mu2></ode></friction></surface>
+        </collision>
+        <visual name="wb_visual">
+          <geometry><sphere><radius>0.06</radius></sphere></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="wheel_back_joint" type="ball">
+        <parent>base_link</parent>
+        <child>wheel_back</child>
+      </joint>
+
+      <!-- ── wheel_left: left drive wheel (revolute, velocity-controlled) ── -->
+      <link name="wheel_left">
+        <pose>0 0.225 0.10 1.5708 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.005</ixx><iyy>0.005</iyy><izz>0.0025</izz></inertia>
+        </inertial>
+        <collision name="wl_collision">
+          <geometry><cylinder><radius>0.10</radius><length>0.05</length></cylinder></geometry>
+          <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="wl_visual">
+          <geometry><cylinder><radius>0.10</radius><length>0.05</length></cylinder></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="wheel_left_joint" type="revolute">
+        <parent>base_link</parent>
+        <child>wheel_left</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit><lower>-1e+16</lower><upper>1e+16</upper><effort>50</effort><velocity>20</velocity></limit>
+          <dynamics><damping>0.02</damping></dynamics>
+        </axis>
+      </joint>
+
+      <!-- ── wheel_right: right drive wheel (revolute, velocity-controlled) ── -->
+      <link name="wheel_right">
+        <pose>0 -0.225 0.10 1.5708 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.005</ixx><iyy>0.005</iyy><izz>0.0025</izz></inertia>
+        </inertial>
+        <collision name="wr_collision">
+          <geometry><cylinder><radius>0.10</radius><length>0.05</length></cylinder></geometry>
+          <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="wr_visual">
+          <geometry><cylinder><radius>0.10</radius><length>0.05</length></cylinder></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="wheel_right_joint" type="revolute">
+        <parent>base_link</parent>
+        <child>wheel_right</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit><lower>-1e+16</lower><upper>1e+16</upper><effort>50</effort><velocity>20</velocity></limit>
+          <dynamics><damping>0.02</damping></dynamics>
+        </axis>
+      </joint>
+
+      <!-- ============================================================
+           TableControlPlugin: shared-memory bridge to Ada/PACE
+           SHM_KEY 123456 must match Hal.Gazebo_Commands Key parameter.
+      ============================================================ -->
+      <plugin filename="libTablePlugin.so" name="custom_sim::TableControlPlugin" />
+
+    </model>
+
+  </world>
+</sdf>

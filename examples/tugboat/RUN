@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# RUN -- launch the Tugbot simulation via the P4 distributed launcher
+#
+# P4 reads session.pro which starts two processes:
+#   Proc 1: Ada tugbot_main  (WMI web server + simulation tasks)
+#   Proc 2: gz sim -r tugbot.sdf  (Gazebo 3D visualiser)
+#
+# The web server port = PACE_PORT_WEB (default 5600) + PACE_NODE (default 1)
+# So the default is http://localhost:5601/
+#
+# WMI web commands (see README.md for full API):
+#
+#   Navigate:
+#     curl "http://localhost:5601/TUGBOT.NAVIGATE?set=MOVING_FORWARD"
+#     curl "http://localhost:5601/TUGBOT.NAVIGATE?set=STOPPED"
+#
+#   Drive (direction + speed in one call):
+#     curl "http://localhost:5601/TUGBOT.DRIVE?direction=MOVING_FORWARD&speed=0.8"
+#     curl "http://localhost:5601/TUGBOT.DRIVE?direction=TURNING_LEFT&speed=0.5"
+#
+#   Set speed separately:
+#     curl "http://localhost:5601/TUGBOT.SET_SPEED?set=0.8"
+#
+#   Gripper:
+#     curl "http://localhost:5601/TUGBOT.GRIPPER?set=CLOSED"
+#     curl "http://localhost:5601/TUGBOT.GRIPPER?set=OPEN"
+#
+#   Warning beacon:
+#     curl "http://localhost:5601/TUGBOT.LIGHT?set=TRUE"
+#     curl "http://localhost:5601/TUGBOT.LIGHT?set=FALSE"
+#
+#   Status (XML):
+#     curl "http://localhost:5601/TUGBOT.GET_STATUS"
+#
+#   Live heading stream (server push):
+#     curl "http://localhost:5601/TUGBOT.HEADING_MONITOR"
+
+env P4PATH="../../launch.pro" ../../drivers/p4
