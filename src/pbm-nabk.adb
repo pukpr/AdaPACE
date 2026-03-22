@@ -65,7 +65,7 @@ package body PBM.NABK is
                                                   T("target_altitude", Tgt.Alt)) 
                                                 );
          begin
-            Pace.Log.Put_Line ("GETTING FIRING SOLUTION");
+            Pace.Log.Put_Line ("GETTING BALLISTIC SOLUTION");
             Pace.Log.Put_Line (FM_Cmd);
             declare
                S : constant String :=  Pace.Tcp.Http.Get

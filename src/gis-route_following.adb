@@ -183,9 +183,9 @@ package body Gis.Route_Following is
       -- this comment isn't very COMMON like... but not sure what to do with it
       -- or the code it talks about
       -- the second clause of this if statement is needed so that the route continues
-      -- to follow throughout a fire mission until the crew clears it.. eventually this
-      -- may need to be made more robust (currently will break if have multiple targets
-      -- in a fire mission, or emplacing for a different reason other than a fire mission!)
+      -- to follow throughout an operation until the crew clears it.. eventually this
+      -- may need to be made more robust (currently will break if have multiple waypoints
+      -- in an operation, or emplacing for a different reason other than an operation!)
       if Reached_Control_Point and Route (Cp).Heading_Restriction = 0.0 then
          if Current_Point = Points then
             Continue_Following := False;

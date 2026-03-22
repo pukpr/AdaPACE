@@ -20,7 +20,7 @@ package body Demonstrator is
                            Arm2_Assembly => To_Bounded_String ("axis_arm2"),
                            Liftbox_Assembly => To_Bounded_String ("Liftbox"),
                            Rear_Pos_Standoff => (0.0, -1.3977, 0.08),
-                           Breech_Z_Stopping_Point => 1.0035);
+                           Endpoint_Z_Stopping_Point => 1.0035);
 
    procedure Input (Obj : Raise_Loader) is
    begin

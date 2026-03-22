@@ -14,7 +14,7 @@ package body Hal.Morph_Loader is
    -- there are three different locations that a wheel can be at
    -- Straight_Vert : the initial 90 degree straight portion
    -- Curved : on the curved portion
-   -- Straight_Elev : the straight portion at same angle as the gun
+   -- Straight_Elev : the straight portion at same angle as the elevation arm
    type Where_At is (Straight_Vert, Curved, Straight_Elev);
 
 
@@ -30,8 +30,8 @@ package body Hal.Morph_Loader is
    --    Arm2_Assembly : Bounded_String;
    --    Liftbox_Assembly : Bounded_String;
    --    Rear_Pos_Standoff : Hal.Position;
-   --    Breech_Constant_N : Float;
-   --    Breech_Constant_M : Float;
+   --    Endpoint_Constant_N : Float;
+   --    Endpoint_Constant_M : Float;
 
 
    --------------------------- constants ------------------------------
@@ -60,7 +60,7 @@ package body Hal.Morph_Loader is
 
 
    -------------------------- variables --------------------------------
-   Theta : Float; -- elevation of gun in radians
+   Theta : Float; -- elevation angle in radians
    -- the lower tangent point
    Tangent_Point_One : Position;
    -- the upper tangent point
@@ -73,12 +73,12 @@ package body Hal.Morph_Loader is
    -- at Tangent_Point_Two
    Tangent_Point_Two_Rear : Position;
 
-   -- the stopping point.. or where the breech is at
-   Breech_Point : Position;
+   -- the stopping point.. or where the endpoint is at
+   Endpoint_Point : Position;
 
    -- it is the x-axis that rotates and it starts in the vertical lowered
-   -- position at 0 degrees... which means when the gun is at a
-   -- 0 degree elevation, the loader has an orientation of 90 degrees
+   -- position at 0 degrees... which means when the elevation is at a
+   -- 0 degree angle, the loader has an orientation of 90 degrees
    Current_Orn : Hal.Orientation := (0.0, 0.0, 0.0);
    Rear_Pos : Hal.Position := Rear_Pos_Standoff;
    Front_Pos : Hal.Position := Front_Pos_Standoff;
@@ -115,16 +115,16 @@ package body Hal.Morph_Loader is
    end Calculate_Orientation;
 
 
-   procedure Set_Breech_Point is
+   procedure Set_Endpoint_Point is
    begin
-      Breech_Point.X := 0.0;
-      Breech_Point.Y := -Dist_Trunnion_To_Str_Elev_Line * Cos (Theta) +
-                          Breech_Z_Stopping_Point * Sin (Theta);
-      Breech_Point.Z := Dist_Trunnion_To_Str_Elev_Line * Sin (Theta) +
-                          Breech_Z_Stopping_Point * Cos (Theta);
-      Pace.Log.Put_Line ("breech point:", 8);
-      Print_Pos (Breech_Point); -- removed pragma debug
-   end Set_Breech_Point;
+      Endpoint_Point.X := 0.0;
+      Endpoint_Point.Y := -Dist_Trunnion_To_Str_Elev_Line * Cos (Theta) +
+                          Endpoint_Z_Stopping_Point * Sin (Theta);
+      Endpoint_Point.Z := Dist_Trunnion_To_Str_Elev_Line * Sin (Theta) +
+                          Endpoint_Z_Stopping_Point * Cos (Theta);
+      Pace.Log.Put_Line ("endpoint:", 8);
+      Print_Pos (Endpoint_Point); -- removed pragma debug
+   end Set_Endpoint_Point;
 
    procedure Set_Tangent_Points is
       -- these constants are derived from the model
@@ -156,14 +156,14 @@ package body Hal.Morph_Loader is
 
 
    -- return true if time to stop raising else false
-   function At_The_Breech return Boolean is
+   function At_The_Endpoint return Boolean is
    begin
-      if Front_Pos.Y >= Breech_Point.Y and Front_Pos.Z >= Breech_Point.Z then
+      if Front_Pos.Y >= Endpoint_Point.Y and Front_Pos.Z >= Endpoint_Point.Z then
          return True;
       else
          return False;
       end if;
-   end At_The_Breech;
+   end At_The_Endpoint;
 
    -- return true if time to stop lowering, else false
    function At_The_Bottom return Boolean is
@@ -471,7 +471,7 @@ package body Hal.Morph_Loader is
    begin
       Pace.Log.Put_Line ("raising loader to " & Float'Image (Elevation));
       Theta := Boundary_Condition (Hal.Rads (Elevation));
-      Set_Breech_Point;
+      Set_Endpoint_Point;
       Set_Tangent_Points;
 
       loop
@@ -499,7 +499,7 @@ package body Hal.Morph_Loader is
          Hal.Sms.Set (Name => To_String (Arm2_Assembly),
                       Rot => (Hal.Rads (Arm2_Alpha), 0.0, 0.0));
 
-         exit when At_The_Breech;
+         exit when At_The_Endpoint;
          Current_Time := Current_Time + Duration (Delta_T);
          Pace.Log.Wait_Until (Current_Time);
       end loop;
