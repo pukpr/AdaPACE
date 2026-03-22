@@ -1,34 +1,86 @@
 # Tugbot Simulation
 
 Ada/PACE simulation for the **tugbot** warehouse logistics robot, integrated
-with the Gazebo 3D 6-DOF physics model and equipped with a PACE web server for
-remote manipulation.
+with the Gazebo 3D 6-DOF physics model and equipped with a WMI (Woman-Machine
+Interface) web server for remote manipulation.
 
 ## Architecture
 
 The simulation follows the patterns established by:
-- **HumanRobot** – two `Hal.Gazebo_Commands` instantiations; multiple focused
+- **HumanRobot** — two `Hal.Gazebo_Commands` instantiations; multiple focused
   Ada tasks per subsystem
-- **joint_position_controller (Panda)** – clean single-file project, `jpc.sdf`
-  style SDF with `libTablePlugin.so` shared-memory bridge
-- **SUV** – PACE web server via `UIO.Server.Create`; web dispatch actions
+- **joint_position_controller (Panda)** — `libTablePlugin.so` SDF shared-memory bridge
+- **delivery_vehicle (`uio-dbw.adb`)** — web dispatch action types, `use Pace.Server.Dispatch`,
+  `Drive_State'Value(+Obj.Set)`, `Pace.Server.Keys.Value`, `Pace.Server.Xml.Item`
+- **`demo_drone.adb`** — `Wmi.Create` + `Wmi.Call` pattern
 
 ```
 tugboat/
 ├── tugbot.ads          -- Package spec: Joints & Links enums, Gz instances,
-│                          PACE message types (Navigate, Set_Gripper, …)
-├── tugbot.adb          -- Package body: 4 Ada tasks + web dispatch actions
+│                          WMI Action types (Navigate, Set_Speed, Drive,
+│                          Gripper, Light, Get_Status, Heading_Monitor)
+├── tugbot.adb          -- Package body: 4 Ada tasks + WMI dispatch bodies
 │      Drive_Task       --   differential-drive kinematics + odometry
 │      Sensor_Task      --   sensor link pose propagation
 │      Light_Task       --   warning beacon rotation (revolute joint)
 │      Gripper_Task     --   gripper/hand servo (revolute joints)
-├── tugbot_main.adb     -- Main: UIO.Server + Tugbot.Start + Ses.Pp.Parser
+├── tugbot_main.adb     -- Main: Wmi.Create + Tugbot.Start + Wmi.Call
 ├── tugboat.gpr         -- GNAT project file
 ├── tugbot.sdf          -- Gazebo world: ground plane + tugbot model
 ├── session.pro         -- P4 launcher session (Ada proc + gz sim proc)
 ├── BUILD               -- Build script (gprbuild + ipcrm)
 └── RUN                 -- Run script  (env P4PATH … drivers/p4)
 ```
+
+## WMI — Woman-Machine Interface
+
+`Wmi` (`wmi.ads`) is a rename of `Uio.Server`:
+
+```ada
+package Wmi renames Uio.Server;
+```
+
+It provides three roles:
+
+| Call | Description |
+|---|---|
+| `Wmi.Create` | Start HTTP web server + P4 parser task in one call |
+| `Wmi.Call(Query, Params)` | Programmatic dispatch (bypasses HTTP, direct `Dispatch_To_Action`) |
+| `Wmi.P("key", value)` | Build a CGI parameter string |
+| `Wmi."+"(l, r)` | Concatenate parameters: `Wmi.P("a","1") + Wmi.P("b","2")` |
+| `Wmi.Url(Query, Params)` | Make an HTTP GET to localhost |
+
+### Wmi.Create vs UIO.Server.Create
+
+`Wmi.Create` (= `Uio.Server.Create` with `P4_On => True`) internally spawns
+a `Parser_Task` that runs `Ses.Pp.Parser`. There is **no need** to call
+`Ses.Pp.Parser` separately — doing so would start a second parser task.
+
+### Wmi.Call pattern (from demo_drone.adb / eng-test.adb)
+
+```ada
+--  Trigger an action programmatically (bypasses HTTP):
+Wmi.Call (Query  => "tugbot.navigate",
+          Params => Wmi.P ("set", "MOVING_FORWARD"));
+
+--  Multiple params (like joystick Drive action):
+Wmi.Call (Query  => "tugbot.drive",
+          Params => Wmi.P ("direction", "MOVING_FORWARD") +
+                    Wmi.P ("speed", 0.8));
+```
+
+## Web Dispatch Action Patterns
+
+All web action types derive from `Pace.Server.Dispatch.Action` following
+`uio-dbw.ads`. The bodies follow `uio-dbw.adb` conventions:
+
+| Pattern | Delivery_vehicle equivalent | Tugbot action |
+|---|---|---|
+| `Drive_State'Value(+Obj.Set)` | `Gear?set=FORWARD` | `NAVIGATE?set=MOVING_FORWARD` |
+| `Float'Value(+Obj.Set)` | `Accelerate?set=1.0` | `SET_SPEED?set=0.8` |
+| `Pace.Server.Keys.Value("k",d)` | `Joystick?x=0.5&y=0.8` | `DRIVE?direction=…&speed=…` |
+| `Put_Content("")` + `Item(…)` | `Get_All_Gauges` | `GET_STATUS` |
+| `Push_Content` + loop | `Compass` | `HEADING_MONITOR` |
 
 ## Tugbot Articulated Parts
 
@@ -54,26 +106,8 @@ tugboat/
 | `wheel_right` | revolute | `Links.wheel_right` | `Set_Rot` (ω) |
 | `wheel_right_joint` | revolute | `Joints.wheel_right_joint` | `Set_Pose` (ω) |
 
-> **Note:** `warnign_light` preserves the typo present in the original tugbot
-> Gazebo model. The TableControlPlugin finds entities by name string, so this
-> must match exactly.
-
-## Gazebo Interface
-
-Both Ada packages share SHM key **123456** (matching `SHM_KEY` in
-`shared_structs.h`). The `TableControlPlugin` dispatches commands by entity
-**name** (not by array index), so two simultaneous `Hal.Gazebo_Commands`
-instantiations are safe:
-
-```ada
-package Gz_Joints is new Hal.Gazebo_Commands (Key => 123456, Entities => Joints);
-package Gz_Links  is new Hal.Gazebo_Commands (Key => 123456, Entities => Links);
-```
-
-Command routing inside the plugin:
-- **Command 0 (`Set_Pose`)** → `JointPosition` if a joint, else `Pose` for links
-- **Command 1 (`Set_Rot`)** → `SetAngularVelocity` on the link
-- **Command 2 (`Set_Torque`)** → `JointForceCmd` or `AddWorldWrench`
+> **Note:** `warnign_light` / `warnign_light_joint` preserves the typo in the
+> original tugbot model. `TableControlPlugin` matches by name string exactly.
 
 ## Build
 
@@ -82,53 +116,87 @@ cd examples/tugboat
 bash BUILD
 ```
 
-Requires GNAT, `gprbuild`, and the PACE library (`pace.gpr` at `../../`).
-
 ## Run
 
 ```bash
 bash RUN
 ```
 
-Requires Gazebo Sim (`gz sim`), `libTablePlugin.so` built in
-`../../plugins/gazebo/`, and the P4 distributed launcher in `../../drivers/`.
+Requires Gazebo Sim, `libTablePlugin.so` in `../../plugins/gazebo/`, and the
+P4 launcher in `../../drivers/`.
 
-## Remote Manipulation (PACE Web Server)
+## Remote Manipulation API
 
-After launch the web server listens on port **8080** by default
-(set `PACE_PORT` env var to change).
+After launch the web server listens on `PACE_PORT_WEB` (default: 5600 + `PACE_NODE`).
 
-### Navigate
+### Navigate (direction only)
 
 ```bash
-# Forward at 80 % speed
-curl "http://localhost:8080/Tugbot.Navigate_Action?set=<xml><direction>forward</direction><speed>0.8</speed></xml>"
+# Like delivery_vehicle: GEAR?set=FORWARD
+curl "http://localhost:5601/TUGBOT.NAVIGATE?set=MOVING_FORWARD"
+curl "http://localhost:5601/TUGBOT.NAVIGATE?set=TURNING_LEFT"
+curl "http://localhost:5601/TUGBOT.NAVIGATE?set=STOPPED"
+```
 
-# Turn left at 50 %
-curl "http://localhost:8080/Tugbot.Navigate_Action?set=<xml><direction>left</direction><speed>0.5</speed></xml>"
+Values: `STOPPED` | `MOVING_FORWARD` | `MOVING_BACKWARD` | `TURNING_LEFT` | `TURNING_RIGHT`
 
-# Stop
-curl "http://localhost:8080/Tugbot.Navigate_Action?set=<xml><direction>stop</direction></xml>"
+### Set_Speed
+
+```bash
+# Like delivery_vehicle: ACCELERATE?set=1.0
+curl "http://localhost:5601/TUGBOT.SET_SPEED?set=0.8"
+```
+
+### Drive (joystick-style, direction + speed in one call)
+
+```bash
+# Like delivery_vehicle: JOYSTICK?x=0.5&y=0.8
+curl "http://localhost:5601/TUGBOT.DRIVE?direction=MOVING_FORWARD&speed=0.8"
+curl "http://localhost:5601/TUGBOT.DRIVE?direction=TURNING_RIGHT&speed=0.5"
+curl "http://localhost:5601/TUGBOT.DRIVE?direction=STOPPED"
 ```
 
 ### Gripper
 
 ```bash
-curl "http://localhost:8080/Tugbot.Gripper_Action?set=<xml><state>close</state></xml>"
-curl "http://localhost:8080/Tugbot.Gripper_Action?set=<xml><state>open</state></xml>"
+curl "http://localhost:5601/TUGBOT.GRIPPER?set=CLOSED"
+curl "http://localhost:5601/TUGBOT.GRIPPER?set=OPEN"
 ```
 
-### Warning Beacon
+### Warning Light
 
 ```bash
-curl "http://localhost:8080/Tugbot.Light_Action?set=<xml><enabled>true</enabled></xml>"
-curl "http://localhost:8080/Tugbot.Light_Action?set=<xml><enabled>false</enabled></xml>"
+curl "http://localhost:5601/TUGBOT.LIGHT?set=TRUE"
+curl "http://localhost:5601/TUGBOT.LIGHT?set=FALSE"
 ```
 
 ### Status Query
 
 ```bash
-curl "http://localhost:8080/Tugbot.Status_Action"
+# Like delivery_vehicle: GET_ALL_GAUGES (returns XML)
+curl "http://localhost:5601/TUGBOT.GET_STATUS"
 # Returns: <status><drive>STOPPED</drive><gripper>OPEN</gripper>
-#           <light>FALSE</light><x>0.0</x><y>0.0</y><heading>0.0</heading></status>
+#           <light>TRUE</light><x>0.0</x><y>0.0</y><heading>0.0</heading></status>
+```
+
+### Heading Monitor (server push)
+
+```bash
+# Like delivery_vehicle: COMPASS (streaming server-push)
+curl "http://localhost:5601/TUGBOT.HEADING_MONITOR"
+# Streams: <heading>0.0</heading><heading>0.012</heading>...
+```
+
+### Programmatic dispatch via Wmi.Call (from Ada code)
+
+```ada
+--  Following demo_drone.adb / eng-test.adb pattern:
+Wmi.Call (Query  => "tugbot.navigate",
+          Params => Wmi.P ("set", "MOVING_FORWARD"));
+Wmi.Call (Query  => "tugbot.set_speed",
+          Params => Wmi.P ("set", "0.8"));
+Wmi.Call (Query  => "tugbot.drive",
+          Params => Wmi.P ("direction", "MOVING_FORWARD") +
+                    Wmi.P ("speed", 0.8));
+Wmi.Call (Query => "tugbot.get_status");
 ```

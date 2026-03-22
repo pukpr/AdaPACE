@@ -1,10 +1,10 @@
 with Pace.Log;
 with Pace.Server;
 with Pace.Server.Dispatch;
-with Pace.Strings;
+with Pace.Server.Xml;
+with Pace.Strings; use Pace.Strings;
 with Ada.Numerics.Long_Elementary_Functions;
 with Ada.Numerics;
-with Ada.Strings.Fixed;
 
 --
 --  Ada Singleton Object Pattern
@@ -132,19 +132,18 @@ package body Tugbot is
          Y := Y + V * sin (H) * dT;
          State.Set_Pose (X, Y, H);
 
-         --  Command chassis pose via link (Set_Pose → Pose component)
+         --  Command chassis pose via link (Set_Pose -> Pose component)
          Gz_Links.Set_Pose (base_link, X => X, Y => Y, Yaw => H);
 
-         --  Command drive wheel angular velocity via link (Set_Rot → SetAngularVelocity)
-         --  Yaw axis aligns with the wheel's spin axis in the SDF
+         --  Command drive wheel angular velocity via link (Set_Rot -> SetAngularVelocity)
          Gz_Links.Set_Rot (wheel_left,  Yaw => L_Omega);
          Gz_Links.Set_Rot (wheel_right, Yaw => R_Omega);
 
-         --  Command drive wheel joint positions (integrating angle for visual fidelity)
+         --  Command drive wheel joint positions (for visual fidelity)
          Gz_Joints.Set_Pose (wheel_left_joint,  Roll => L_Omega);
          Gz_Joints.Set_Pose (wheel_right_joint, Roll => R_Omega);
 
-         --  Caster wheels (ball joints): propagate chassis heading for visual alignment
+         --  Caster wheels: propagate chassis heading
          Gz_Links.Set_Pose (wheel_front, Yaw => H);
          Gz_Links.Set_Pose (wheel_back,  Yaw => H);
 
@@ -181,8 +180,6 @@ package body Tugbot is
          Y := State.Get_Y;
          H := State.Get_Heading;
 
-         --  All sensor links are fixed to base_link in the SDF; reflect their
-         --  world pose so external tools can read sensor positions from shared memory
          Gz_Links.Set_Pose (camera_front, X => X, Y => Y, Yaw => H);
          Gz_Links.Set_Pose (camera_back,  X => X, Y => Y, Yaw => H + Pi);
          Gz_Links.Set_Pose (scan_front,   X => X, Y => Y, Yaw => H);
@@ -213,7 +210,7 @@ package body Tugbot is
       loop
          if State.Get_Light then
             Angle := Angle + Light_Rate * dT;
-            --  Set_Pose on a revolute joint → JointPosition (Roll = joint angle)
+            --  Set_Pose on a revolute joint -> JointPosition (Roll = joint angle)
             Gz_Joints.Set_Pose (warnign_light_joint, Roll => Angle);
          end if;
          Pace.Log.Wait (dT);
@@ -247,11 +244,11 @@ package body Tugbot is
             when Closed => Tgt_Arm := Gripper_Closed;  Tgt_Hand := Hand_Closed;
          end case;
 
-         --  First-order filter toward target (10 % step per cycle ≈ smooth servo)
+         --  First-order filter toward target (10% step per cycle = smooth servo)
          Cur_Arm  := Cur_Arm  + (Tgt_Arm  - Cur_Arm)  * 0.1;
          Cur_Hand := Cur_Hand + (Tgt_Hand - Cur_Hand) * 0.1;
 
-         --  Set_Pose on revolute joint → JointPosition in Gazebo
+         --  Set_Pose on revolute joint -> JointPosition in Gazebo
          Gz_Joints.Set_Pose (gripper_joint,      Roll => Cur_Arm);
          Gz_Joints.Set_Pose (gripper_hand_joint, Roll => Cur_Hand);
 
@@ -268,178 +265,166 @@ package body Tugbot is
    end Gripper_Task;
 
    --
-   --  Ada Command Pattern bodies
+   --  Internal simulation start message body
    --
-
-   procedure Input (Obj : in Navigate) is
-   begin
-      State.Set_Drive (Obj.Direction);
-      State.Set_Speed (Obj.Speed);
-      Pace.Log.Trace (Obj);
-      Pace.Log.Put_Line ("Navigate => " & Drive_State'Image (Obj.Direction) &
-                         "  speed=" & Long_Float'Image (Obj.Speed));
-   end Input;
-
-   procedure Input (Obj : in Set_Gripper) is
-   begin
-      State.Set_Gripper (Obj.State);
-      Pace.Log.Trace (Obj);
-      Pace.Log.Put_Line ("Gripper  => " & Gripper_State'Image (Obj.State));
-   end Input;
-
-   procedure Input (Obj : in Set_Warning_Light) is
-   begin
-      State.Set_Light (Obj.Enabled);
-      Pace.Log.Trace (Obj);
-      Pace.Log.Put_Line ("Light    => " & Boolean'Image (Obj.Enabled));
-   end Input;
-
-   procedure Output (Obj : out Get_Status) is
-   begin
-      Obj.Drive   := State.Get_Drive;
-      Obj.Gripper := State.Get_Gripper;
-      Obj.Light   := State.Get_Light;
-      Obj.X       := State.Get_X;
-      Obj.Y       := State.Get_Y;
-      Obj.Heading := State.Get_Heading;
-      Pace.Log.Trace (Obj);
-   end Output;
-
    procedure Input (Obj : in Start) is
    begin
-      Pace.Log.Put_Line ("Tugbot Start received -- simulation tasks running.");
+      Pace.Log.Put_Line ("Tugbot Start -- simulation tasks running.");
       Pace.Log.Trace (Obj);
    end Input;
 
    -------------------------------------------------------------------------
-   --  PACE Web Server Dispatch Actions
+   --  WMI (Woman-Machine Interface) web dispatch action bodies
    --
-   --  Remote manipulation URL scheme:
-   --
-   --  Navigate:
-   --    GET http://host:8080/Tugbot.Navigate_Action?set=<xml><direction>forward</direction><speed>0.8</speed></xml>
-   --    direction: forward | backward | left | right | stop
-   --    speed:     0.0 .. 1.0  (normalised; default 1.0)
-   --
-   --  Gripper:
-   --    GET http://host:8080/Tugbot.Gripper_Action?set=<xml><state>close</state></xml>
-   --    state: open | close
-   --
-   --  Warning light:
-   --    GET http://host:8080/Tugbot.Light_Action?set=<xml><enabled>true</enabled></xml>
-   --    enabled: true | false
-   --
-   --  Status query (no parameters required):
-   --    GET http://host:8080/Tugbot.Status_Action
+   --  Following delivery_vehicle / uio-dbw.adb patterns:
+   --    - use Pace.Server.Dispatch  (Action, Save_Action, Xml_Set, Default)
+   --    - use Pace.Server.Xml       (Item, Put_Content) inside each body
+   --    - use Pace.Strings          (+Obj.Set for String<->Unbounded_String)
+   --    - Drive_State'Value(+Obj.Set) for enum from URL set= parameter
+   --    - Pace.Server.Keys.Value("key", default) for multi-param CGI style
    -------------------------------------------------------------------------
 
    use Pace.Server.Dispatch;
-   use Pace.Strings;
-   use Ada.Strings.Fixed;
 
-   --  Shared helper: extract the inner text of the first occurrence of <Tag>...</Tag>
-   function Extract_Tag (Doc : String; Tag : String) return String is
-      Open  : constant String  := "<" & Tag & ">";
-      Close : constant String  := "</" & Tag & ">";
-      S     : constant Natural := Index (Doc, Open);
-      E     : constant Natural := Index (Doc, Close);
+   -------------------------------------------------------------------------
+   --  Navigate: direction command via set= parameter
+   --  e.g. TUGBOT.NAVIGATE?set=MOVING_FORWARD
+   --  Like delivery_vehicle Gear?set=FORWARD using Drive_State'Value
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Navigate) is
+      use Pace.Server.Xml;
+      Dir_Str : constant String := +Obj.Set;
    begin
-      if S > 0 and then E > S then
-         return Doc (S + Open'Length .. E - 1);
-      end if;
-      return "";
-   end Extract_Tag;
+      State.Set_Drive (Drive_State'Value (Dir_Str));
+      Pace.Server.Put_Data (Item ("direction", Dir_Str));
+      Pace.Log.Trace (Obj);
+   exception
+      when Constraint_Error =>
+         Pace.Server.Put_Data
+           (Item ("error", "invalid direction: " & Dir_Str &
+                  " -- use STOPPED|MOVING_FORWARD|MOVING_BACKWARD|TURNING_LEFT|TURNING_RIGHT"));
+   end Inout;
 
-   --
-   --  Navigate_Action
-   --
-   type Navigate_Action is new Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Navigate_Action);
-   procedure Inout (Obj : in out Navigate_Action) is
-      Doc     : constant String := U2s (Obj.Set);
-      Dir_Str : constant String := Extract_Tag (Doc, "direction");
-      Spd_Str : constant String := Extract_Tag (Doc, "speed");
-      Msg     : Navigate;
+   -------------------------------------------------------------------------
+   --  Set_Speed: normalized speed via set= parameter
+   --  e.g. TUGBOT.SET_SPEED?set=0.8
+   --  Like delivery_vehicle Accelerate?set=1.0 using Float'Value
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Set_Speed) is
+      use Pace.Server.Xml;
+      Spd : constant Long_Float := Long_Float (Float'Value (+Obj.Set));
    begin
-      if    Dir_Str = "forward"  then Msg.Direction := Moving_Forward;
-      elsif Dir_Str = "backward" then Msg.Direction := Moving_Backward;
-      elsif Dir_Str = "left"     then Msg.Direction := Turning_Left;
-      elsif Dir_Str = "right"    then Msg.Direction := Turning_Right;
-      else                            Msg.Direction := Stopped;
-      end if;
+      State.Set_Speed (Spd);
+      Pace.Server.Put_Data (Item ("speed", Float (Spd)));
+      Pace.Log.Trace (Obj);
+   exception
+      when Constraint_Error =>
+         Pace.Server.Put_Data
+           (Item ("error", "invalid speed: " & (+Obj.Set) & " -- expected 0.0..1.0"));
+   end Inout;
 
-      Msg.Speed := (if Spd_Str /= "" then Long_Float'Value (Spd_Str) else 1.0);
-      Input (Msg);
-      Pace.Server.Put_Data
-        ("<result><direction>" & Drive_State'Image (Msg.Direction) &
-         "</direction><speed>"  & Long_Float'Image  (Msg.Speed)    &
-         "</speed></result>");
+   -------------------------------------------------------------------------
+   --  Drive: joystick-style multi-param command
+   --  e.g. TUGBOT.DRIVE?direction=MOVING_FORWARD&speed=0.8
+   --  Like delivery_vehicle Joystick?x=0.5&y=0.8 using Pace.Server.Keys.Value
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Drive) is
+      use Pace.Server.Xml;
+      Dir_Str : constant String     := Pace.Server.Keys.Value ("direction", "STOPPED");
+      Spd     : constant Long_Float := Long_Float (Pace.Server.Keys.Value ("speed", 1.0));
+   begin
+      State.Set_Drive (Drive_State'Value (Dir_Str));
+      State.Set_Speed (Spd);
+      Pace.Server.Put_Data (Item ("direction", Dir_Str) &
+                            Item ("speed",     Float (Spd)));
+      Pace.Log.Trace (Obj);
+   exception
+      when Constraint_Error =>
+         Pace.Server.Put_Data (Item ("error", "invalid drive params: " & Dir_Str));
+   end Inout;
+
+   -------------------------------------------------------------------------
+   --  Gripper: open/close end-effector via set= parameter
+   --  e.g. TUGBOT.GRIPPER?set=CLOSED
+   --  Like delivery_vehicle Gear?set=FORWARD using Gripper_State'Value
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Gripper) is
+      use Pace.Server.Xml;
+      Grp_Str : constant String := +Obj.Set;
+   begin
+      State.Set_Gripper (Gripper_State'Value (Grp_Str));
+      Pace.Server.Put_Data (Item ("gripper", Grp_Str));
+      Pace.Log.Trace (Obj);
+   exception
+      when Constraint_Error =>
+         Pace.Server.Put_Data (Item ("error", "invalid gripper: " & Grp_Str &
+                               " -- use OPEN|CLOSED"));
+   end Inout;
+
+   -------------------------------------------------------------------------
+   --  Light: enable/disable warning beacon via set= parameter
+   --  e.g. TUGBOT.LIGHT?set=TRUE
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Light) is
+      use Pace.Server.Xml;
+      Enabled : constant Boolean := +Obj.Set = "TRUE";
+   begin
+      State.Set_Light (Enabled);
+      Pace.Server.Put_Data (Item ("light", Enabled));
       Pace.Log.Trace (Obj);
    end Inout;
 
-   --
-   --  Gripper_Action
-   --
-   type Gripper_Action is new Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Gripper_Action);
-   procedure Inout (Obj : in out Gripper_Action) is
-      Doc : constant String := U2s (Obj.Set);
-      Msg : Set_Gripper;
+   -------------------------------------------------------------------------
+   --  Get_Status: XML snapshot of full robot state
+   --  e.g. TUGBOT.GET_STATUS
+   --  Like delivery_vehicle Get_All_Gauges / Get_Move_Status
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Get_Status) is
+      use Pace.Server.Xml;
    begin
-      Msg.State := (if Extract_Tag (Doc, "state") = "close" then Closed else Open);
-      Input (Msg);
-      Pace.Server.Put_Data
-        ("<result><gripper>" & Gripper_State'Image (Msg.State) &
-         "</gripper></result>");
+      Put_Content ("");   -- sets content-type: application/xml
+      Obj.Set := +(Item ("status",
+                         Item ("drive",   Drive_State'Image   (State.Get_Drive))   &
+                         Item ("gripper", Gripper_State'Image (State.Get_Gripper)) &
+                         Item ("light",   State.Get_Light)                          &
+                         Item ("x",       Float (State.Get_X))                      &
+                         Item ("y",       Float (State.Get_Y))                      &
+                         Item ("heading", Float (State.Get_Heading))));
+      Pace.Server.Put_Data (+Obj.Set);
       Pace.Log.Trace (Obj);
    end Inout;
 
-   --
-   --  Light_Action
-   --
-   type Light_Action is new Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Light_Action);
-   procedure Inout (Obj : in out Light_Action) is
-      Doc : constant String := U2s (Obj.Set);
-      Msg : Set_Warning_Light;
+   -------------------------------------------------------------------------
+   --  Heading_Monitor: server-push live heading stream
+   --  e.g. TUGBOT.HEADING_MONITOR  (keep-alive, streams heading updates)
+   --  Like delivery_vehicle Compass using Pace.Server.Push_Content + loop
+   -------------------------------------------------------------------------
+   procedure Inout (Obj : in out Heading_Monitor) is
+      use Pace.Server.Xml;
    begin
-      Msg.Enabled := (Extract_Tag (Doc, "enabled") = "true");
-      Input (Msg);
-      Pace.Server.Put_Data
-        ("<result><light>" & Boolean'Image (Msg.Enabled) &
-         "</light></result>");
+      Pace.Server.Push_Content;
       Pace.Log.Trace (Obj);
-   end Inout;
-
-   --
-   --  Status_Action
-   --
-   type Status_Action is new Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Status_Action);
-   procedure Inout (Obj : in out Status_Action) is
-      S : Get_Status;
-   begin
-      Output (S);
-      Pace.Server.Put_Data
-        ("<status>" &
-         "<drive>"   & Drive_State'Image   (S.Drive)   & "</drive>"   &
-         "<gripper>" & Gripper_State'Image (S.Gripper) & "</gripper>" &
-         "<light>"   & Boolean'Image       (S.Light)   & "</light>"   &
-         "<x>"       & Long_Float'Image    (S.X)       & "</x>"       &
-         "<y>"       & Long_Float'Image    (S.Y)       & "</y>"       &
-         "<heading>" & Long_Float'Image    (S.Heading) & "</heading>" &
-         "</status>");
-      Pace.Log.Trace (Obj);
+      loop
+         Pace.Server.Put_Data (Item ("heading", Float (State.Get_Heading)),
+                               Raw => True);
+         Pace.Log.Wait (0.5);
+      end loop;
    end Inout;
 
 begin
    --
-   --  Register all web dispatch actions during package elaboration.
-   --  The PACE web server will route incoming HTTP requests to these handlers.
+   --  Register all WMI web dispatch actions during package elaboration.
+   --  Defaults follow delivery_vehicle / uio-dbw.adb Save_Action patterns:
+   --    +"value"  -- command default if no set= parameter supplied
+   --    Xml_Set   -- marks query as returning XML output
+   --    Default   -- no default (multi-param or streaming actions)
    --
-   Save_Action (Navigate_Action'(Pace.Msg with Set => Default));
-   Save_Action (Gripper_Action' (Pace.Msg with Set => Default));
-   Save_Action (Light_Action'   (Pace.Msg with Set => Default));
-   Save_Action (Status_Action'  (Pace.Msg with Set => Default));
+   Save_Action (Navigate'      (Pace.Msg with Set => +"STOPPED"));
+   Save_Action (Set_Speed'     (Pace.Msg with Set => +"1.0"));
+   Save_Action (Drive'         (Pace.Msg with Set => Default));
+   Save_Action (Gripper'       (Pace.Msg with Set => +"OPEN"));
+   Save_Action (Light'         (Pace.Msg with Set => +"FALSE"));
+   Save_Action (Get_Status'    (Pace.Msg with Set => Xml_Set));
+   Save_Action (Heading_Monitor'(Pace.Msg with Set => Default));
 
 end Tugbot;

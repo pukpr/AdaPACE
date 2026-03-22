@@ -1,4 +1,5 @@
 with Pace;
+with Pace.Server.Dispatch;
 with Hal.Gazebo_Commands;
 
 --
@@ -10,6 +11,13 @@ with Hal.Gazebo_Commands;
 --  (pose/velocity-controlled) each have a clean, type-safe enumeration.
 --  The shared-memory plugin finds entities by NAME, so both packages can
 --  safely share the same key without index conflicts.
+--
+--  WMI (Woman-Machine Interface) web dispatch action types follow the
+--  delivery_vehicle / uio-dbw.ads pattern:
+--    - Single-value commands  : set= parameter, e.g. NAVIGATE?set=MOVING_FORWARD
+--    - Multi-value commands   : named CGI params, e.g. DRIVE?direction=MOVING_FORWARD&speed=0.8
+--    - Status queries         : return XML, e.g. GET_STATUS
+--    - Server-push monitoring : live stream, e.g. HEADING_MONITOR
 --
 --  Revolute / ball joints controlled:
 --    warnign_light_joint  (revolute -- spinning beacon)
@@ -85,44 +93,53 @@ package Tugbot is
    type Gripper_State is (Open, Closed);
 
    --
-   --  Ada Command Pattern Operation Specs
+   --  WMI (Woman-Machine Interface) web dispatch action types
+   --  Following the delivery_vehicle / uio-dbw.ads pattern.
+   --  Types placed in the spec so they can also be called programmatically
+   --  via Wmi.Call as well as through the HTTP URL command pattern.
    --
 
-   --  Navigate: set drive direction and normalised speed [0.0 .. 1.0]
-   type Navigate is new Pace.Msg with
-      record
-         Direction : Drive_State := Stopped;
-         Speed     : Long_Float  := 1.0;
-      end record;
-   procedure Input (Obj : in Navigate);
+   --  Navigate: single-value direction command
+   --  URL:  TUGBOT.NAVIGATE?set=MOVING_FORWARD
+   --  Values: STOPPED | MOVING_FORWARD | MOVING_BACKWARD | TURNING_LEFT | TURNING_RIGHT
+   type Navigate is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Navigate);
 
-   --  Set_Gripper: open or close the end-effector
-   type Set_Gripper is new Pace.Msg with
-      record
-         State : Gripper_State := Open;
-      end record;
-   procedure Input (Obj : in Set_Gripper);
+   --  Set_Speed: normalized speed in range [0.0 .. 1.0]
+   --  URL:  TUGBOT.SET_SPEED?set=0.8
+   type Set_Speed is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Set_Speed);
 
-   --  Set_Warning_Light: enable/disable the revolute warning beacon
-   type Set_Warning_Light is new Pace.Msg with
-      record
-         Enabled : Boolean := False;
-      end record;
-   procedure Input (Obj : in Set_Warning_Light);
+   --  Drive: joystick-style combined direction + speed (multi CGI params)
+   --  URL:  TUGBOT.DRIVE?direction=MOVING_FORWARD&speed=0.8
+   type Drive is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Drive);
 
-   --  Get_Status: non-blocking snapshot of current robot state (Output pattern)
-   type Get_Status is new Pace.Msg with
-      record
-         Drive   : Drive_State   := Stopped;
-         Gripper : Gripper_State := Open;
-         Light   : Boolean       := False;
-         X       : Long_Float    := 0.0;
-         Y       : Long_Float    := 0.0;
-         Heading : Long_Float    := 0.0;
-      end record;
-   procedure Output (Obj : out Get_Status);
+   --  Gripper: open or close the end-effector
+   --  URL:  TUGBOT.GRIPPER?set=CLOSED
+   --  Values: OPEN | CLOSED
+   type Gripper is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Gripper);
 
-   --  Start: kick off the simulation agent loop
+   --  Light: enable or disable the spinning warning beacon
+   --  URL:  TUGBOT.LIGHT?set=TRUE
+   --  Values: TRUE | FALSE
+   type Light is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Light);
+
+   --  Get_Status: XML snapshot of full robot state
+   --  URL:  TUGBOT.GET_STATUS
+   type Get_Status is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Get_Status);
+
+   --  Heading_Monitor: server-push live heading stream (like delivery_vehicle Compass)
+   --  URL:  TUGBOT.HEADING_MONITOR
+   type Heading_Monitor is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Heading_Monitor);
+
+   --
+   --  Internal simulation start message (kicks off the four simulation tasks)
+   --
    type Start is new Pace.Msg with null record;
    procedure Input (Obj : in Start);
 
