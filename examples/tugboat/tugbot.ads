@@ -115,11 +115,11 @@ package Tugbot is
    type Drive is new Pace.Server.Dispatch.Action with null record;
    procedure Inout (Obj : in out Drive);
 
-   --  Gripper: open or close the end-effector
+   --  Gripper_Action: open or close the end-effector
    --  URL:  TUGBOT.GRIPPER?set=CLOSED
    --  Values: OPEN | CLOSED
-   type Gripper is new Pace.Server.Dispatch.Action with null record;
-   procedure Inout (Obj : in out Gripper);
+   type Gripper_Action is new Pace.Server.Dispatch.Action with null record;
+   procedure Inout (Obj : in out Gripper_Action);
 
    --  Light: enable or disable the spinning warning beacon
    --  URL:  TUGBOT.LIGHT?set=TRUE

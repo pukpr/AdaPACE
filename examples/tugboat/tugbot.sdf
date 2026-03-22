@@ -8,12 +8,7 @@
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
     <plugin name='ignition::gazebo::systems::Physics' filename='libignition-gazebo-physics-system.so'/>
-    <plugin name='ignition::gazebo::systems::UserCommands' filename='libignition-gazebo-user-commands-system.so'/>
     <plugin name='ignition::gazebo::systems::SceneBroadcaster' filename='libignition-gazebo-scene-broadcaster-system.so'/>
-    <plugin name='ignition::gazebo::systems::Imu' filename='ignition-gazebo-imu-system'/>
-    <plugin name='ignition::gazebo::systems::Sensors' filename='ignition-gazebo-sensors-system'>
-      <render_engine>ogre2</render_engine>
-    </plugin>
     <gui fullscreen='false'>
       <plugin name='3D View' filename='GzScene3D'>
         <ignition-gui>
@@ -1529,54 +1524,6 @@
         </axis>
         <pose>0 0 5.5511199999999995e-17 0 0 0</pose>
       </joint>
-      <plugin name='ignition::gazebo::systems::DiffDrive' filename='ignition-gazebo-diff-drive-system'>
-        <left_joint>wheel_left_joint</left_joint>
-        <right_joint>wheel_right_joint</right_joint>
-        <wheel_separation>0.5605</wheel_separation>
-        <wheel_radius>0.195</wheel_radius>
-        <odom_publish_frequency>20</odom_publish_frequency>
-        <frame_id>odom</frame_id>
-        <child_frame_id>base_link</child_frame_id>
-      </plugin>
-      <plugin name='ignition::gazebo::systems::JointController' filename='ignition-gazebo-joint-controller-system'>
-        <joint_name>gripper_joint</joint_name>
-        <use_force_commands>true</use_force_commands>
-        <p_gain>0.2</p_gain>
-        <i_gain>0.01</i_gain>
-      </plugin>
-      <plugin name='ignition::gazebo::systems::JointController' filename='ignition-gazebo-joint-controller-system'>
-        <joint_name>gripper_hand_joint</joint_name>
-        <use_force_commands>true</use_force_commands>
-        <p_gain>0.2</p_gain>
-        <i_gain>0.01</i_gain>
-      </plugin>
-      <plugin name='ignition::gazebo::systems::PosePublisher' filename='ignition-gazebo-pose-publisher-system'>
-        <publish_link_pose>true</publish_link_pose>
-        <publish_collision_pose>false</publish_collision_pose>
-        <publish_visual_pose>false</publish_visual_pose>
-        <publish_sensor_pose>false</publish_sensor_pose>
-        <publish_nested_model_pose>true</publish_nested_model_pose>
-        <update_frequency>20</update_frequency>
-      </plugin>
-      <plugin name='ignition::gazebo::systems::JointController' filename='ignition-gazebo-joint-controller-system'>
-        <joint_name>warnign_light_joint</joint_name>
-        <initial_velocity>10.0</initial_velocity>
-      </plugin>
-      <plugin name='ignition::gazebo::systems::LinearBatteryPlugin' filename='ignition-gazebo-linearbatteryplugin-system'>
-        <battery_name>linear_battery</battery_name>
-        <voltage>24.592</voltage>
-        <open_circuit_voltage_constant_coef>24.592</open_circuit_voltage_constant_coef>
-        <capacity>1.2009</capacity>
-        <power_load>6.5</power_load>
-        <fix_issue_225>true</fix_issue_225>
-        <enable_recharge>true</enable_recharge>
-        <charging_time>3.0</charging_time>
-        <recharge_by_topic>true</recharge_by_topic>
-      </plugin>
-      <plugin name='ignition::gazebo::systems::JointStatePublisher' filename='ignition-gazebo-joint-state-publisher-system'>
-        <joint_name>gripper_joint</joint_name>
-        <joint_name>gripper_hand_joint</joint_name>
-      </plugin>
       <!-- PACE Plugin MUST be at the end of the <model> section -->
       <plugin filename="libTablePlugin.so" name="custom_sim::TableControlPlugin" />
     </model>
@@ -2608,13 +2555,6 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
-      <plugin name='ignition::gazebo::systems::PosePublisher' filename='ignition-gazebo-pose-publisher-system'>
-        <publish_link_pose>true</publish_link_pose>
-        <publish_collision_pose>false</publish_collision_pose>
-        <publish_visual_pose>false</publish_visual_pose>
-        <publish_nested_model_pose>true</publish_nested_model_pose>
-        <update_frequency>20</update_frequency>
-      </plugin>
       <static>false</static>
     </model>
     <model name='pallet_box_mobile_0'>
@@ -2732,13 +2672,6 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
-      <plugin name='ignition::gazebo::systems::PosePublisher' filename='ignition-gazebo-pose-publisher-system'>
-        <publish_link_pose>true</publish_link_pose>
-        <publish_collision_pose>false</publish_collision_pose>
-        <publish_visual_pose>false</publish_visual_pose>
-        <publish_nested_model_pose>true</publish_nested_model_pose>
-        <update_frequency>20</update_frequency>
-      </plugin>
       <static>false</static>
     </model>
     <model name='pallet_box_mobile_1'>
@@ -2856,13 +2789,6 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
-      <plugin name='ignition::gazebo::systems::PosePublisher' filename='ignition-gazebo-pose-publisher-system'>
-        <publish_link_pose>true</publish_link_pose>
-        <publish_collision_pose>false</publish_collision_pose>
-        <publish_visual_pose>false</publish_visual_pose>
-        <publish_nested_model_pose>true</publish_nested_model_pose>
-        <update_frequency>20</update_frequency>
-      </plugin>
       <static>false</static>
     </model>
     <model name='pallet_box'>
@@ -2980,13 +2906,6 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
-      <plugin name='ignition::gazebo::systems::PosePublisher' filename='ignition-gazebo-pose-publisher-system'>
-        <publish_link_pose>true</publish_link_pose>
-        <publish_collision_pose>false</publish_collision_pose>
-        <publish_visual_pose>false</publish_visual_pose>
-        <publish_nested_model_pose>true</publish_nested_model_pose>
-        <update_frequency>20</update_frequency>
-      </plugin>
       <static>true</static>
     </model>
     <model name='shelf_big_1'>
@@ -3464,13 +3383,6 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
-      <plugin name='ignition::gazebo::systems::PosePublisher' filename='ignition-gazebo-pose-publisher-system'>
-        <publish_link_pose>true</publish_link_pose>
-        <publish_collision_pose>false</publish_collision_pose>
-        <publish_visual_pose>false</publish_visual_pose>
-        <publish_nested_model_pose>true</publish_nested_model_pose>
-        <update_frequency>20</update_frequency>
-      </plugin>
       <static>true</static>
     </model>
     <light name='sun' type='directional'>

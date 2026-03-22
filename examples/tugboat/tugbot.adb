@@ -150,7 +150,7 @@ package body Tugbot is
          --  IMU link tracks chassis heading (fixed joint, orientation update)
          Gz_Links.Set_Pose (imu_link, Yaw => H);
 
-         Pace.Log.Wait (dT);
+         Pace.Log.Wait (duration(dT));
       end loop;
 
    exception
@@ -186,7 +186,7 @@ package body Tugbot is
          Gz_Links.Set_Pose (scan_back,    X => X, Y => Y, Yaw => H + Pi);
          Gz_Links.Set_Pose (scan_omni,    X => X, Y => Y, Yaw => H);
 
-         Pace.Log.Wait (dT * 2.0);   -- sensors update at half the drive rate
+         Pace.Log.Wait (duration(dT * 2.0));   -- sensors update at half the drive rate
       end loop;
 
    exception
@@ -213,7 +213,7 @@ package body Tugbot is
             --  Set_Pose on a revolute joint -> JointPosition (Roll = joint angle)
             Gz_Joints.Set_Pose (warnign_light_joint, Roll => Angle);
          end if;
-         Pace.Log.Wait (dT);
+         Pace.Log.Wait (duration(dT));
       end loop;
 
    exception
@@ -256,7 +256,7 @@ package body Tugbot is
          Gz_Links.Set_Pose (gripper,      Roll => Cur_Arm);
          Gz_Links.Set_Pose (gripper_hand, Roll => Cur_Hand);
 
-         Pace.Log.Wait (dT);
+         Pace.Log.Wait (duration(dT));
       end loop;
 
    exception
@@ -344,11 +344,11 @@ package body Tugbot is
    end Inout;
 
    -------------------------------------------------------------------------
-   --  Gripper: open/close end-effector via set= parameter
+   --  Gripper_Action: open/close end-effector via set= parameter
    --  e.g. TUGBOT.GRIPPER?set=CLOSED
    --  Like delivery_vehicle Gear?set=FORWARD using Gripper_State'Value
    -------------------------------------------------------------------------
-   procedure Inout (Obj : in out Gripper) is
+   procedure Inout (Obj : in out Gripper_Action) is
       use Pace.Server.Xml;
       Grp_Str : constant String := +Obj.Set;
    begin
@@ -422,7 +422,7 @@ begin
    Save_Action (Navigate'      (Pace.Msg with Set => +"STOPPED"));
    Save_Action (Set_Speed'     (Pace.Msg with Set => +"1.0"));
    Save_Action (Drive'         (Pace.Msg with Set => Default));
-   Save_Action (Gripper'       (Pace.Msg with Set => +"OPEN"));
+   Save_Action (Gripper_Action'(Pace.Msg with Set => +"OPEN"));
    Save_Action (Light'         (Pace.Msg with Set => +"FALSE"));
    Save_Action (Get_Status'    (Pace.Msg with Set => Xml_Set));
    Save_Action (Heading_Monitor'(Pace.Msg with Set => Default));
