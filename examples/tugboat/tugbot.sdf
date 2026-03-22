@@ -1577,6 +1577,8 @@
         <joint_name>gripper_joint</joint_name>
         <joint_name>gripper_hand_joint</joint_name>
       </plugin>
+      <!-- PACE Plugin MUST be at the end of the <model> section -->
+      <plugin filename="libTablePlugin.so" name="custom_sim::TableControlPlugin" />
     </model>
     <model name='cart1'>
       <pose>-5.7300000883560376 15 0.10999135565829166 -2.5079154383194818e-12 -8.0323542584223806e-07 3.6732100351411317e-06</pose>
