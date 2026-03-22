@@ -76,7 +76,7 @@ package body Hal.Morph_Track is
       -- 2nd Tangent Points
       Y_Tangent_2 := Y_Center + (Radius * Cos (Theta));
       Z_Tangent_2 := Z_Center - (Radius * Sin (Theta));
-      -- Gun Elevation Path
+      -- Elevation Path
       Y_Diff := (Y_Tangent_2 - Y_Tangent_1);
       Y_Radius := Y_Tangent_1 + Y_Diff;
       Z_Radius := Z_Center + Sqrt ((Radius ** 2) +

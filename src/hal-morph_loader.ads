@@ -17,11 +17,11 @@ generic
    Liftbox_Assembly : Bounded_String;
    -- position of the rear wheels of axis_loader when in the lowered position
    Rear_Pos_Standoff : Hal.Position;
-   -- this is used to determine when the loader reaches the breech and
+   -- this is used to determine when the loader reaches the endpoint and
    -- is the z distance from the trunnion axis to the point where the front
-   -- wheels of the loader should be when the loader is stopped at the breech
-   -- when the gun elevation angle is zero
-   Breech_Z_Stopping_Point : Float;
+   -- wheels of the loader should be when the loader is stopped at the endpoint
+   -- when the elevation angle is zero
+   Endpoint_Z_Stopping_Point : Float;
 package Hal.Morph_Loader is
 
    pragma Elaborate_Body;

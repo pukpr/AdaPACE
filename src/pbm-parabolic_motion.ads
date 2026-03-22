@@ -14,7 +14,7 @@ package Pbm.Parabolic_Motion is
 
    -- Assumes two-dimensional (flat) world
    -- Given Theta, Source location and destination location, return the
-   -- initial velocity that a parabolic curve would need for a projectile to hit
+   -- initial velocity that a parabolic curve would need for an object to hit
    -- the destination
    procedure Calculate_Velocity (Theta : in Float;
                                  Source_X : in Float;
@@ -29,51 +29,51 @@ package Pbm.Parabolic_Motion is
    -- means there was a sqrt of a negative number
    Bad_Elevation_Angle : exception;
 
-   -- This function calculates the time that a projectile has already been airborne
+   -- This function calculates the time that an object in parabolic motion has already been airborne
    -- given the horizontal distance (m) traveled, initial angle (radians),
    -- and initial velocity (m/s).
    function Time_In_Air
      (Distance : in Float; Angle : in Float; Velocity : in Float)
       return Float;
 
-   -- This function returns the total time a projectile will be in the air, considering
-   -- the difference in elevation between the firing vehicle and the target.
+   -- This function returns the total time an object in parabolic motion will be in the air, considering
+   -- the difference in elevation between the source and the destination.
    -- Input angle (radians) and velocity (m/s) and vertical_distance (m)
-   -- Vertical_Distance should be the difference in elevation between firing vehicle and the target,
-   -- so if target is higher than firing vehicle the value should be negative.
+   -- Vertical_Distance should be the difference in elevation between source and destination,
+   -- so if destination is higher than source the value should be negative.
    function Total_Time_In_Air (Angle : in Float;
                                Velocity : in Float;
                                Vertical_Distance : in Float) return Float;
 
-   -- This function returns the horizontal distance a projectile has
+   -- This function returns the horizontal distance an object in parabolic motion has
    -- traveled given the initial angle (radians), Velocity (m/s), and time (s).
    function Distance_Traveled
               (Angle : in Float; Velocity : in Float; Time : in Float)
               return Float;
 
-   -- Returns the initial velocity of a projectile
-   -- given angle (radians) of gun and total distance (m) to travel
-   -- Note: Assumes firing vehicle and target are at same elevation
+   -- Returns the initial velocity of an object in parabolic motion
+   -- given angle (radians) of launch and total distance (m) to travel
+   -- Note: Assumes source and destination are at same elevation
    function Initial_Velocity
               (Angle : in Float; Distance : in Float) return Float;
 
-   -- Returns the initial velocity of a projectile
-   -- given angle (radians) of gun, horizontal_distance travelled,
-   -- and the vertical_distance at which the projectile lands.
-   -- i.e. if target is 350 meters below in elevation from the source then
+   -- Returns the initial velocity of an object in parabolic motion
+   -- given angle (radians) of launch, horizontal_distance travelled,
+   -- and the vertical_distance at which the object lands.
+   -- i.e. if destination is 350 meters below in elevation from the source then
    -- vertical_distance should be -350
    function Initial_Velocity (Angle : in Float;
                               Horizontal_Distance : in Float;
                               Vertical_Distance : in Float) return Float;
 
-   -- Returns the elevation to shoot the projectile at in radians, given
+   -- Returns the elevation to launch the object at in radians, given
    -- the initial velocity, the horizontal_distance travelled,
-   -- and the vertical_distance at which the projectile lands.
+   -- and the vertical_distance at which the object lands.
    -- The elevation given will be less than Pi/4.  Can find the complementary
    -- elevation, which will land at same spot by going Pi/2 - Elevation.
-   -- i.e. if target is 350 meters below in elevation from the source then
+   -- i.e. if destination is 350 meters below in elevation from the source then
    -- vertical_distance should be -350
-   -- Success will be false if the velocity isn't high enough to reach the target
+   -- Success will be false if the velocity isn't high enough to reach the destination
    procedure Elevation_Calculation (Initial_Velocity : in Float;
                                     Horizontal_Distance : in Float;
                                     Vertical_Distance : in Float;

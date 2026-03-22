@@ -6,9 +6,9 @@ with Pace.Semaphore;
 package body Pbm.Bfpath is
 
    procedure Op4_Bfpath_Initialize
-     (Proj_Type                                                        : in
+     (Object_Type                                                        : in
      Integer;
-      Launch_Time, Gun_Az, Gun_Qe, Proj_Mv, Gun_Lat, Gun_Long, Gun_Hgt : in
+      Launch_Time, Azimuth, Elevation_Angle, Initial_Speed, Src_Lat, Src_Long, Src_Hgt : in
      Long_Float);
    pragma Import (C, Op4_Bfpath_Initialize);
 
@@ -22,21 +22,21 @@ package body Pbm.Bfpath is
    pragma Import (C, Op4_Bfpath_Get);
 
    procedure Initialize
-     (Proj_Type                                                        : in
+     (Object_Type                                                        : in
         Integer;
-      Launch_Time, Gun_Az, Gun_Qe, Proj_Mv, Gun_Lat, Gun_Long, Gun_Hgt : in
+      Launch_Time, Azimuth, Elevation_Angle, Initial_Speed, Src_Lat, Src_Long, Src_Hgt : in
         Float)
    is
    begin
       Op4_Bfpath_Initialize
-        (Proj_Type,
+        (Object_Type,
          Long_Float (Launch_Time),
-         Long_Float (Gun_Az),
-         Long_Float (Gun_Qe),
-         Long_Float (Proj_Mv),
-         Long_Float (Gun_Lat),
-         Long_Float (Gun_Long),
-         Long_Float (Gun_Hgt));
+         Long_Float (Azimuth),
+         Long_Float (Elevation_Angle),
+         Long_Float (Initial_Speed),
+         Long_Float (Src_Lat),
+         Long_Float (Src_Long),
+         Long_Float (Src_Hgt));
    end Initialize;
 
    procedure Update (Run_Until : in Duration) is
@@ -66,9 +66,9 @@ package body Pbm.Bfpath is
    M : aliased Pace.Semaphore.Mutex;
 
    function Generate_Flight_Path
-     (Proj_Type                            : in Integer;
-      Launch_Time, Gun_Az, Gun_Qe, Proj_Mv : in Float;
-      Gun_Lat, Gun_Long, Gun_Hgt           : in Float;
+     (Object_Type                            : in Integer;
+      Launch_Time, Azimuth, Elevation_Angle, Initial_Speed : in Float;
+      Src_Lat, Src_Long, Src_Hgt           : in Float;
       Total_Time                           : in Second_Tics := 150)
       return                                 Flight_Path_Data
    is
@@ -79,14 +79,14 @@ package body Pbm.Bfpath is
       Tangent_Angle    : Float;
    begin
       Initialize
-        (Proj_Type,
+        (Object_Type,
          Launch_Time,
-         Gun_Az,
-         Gun_Qe,
-         Proj_Mv,
-         Gun_Lat,
-         Gun_Long,
-         Gun_Hgt);
+         Azimuth,
+         Elevation_Angle,
+         Initial_Speed,
+         Src_Lat,
+         Src_Long,
+         Src_Hgt);
       for I in  0 .. Total_Time loop
          Current_Time := Duration (I);
          Update (Current_Time);

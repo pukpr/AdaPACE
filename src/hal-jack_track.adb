@@ -112,7 +112,7 @@ package body Hal.Jack_Track is
    Last_X : Float;
 
 
-   -- this task ensures that the gun is done elevating
+   -- this task ensures that the elevation arm is done elevating
    task Agent is pragma Task_Name (UName);
       entry Follow_Elevation (Crooked_Counter : in Integer;
                               True_Counter : in Integer);

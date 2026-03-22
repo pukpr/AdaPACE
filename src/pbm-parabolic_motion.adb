@@ -73,7 +73,7 @@ package body Pbm.Parabolic_Motion is
    exception
       when E: Ada.Numerics.Argument_Error =>
          Pace.Log.Put_Line
-           ("Argument Error thrown inside Total_Time_In_Air.  Sqrt of a negative number.  The angle of the gun is not high enough to hit the target.");
+           ("Argument Error thrown inside Total_Time_In_Air.  Sqrt of a negative number.  The launch angle is not high enough to reach the destination.");
          raise Bad_Elevation_Angle;
    end Total_Time_In_Air;
 
@@ -101,18 +101,18 @@ package body Pbm.Parabolic_Motion is
    exception
       when E: Ada.Numerics.Argument_Error =>
          Pace.Log.Put_Line
-           ("Argument Error thrown inside Initial_Velocity.  Sqrt of a negative number.  The angle of the gun is not high enough to hit the target.");
+           ("Argument Error thrown inside Initial_Velocity.  Sqrt of a negative number.  The launch angle is not high enough to reach the destination.");
          raise Bad_Elevation_Angle;
    end Initial_Velocity;
 
 
-   procedure Calculate_Firing_Angle
+   procedure Calculate_Launch_Angle
      (Theta           : out Float;
       Actual_Change   : out Float;
       Cycles          : out Integer;
       Radial_Distance : in Float;
       Altitude_Change : in Float;
-      Muzzle_Velocity : in Float;
+      Initial_Speed : in Float;
       Low_El, High_El : in Float;
       High_Quadrant   : in Boolean := True;
       Accuracy_EPS    : in Float   := 0.1) is
@@ -132,7 +132,7 @@ package body Pbm.Parabolic_Motion is
 
       procedure Constraint (Theta : in LFloat; Ym : out LFloat) is
          use Ada.Numerics.Long_Elementary_Functions;
-         VX : constant LFloat := LFloat(Muzzle_Velocity) * Cos (Theta);
+         VX : constant LFloat := LFloat(Initial_Speed) * Cos (Theta);
          RD : constant LFloat := LFloat(Radial_Distance);
       begin
          Ym := RD * Tan (Theta) - LFloat(Gravity) * (RD*RD/2.0)/VX/VX;
@@ -167,13 +167,13 @@ package body Pbm.Parabolic_Motion is
 
    begin
       Pace.Log.Put_Line ("calling iterative solver with velocity " & Initial_Velocity'Img & " and hdist " & Horizontal_Distance'Img & " and vdist " & Vertical_Distance'Img & " and high_quad " & High_Quadrant'Img, 9);
-      Calculate_Firing_Angle (
+      Calculate_Launch_Angle (
          Theta            => Elevation,
          Actual_Change    => Actual_Change,
          Cycles           => Cycles,
          Radial_Distance  => Horizontal_Distance,
          Altitude_Change  => Vertical_Distance,
-         Muzzle_Velocity  => Initial_Velocity,
+         Initial_Speed  => Initial_Velocity,
          Low_El           => Low_El,
          High_El          => High_El,
          High_Quadrant    => High_Quadrant,

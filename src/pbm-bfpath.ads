@@ -12,9 +12,9 @@ package Pbm.Bfpath is
      array (Second_Tics range <>) of Flight_Path_Record;
 
    function Generate_Flight_Path
-     (Proj_Type                            : in Integer;
-      Launch_Time, Gun_Az, Gun_Qe, Proj_Mv : in Float;
-      Gun_Lat, Gun_Long, Gun_Hgt           : in Float;
+     (Object_Type                            : in Integer;
+      Launch_Time, Azimuth, Elevation_Angle, Initial_Speed : in Float;
+      Src_Lat, Src_Long, Src_Hgt           : in Float;
       Total_Time                           : in Second_Tics := 150)
       return                                 Flight_Path_Data;
 
@@ -27,9 +27,9 @@ private
    -- Underlying functions
 
    procedure Initialize
-     (Proj_Type                                                        : in
+     (Object_Type                                                        : in
      Integer;
-      Launch_Time, Gun_Az, Gun_Qe, Proj_Mv, Gun_Lat, Gun_Long, Gun_Hgt : in
+      Launch_Time, Azimuth, Elevation_Angle, Initial_Speed, Src_Lat, Src_Long, Src_Hgt : in
      Float);
 
    procedure Update (Run_Until : in Duration);
