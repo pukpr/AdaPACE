@@ -88,8 +88,8 @@ All web action types derive from `Pace.Server.Dispatch.Action` following
 |---|---|---|---|
 | `base_link` | root | `Links.base_link` | `Set_Pose` (odometry) |
 | `imu_link` | fixed | `Links.imu_link` | `Set_Pose` (heading) |
-| `warnign_light` | revolute | `Links.warnign_light` | `Set_Rot` |
-| `warnign_light_joint` | revolute | `Joints.warnign_light_joint` | `Set_Pose` (angle) |
+| `warnign_light` | revolute | `Links.warnign_light` | `Set_Rot` (ω, Z-axis) |
+| `warnign_light_joint` | revolute | `Joints.warnign_light_joint` | SDF only — see note |
 | `camera_front` | fixed | `Links.camera_front` | `Set_Pose` |
 | `camera_back` | fixed | `Links.camera_back` | `Set_Pose` |
 | `scan_front` | fixed | `Links.scan_front` | `Set_Pose` |
@@ -108,6 +108,60 @@ All web action types derive from `Pace.Server.Dispatch.Action` following
 
 > **Note:** `warnign_light` / `warnign_light_joint` preserves the typo in the
 > original tugbot model. `TableControlPlugin` matches by name string exactly.
+
+## PACE Direct-Motion and SDF Joint Dynamics
+
+PACE simulation is **direct motion** — joint positions and link velocities are
+set explicitly through shared memory, not through physics stimulus-response.
+This has an important consequence for SDF joint dynamics:
+
+> **Any friction, damping, or stiffness defined on a PACE-controlled joint
+> provides physics-engine resistance that fights the explicit commands.**
+
+### Set_Pose vs Set_Rot for spinning joints
+
+For joints that spin **continuously** (like the warning beacon), use
+`Set_Rot` (angular velocity) on the **link**, not `Set_Pose` (position) on
+the joint:
+
+| Approach | How it works | Issue |
+|---|---|---|
+| `Set_Pose` on joint | Teleports joint to an ever-growing angle each tick | Physics solver "sees" a large velocity implied by the position jump; velocity limiters and constraint stiffness resist the motion → beacon appears slow |
+| `Set_Rot` on link | Sets constant angular velocity; solver simply maintains it | No position conflict; friction=0/damping=0 means no resistance → smooth full-speed spin |
+
+```ada
+--  WRONG for a continuously spinning beacon (position fights physics):
+Angle := Angle + Light_Rate * dT;
+Gz_Joints.Set_Pose (warnign_light_joint, Roll => Angle);
+
+--  CORRECT: Set_Rot matches the wheel-spin pattern used for drive wheels:
+Gz_Links.Set_Rot (warnign_light, Yaw => Light_Rate);  -- warnign_light_joint axis = 0 0 1
+```
+
+This pattern is the same one used for the drive wheels (`Set_Rot` on the
+link for velocity, `Set_Pose` on the joint for visual-fidelity tracking).
+
+### SDF dynamics for PACE-controlled joints
+
+For every joint whose position or velocity is driven by PACE, set all of
+the following to zero in the SDF `<dynamics>` block and `<limit>` stiffness:
+
+```xml
+<limit>
+  <stiffness>0</stiffness>
+  <dissipation>0</dissipation>
+</limit>
+<dynamics>
+  <spring_stiffness>0</spring_stiffness>
+  <damping>0</damping>
+  <friction>0</friction>
+</dynamics>
+```
+
+This was the key change that made the `joint_position_controller` (Panda)
+example work correctly — see `examples/joint_position_controller/jpc.sdf`
+for the reference pattern.  All PACE-controlled joints in `tugbot.sdf`
+follow this pattern.
 
 ## Build
 
