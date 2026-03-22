@@ -196,22 +196,28 @@ package body Tugbot is
 
    -------------------------------------------------------------------------
    --  LIGHT TASK
-   --  Spins the warning beacon (revolute joint) when enabled.
-   --  Pattern: HumanRobot Arm_Controller / gazebo_3d Wobble task
+   --  Spins the warning beacon when enabled using Set_Rot (angular velocity).
+   --  Pattern: Drive_Task wheel spin (Set_Rot -> SetAngularVelocity on link).
+   --  Set_Rot avoids the position/physics conflict that makes Set_Pose slow:
+   --  PACE is direct motion, not physics stimulus-response, so setting an
+   --  ever-increasing JointPosition each tick fights the physics solver.
+   --  Setting a constant angular velocity on the link lets the physics engine
+   --  maintain the spin without resistance from friction or stiffness.
    -------------------------------------------------------------------------
    task Light_Task;
    task body Light_Task is
       function ID is new Pace.Log.Unit_ID;
-      Angle : Long_Float := 0.0;
    begin
       Pace.Log.Agent_Id (ID);
       Pace.Log.Put_Line ("Tugbot Light_Task started.");
 
       loop
          if State.Get_Light then
-            Angle := Angle + Light_Rate * dT;
-            --  Set_Pose on a revolute joint -> JointPosition (Roll = joint angle)
-            Gz_Joints.Set_Pose (warnign_light_joint, Roll => Angle);
+            --  Set_Rot on the link -> SetAngularVelocity (Yaw = Z-axis spin)
+            --  warnign_light_joint axis is 0 0 1, so Yaw matches the joint axis.
+            Gz_Links.Set_Rot (warnign_light, Yaw => Light_Rate);
+         else
+            Gz_Links.Set_Rot (warnign_light, Yaw => 0.0);
          end if;
          Pace.Log.Wait (duration(dT));
       end loop;

@@ -484,6 +484,8 @@
         </light>
         <enable_wind>false</enable_wind>
       </link>
+      <!-- PACE direct-motion joint: no friction/damping/stiffness so the
+           physics solver does not resist Set_Rot angular-velocity commands. -->
       <joint name='warnign_light_joint' type='revolute'>
         <child>warnign_light</child>
         <parent>base_link</parent>
@@ -493,9 +495,9 @@
             <lower>-inf</lower>
             <upper>inf</upper>
             <effort>1000</effort>
-            <velocity>20</velocity>
-            <stiffness>100000000</stiffness>
-            <dissipation>1</dissipation>
+            <velocity>inf</velocity>
+            <stiffness>0</stiffness>
+            <dissipation>0</dissipation>
           </limit>
           <dynamics>
             <spring_reference>0</spring_reference>
@@ -1045,6 +1047,8 @@
         </sensor>
         <enable_wind>false</enable_wind>
       </link>
+      <!-- PACE direct-motion joint: zero friction/stiffness so the physics
+           solver does not resist Set_Pose position commands. -->
       <joint name='gripper_joint' type='revolute'>
         <pose>0.34999999999999998 0 0.089999999999999997 0 0 0</pose>
         <child>gripper</child>
@@ -1056,14 +1060,14 @@
             <upper>0.69999999999999996</upper>
             <effort>4</effort>
             <velocity>0.5</velocity>
-            <stiffness>100000000</stiffness>
-            <dissipation>1</dissipation>
+            <stiffness>0</stiffness>
+            <dissipation>0</dissipation>
           </limit>
           <dynamics>
             <spring_reference>0</spring_reference>
             <spring_stiffness>0</spring_stiffness>
             <damping>0</damping>
-            <friction>0.5</friction>
+            <friction>0</friction>
           </dynamics>
         </axis>
       </joint>
@@ -1224,6 +1228,8 @@
         </collision>
         <enable_wind>false</enable_wind>
       </link>
+      <!-- PACE direct-motion joint: zero friction/stiffness so the physics
+           solver does not resist Set_Pose position commands. -->
       <joint name='gripper_hand_joint' type='revolute'>
         <pose>0.20000000000000001 0 0 0 0 0</pose>
         <child>gripper_hand</child>
@@ -1235,8 +1241,8 @@
             <upper>0.10000000000000001</upper>
             <effort>100</effort>
             <velocity>0.5</velocity>
-            <stiffness>100000000</stiffness>
-            <dissipation>1</dissipation>
+            <stiffness>0</stiffness>
+            <dissipation>0</dissipation>
           </limit>
           <dynamics>
             <spring_reference>0</spring_reference>
@@ -1427,6 +1433,8 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
+      <!-- PACE direct-motion joint: zero damping/friction/stiffness so the
+           physics solver does not resist Set_Rot velocity commands. -->
       <joint name='wheel_left_joint' type='revolute'>
         <child>wheel_left</child>
         <parent>base_link</parent>
@@ -1437,14 +1445,14 @@
             <upper>inf</upper>
             <effort>9.5999999999999996</effort>
             <velocity>inf</velocity>
-            <stiffness>100000000</stiffness>
-            <dissipation>1</dissipation>
+            <stiffness>0</stiffness>
+            <dissipation>0</dissipation>
           </limit>
           <dynamics>
             <spring_reference>0</spring_reference>
             <spring_stiffness>0</spring_stiffness>
-            <damping>3</damping>
-            <friction>0.5</friction>
+            <damping>0</damping>
+            <friction>0</friction>
           </dynamics>
         </axis>
         <pose>0 0 5.5511199999999995e-17 0 0 0</pose>
@@ -1502,6 +1510,8 @@
         </visual>
         <enable_wind>false</enable_wind>
       </link>
+      <!-- PACE direct-motion joint: zero damping/friction/stiffness so the
+           physics solver does not resist Set_Rot velocity commands. -->
       <joint name='wheel_right_joint' type='revolute'>
         <child>wheel_right</child>
         <parent>base_link</parent>
@@ -1512,14 +1522,14 @@
             <upper>inf</upper>
             <effort>9.5999999999999996</effort>
             <velocity>inf</velocity>
-            <stiffness>100000000</stiffness>
-            <dissipation>1</dissipation>
+            <stiffness>0</stiffness>
+            <dissipation>0</dissipation>
           </limit>
           <dynamics>
             <spring_reference>0</spring_reference>
             <spring_stiffness>0</spring_stiffness>
-            <damping>3</damping>
-            <friction>0.5</friction>
+            <damping>0</damping>
+            <friction>0</friction>
           </dynamics>
         </axis>
         <pose>0 0 5.5511199999999995e-17 0 0 0</pose>
