@@ -2,17 +2,17 @@ with Pace.Log;
 with Pace.Socket;
 with Gyrator;
 with Ada.Text_IO;
-with Ses.PP;
+with Pace.Ses.PP;
 
 procedure Client_Main is
 
    task Monitor;
    task body Monitor is
    begin
-      Ses.Pp.Parser;   
+      Pace.Ses.Pp.Parser;   
    exception
       when others =>
-         Ses.Os_Exit (0);         
+         Pace.Log.Os_Exit (0);         
    end Monitor;
 
    function ID is new Pace.Log.Unit_ID;

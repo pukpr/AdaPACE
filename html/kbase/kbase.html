@@ -1,0 +1,80 @@
+<html>
+ <head>
+  <title>VKB Stimulus Main</title>
+  <script language="JavaScript">
+    var KB = "vkb.query";
+    
+    function Query (Form) {
+      Form.action = KB;
+      Form.submit();
+    }
+    function Assert (Form) {
+      Form.set.value = 'asserta(' + Form.assert.value + ')';
+      Query(Form);
+    }
+    function Retract (Form) {
+      Form.set.value = 'retract(' + Form.assert.value + ')';
+      Query(Form);
+    }
+  </script>
+ </head>
+<body>
+
+<h1>Knowledge Base (kbase) stimulus screen</h1>
+<a target="results" href="kbasehelp.html">Help</a> on query 
+<p>
+
+<form method="GET" action="">
+	<input type=button value="Select KBase" onClick="KB=this.form.kb.value;">
+        <select name="kb">
+         <option selected>vkb.query</option>
+         <option>uio.kbase.query</option>
+         <option>(add another)</option>
+        </select>
+</form><p>
+
+<form method="GET" target="results" action="">
+ <select name="set">
+  <option selected>listing</option>
+  <option>gc</option>
+  <option>trace</option>
+ </select>
+ <input type=button value="Builtin Query" onClick="Query(this.form)">
+</form><p>
+
+<form method="GET" target="results" action="">
+	<input type=button value="Run Query" onClick="Query(this.form)">
+	<input type=text size=80 name=set value="color(ID)"> <br>
+	<input type=button value="Assert Data" onClick="Assert(this.form)">
+	<input type=button value="Retract Data" onClick="Retract(this.form)">
+	<input type=text size=50 name=assert value="color(yellow)">
+</form><p>
+
+<form method="GET" target="results" action="vkb.query">
+	<input type="button" value="Run Query returning XML List" onClick="Query(this.form)">
+	<input type="hidden" name="xml_list">
+	style-sheet: <input type=text size=50 name=style value="test.xsl"> <br>
+	<input type=text size=100 name=set value="color(Color)"> <br>
+</form><p>
+
+<form method="GET" target="results" action="vkb.query">
+	<input type="button" value="Run Query returning XML Tree" onClick="Query(this.form)">
+	<input type="hidden" name="xml_tree">
+	style-sheet: <input type=text size=20 name=style value="test.xsl"> <br>
+	<input type=text size=100 name=set value="test(Top)"> <br>
+</form><p>
+
+
+<form method="GET" target="results" action="vkb.assert_xml">
+ <input type="SUBMIT" value="assert XML"><br>
+ <input type=text size=10 name=functor value="test"> <br>
+ <textarea rows=5 cols=30 name=set>&lt;top&gt;&lt;item1&gt;value&lt;/item1&gt;&lt;/top&gt; </textarea>
+</form><p>
+
+<iframe name="results" height="300" width="100%">
+</iframe>
+
+</body>
+</html>
+
+

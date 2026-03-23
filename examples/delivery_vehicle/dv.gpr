@@ -1,7 +1,7 @@
 with "../../pace.gpr";
 
 project DV is
-   for Source_Dirs use (".");
+   for Source_Dirs use (".", "../hal");
    for Object_Dir use "obj";
    for Main use ("demo_drone.adb");
 

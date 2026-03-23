@@ -1,0 +1,1 @@
+gprbuild -aP../.. suv.gpr

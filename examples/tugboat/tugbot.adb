@@ -66,11 +66,11 @@ package body Tugbot is
    use Ada.Numerics.Long_Elementary_Functions;
    use Ada.Numerics;
 
-   dT           : constant Long_Float := 0.05;   -- simulation step  (s)
+   dT           : constant Long_Float := 0.25;   -- simulation step  (s)
    Wheel_Radius : constant Long_Float := 0.10;   -- drive wheel radius (m)
    Track_Width  : constant Long_Float := 0.40;   -- left-to-right drive wheel spacing (m)
    Max_Omega    : constant Long_Float := 10.0;   -- max wheel angular speed (rad/s)
-   Light_Rate   : constant Long_Float := 3.0;    -- warning beacon spin speed (rad/s)
+   Light_Rate   : constant Long_Float := 90.0;    -- warning beacon spin speed (rad/s)
 
    --  Gripper joint limits (radians)
    Gripper_Open   : constant Long_Float := 0.0;

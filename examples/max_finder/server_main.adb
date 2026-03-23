@@ -3,7 +3,7 @@ with Pace.Log;
 with Pace.Socket;
 with Max_Finder;
 with Ada.Text_IO;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure Server_Main is
    function ID is new Pace.Log.Unit_ID;
@@ -14,8 +14,8 @@ begin
    Ada.Text_IO.Put_Line ("Waiting for numbers from workers...");
 
    -- Listen for shutdown signal
-   Ses.Pp.Parser;
+   Pace.Ses.Pp.Parser;
 exception
     when others =>
-        Ses.Os_Exit (0);
+        Pace.Log.Os_Exit (0);
 end Server_Main;

@@ -1,0 +1,21 @@
+<html>  
+  <head>
+      <script type="text/javascript" src="/eng/form2xml.js" ></script>
+      
+  </head>
+  <body>
+    <h2>Utm Roll Pitch Yaw To Latitude Longitude Height Quaternion Conversion</h2>
+    <b>Units are in radians</b><br/>
+    <form name="convert" method="get" onSubmit="return form2xml(this)" action="uio.nav_location.utmrpy_to_latlongquat">
+      Easting: <input type="text" name="easting" value="637000" /> <br/>
+      Northing: <input type="text" name="northing" value="4450000" /> <br/>
+      Zone: <input type="text" name="zone" value="11" /> <br/>
+      Hemisphere: <input type="text" name="hemisphere" value="N" /> <br/>
+      Roll: <input type="text" name="roll" value="0.0" /> <br/>
+      Pitch: <input type="text" name="pitch" value="0.0" /> <br/>
+      Yaw: <input type="text" name="yaw" value="0.0" /> <br/>
+      <input type="submit" name="set" value="Get Conversion"/>
+    </form>
+  </body>    
+</html>
+

@@ -17,7 +17,7 @@ package body Mcast_Test is
 
    procedure Input (Obj : in Message) is
    begin
-      pace.log.put_line (Obj.N'img);
+      pace.log.put_line ("received: " & Obj.N'img);
    end;
 
    -- Sends the messages
@@ -27,6 +27,7 @@ package body Mcast_Test is
    procedure Run is
       M : Message;
    begin
+      pace.log.put_line ("this goes on forever");
       for i in natural'range loop
          delay 3.0;
          M.N := i;

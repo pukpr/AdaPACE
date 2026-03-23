@@ -1,7 +1,7 @@
-with Gnu.Rule_Process;
+with Pace.Rule_Process;
 
 procedure ES is
-   use Gnu.Rule_Process;
+   use Pace.Rule_Process;
    KB : Agent_Type (2_000_000);
 begin
    KB.Init (Ini_File => "",

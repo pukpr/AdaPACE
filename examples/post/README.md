@@ -23,3 +23,8 @@ sh BUILD
 ```bash
 sh RUN
 ```
+
+[](trace.pdf)
+
+program trace
+

@@ -12,9 +12,12 @@ package body Pace.Ses.Launch is
    Interactive : constant Boolean := not Pace.Command_Line.Has_Argument ("POLLED");
    CN : constant String := Pace.Command_Line.Path;
 
-   Home        : constant String := CN & "../../ssom/test_tools/";
+--   Home        : constant String := CN ;
+--   Launch_Pro  : constant String := "p4_launch.pro";
+--   Launch_Path : constant String := Getenv ("P4PATH", Home) & "/";
+   Home        : constant String := CN;
    Launch_Pro  : constant String := "p4_launch.pro";
-   Launch_Path : constant String := Getenv ("P4PATH", Home) & "/";
+   Launch_Path : constant String := Getenv("P4PATH", Home) & "/"; -- & Launch_Pro);
 
    P : Processes (1 .. Max_Number_Of_Processes);
 

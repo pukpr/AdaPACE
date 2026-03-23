@@ -11,7 +11,7 @@ with Pace;
 with Gis;
 with Ual.Utilities;
 -- with Gnu.Fields;
-with Gnu.Rule_Process;
+with Pace.Rule_Process;
 with Hal.Audio.Mixer;
 with Str;
 
@@ -43,7 +43,7 @@ package body Uio.Route is
    type List_Move_Plans is new Pace.Server.Dispatch.Action with null record;
    procedure Inout (Obj : in out List_Move_Plans);
    procedure Inout (Obj : in out List_Move_Plans) is
-      use Gnu.Rule_Process;
+      use Pace.Rule_Process;
       use Pace.Server.Xml;
       use Pace.Server.Kbase_Utilities;
       V : Variables (1 .. 2);

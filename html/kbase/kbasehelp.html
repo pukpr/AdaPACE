@@ -1,0 +1,729 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>WAES.RTF</TITLE>
+<META NAME="Template" CONTENT="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Ada Expert System Help</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><P>Builtin Predicates and Clauses</B> </P>
+<P>&nbsp;</P>
+<B><P>?</B>&#9;<U>Query</P>
+</U><B><P>.</B>&#9;<U>Clause</P>
+</U><B><P>:-</B>&#9;<U>Rule (if)</P>
+</U><B><P>!</B>&#9;<U>Cut</P>
+</U><B><P>+</B>&#9;<U>Addition</P>
+</U><B><P>-</B>&#9;<U>Subtraction, Unary minus</P>
+</U><B><P>*</B>&#9;<U>Multiplication</P>
+</U><B><P>/</B>&#9;<U>Division</P>
+</U><B><P>**</B>&#9;<U>Power</P>
+</U><B><P>mod</B>&#9;<U>Modulus</P>
+</U><B><P>//</B>&#9;<U>Integer division</P>
+</U><B><P>is</B>&#9;<U>Assignment</P>
+</U><B><P>==</B>&#9;<U>Equality</P>
+</U><B><P>\==</B>&#9;<U>Inequality</P>
+</U><B><P>&lt;</B>&#9;<U>Less than</P>
+</U><B><P>&gt;</B>&#9;<U>Greater than</P>
+</U><B><P>=&lt;</B>&#9;<U>Less than or equal to</P>
+</U><B><P>&gt;=</B>&#9;<U>Greater than or equal to</P>
+</U><B><P>,</B>&#9;<U>And</P>
+</U><B><P>;</B>&#9;<U>Or</P>
+</U><B><P>-&gt;</B>&#9;<U>If Then</P>
+</U><B><P>[ ]</B>&#9;<U>List</U> </P>
+<B><P>|</B>&#9;<U>Rest of list</P>
+</U><B><P>( )</B>&#9;<U>Arguments</P>
+</U><B><P>=</B>&#9;<U>Unification</P>
+</U><B><P>\=</B>&#9;<U>Nonunified</P>
+</U><P>&nbsp;</P>
+<U><P>arg</P>
+<P>assert</P>
+<P>asserta</P>
+<P>atom</P>
+<P>call</P>
+<P>concat</P>
+<P>consult</P>
+<P>display</P>
+<P>fail</P>
+<P>findall</P>
+<P>float</P>
+<P>integer</P>
+<P>length</P>
+<P>listing</P>
+<P>nl</P>
+<P>not</P>
+<P>prin</P>
+<P>read</P>
+<P>retract</P>
+<P>save</P>
+<P>see</P>
+<P>seen</P>
+<P>tab</P>
+<P>tell</P>
+<P>told</P>
+<P>true</P>
+<P>trace</P>
+<P>var</P>
+<P>write</P>
+</U><P>&nbsp;</P>
+<B><P>Others</P>
+</B><P>Nonstandard_Predicates</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Menu Commands</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The following commands can be invoked via the menu.</P>
+<P>&nbsp;</P>
+<U><P>Load</P>
+<P>Initialize</P>
+<P>Recall</P>
+<P>Edit</P>
+<P>Exit</P>
+<P>Interpret</P>
+<P>Clauses</P>
+<P>Link</P>
+</U><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Nonstandard Predicates</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The following builtins are specific to AES or to Windows.</P>
+<P>&nbsp;</P>
+<U><P>dde</P>
+<P>gc</P>
+<P>multiple</P>
+<P>only_one</P>
+<P>post</P>
+<P>system</P>
+</U><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Introduction</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>This is a very quick introduction to Prolog (the language of AES), designed to get you up to speed in the basics. This will not explain all of Prolog, so if you are interested in a better, more thorough explanation, try one of these books: </P><DIR>
+
+</FONT><P><IMG SRC="Image1.gif" WIDTH=4 HEIGHT=10><FONT FACE="MS Sans Serif" SIZE=2>&#9;"Programming in Prolog", by Clocksin and Mellish. This is the original de facto language refererence manual, but provides a good introduction to the language. </P>
+</FONT><P><IMG SRC="Image1.gif" WIDTH=4 HEIGHT=10><FONT FACE="MS Sans Serif" SIZE=2>&#9;"The Craft of Prolog", by Richard O'Keefe. This a newer book and is very good for seeing how a real expert goes about using Prolog.</P>
+<P>&nbsp;</P></DIR>
+
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Syntax</P>
+</FONT><FONT FACE="MS Sans Serif" SIZE=2><P>Variables and atoms</B> Prolog identifiers are the usual letter followed by any number of letters, numbers or underscores. However, case is significant, e.g. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">mary /= Mary /= marY</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>In particular, variables are identified by an initial capital letter or underscore, so</FONT><B><FONT FACE="Courier New" COLOR="#000080"> Name </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>and</FONT><B><FONT FACE="Courier New" COLOR="#000080"> _name </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>are variables, while</FONT><B><FONT FACE="Courier New" COLOR="#000080"> name </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>is an atom. Alternatively, any quoted identifier is an atom, so</FONT><B><FONT FACE="Courier New" COLOR="#000080"> "Name" </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>and</FONT><B><FONT FACE="Courier New" COLOR="#000080"> "this is an atom!" </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>are both atoms. The underscore by itself is a special case; it is the anonymous variable (which binds to anything). </P>
+<P>&nbsp;</P>
+<B><P>Lists and structures</B> A list of items is enclosed in square brackets, as in</FONT><B><FONT FACE="Courier New" COLOR="#000080"> [a,b,c]</B></FONT><FONT FACE="MS Sans Serif" SIZE=2>. A list can also be separated into its head and tail with the form</FONT><B><FONT FACE="Courier New" COLOR="#000080"> [a|X]</B></FONT><FONT FACE="MS Sans Serif" SIZE=2>. A structure is simply</FONT><B><FONT FACE="Courier New" COLOR="#000080"> name(arg1)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2>, where there can be any number (&gt; 0) of arguments, separated by commas. </P>
+<P>&nbsp;</P>
+<B><P>Comments</B> Comments in Prolog begin with</FONT><B><FONT FACE="Courier New" COLOR="#000080"> % </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>and extend to the end of the current line. </P>
+<P>&nbsp;</P>
+<B><P>Clauses: Facts, Rules and Procedures</B> A fact is written as</P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, mary).</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P></DIR>
+</DIR>
+
+<P>where the name of the fact states the relationship and the objects are listed in the parenthesis. This fact would be read as "John likes Mary". </P>
+<P>A rule is written:</P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, mary) :- likes(mary, popcorn), brown_eyes(mary).</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<P>where the</FONT><B><FONT FACE="Courier New" COLOR="#000080"> :- </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>is read as "if." This rule would be read as "John likes Mary if Mary likes popcorn and Mary has brown eyes." The part of the rule before the</FONT><B><FONT FACE="Courier New" COLOR="#000080"> :- </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>is called the head and part after is called the body. The body can consist of any number of goals; goals are connected by a comma (</FONT><B><FONT FACE="Courier New" COLOR="#000080">,</B></FONT><FONT FACE="MS Sans Serif" SIZE=2>) to indicate a conjunction, i.e. they must all be true for the clause to be true. A procedure is the set of clauses with the same name and arity (number of arguments). The clauses of a procedure do not have to be contiguous, but it is considered good style to keep them together. </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Execution</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<B><P>Queries</B> Prolog begins execution in response to a query to from the user. If your program contained only the following fact: </P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, mary).</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<P>you could give it the query </P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, mary)?</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<P>and it would respond <B>yes</B> . On the other hand, if you gave it the query </P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, ellen)? </P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P></DIR>
+</DIR>
+
+<P>it would respond <B>no</B>. A no response from Prolog means that it couldn't prove your query. This is not the same as saying your query is false (John just might like Ellen), only that Prolog cannot prove that the query is true in the context of your program. If your program were changed to read: </P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, mary) :- likes(mary,popcorn), brown_eyes(mary). </P>
+<P>likes(mary, popcorn). </P>
+<P>brown_eyes(mary).</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P></DIR>
+</DIR>
+
+<P>then, in response to the query </P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>likes(john, mary)?</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<P>Prolog would first try to prove</FONT><B><FONT FACE="Courier New" COLOR="#000080"> likes(mary, popcorn) </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>and then</FONT><B><FONT FACE="Courier New" COLOR="#000080"> brown_eyes(mary)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2>. Both of these goals would succeed and so Prolog would respond <B>yes</B>. If either of the facts were missing, the query would fail. When there are multiple clauses in a procedure, as in likes above, each clause is tried in order until one succeeds.</P>
+<P>&nbsp;</P>
+<B><P>Using Variables</B> All this is lots of fun, but it isn't too interesting until we introduce variables. The scope of a variable is the clause that it appears in; there are no global variables as in most other languages. A variable initially has no value (it is said to be 'uninstantiated' or 'unbound'). When you use a variable Prolog tries to match ('unify') it with the appropriate clauses. A variable's value can't be changed once it is set, but if a goal can't be proven with a certain value, the code will backtrack and try to find another value that will allow the goal to succeed. For example, given the program above, the query</FONT><B><FONT FACE="Courier New" COLOR="#000080"> likes(john, X)? </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>, generates the response <B>X = mary</B>, meaning your query is provable and the value of X is mary. (If you want more than one answer, type </FONT><B><FONT FACE="Courier New" COLOR="#000080">multiple? </B></FONT><FONT FACE="MS Sans Seri!
+!
+f" SIZE=2>, and repeat the query until it responds <B>no</B> when no more solutions exist.) </P>
+<P>Variables can also be used in rules, as in this definition of the grandfather relation: </P>
+<P>&nbsp;</P><DIR>
+<DIR>
+
+</FONT><B><FONT FACE="Courier New" COLOR="#000080"><P>grandfather(X, Z) :- father(X, Y), parent(Y, Z). </P>
+<P>parent(X, Y) :- father(X, Y). </P>
+<P>parent(X,Y) :- mother(X, Y). </P>
+<P>father(john, tom). </P>
+<P>father(john, mary). </P>
+<P>father(tom, sue). </P>
+<P>mother(mary, harry).</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<P>The grandfather relation is read as "X is the grandfather of Z if X is the father of some person Y and that person Y is the parent of Z." The parent relation is read as "X is the parent of Y if X is the father of Y or X is the mother of Y". Given the program above, </FONT><B><FONT FACE="Courier New" COLOR="#000080">grandfather(john, X)? </B></FONT><FONT FACE="MS Sans Serif" SIZE=2>responds <B>X = sue</B> , and on backtracking responds <B>X = harry</B> . </P>
+<P>&nbsp;</P>
+<B><P>Tracing</B> When you are debugging your code you'll find the trace goal useful, as in</FONT><B><FONT FACE="Courier New" COLOR="#000080"> trace?</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> , to scroll through the code. </P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Load</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Load a rulebase into memory.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Initialize</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Clear the working rulebase.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Recall</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Recall the last loaded file.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Edit</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Load the current rulebase into a text editor.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Exit</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Quit the program.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Interpret</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Enter a query, fact, or rule from the terminal.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Clauses</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>List all current clauses or predicates in the current rulebase.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>Link</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Create a DDE link to another application.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>?</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Defined as query P.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P?</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>A clause ending with a question mark is a query.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>.</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The fact or clause terminator is '.'</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P.</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>If the body of a clause is empty, the clause is called a unit clause or a fact, where P is the head literal. We interpret this declaratively as</P>
+<P>&#9;<B>P is true</P>
+</B><P>and procedurally as</P>
+<P>&#9;<B>P can be satisfied</B>.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>if</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>P if Q and R and S</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P :- Q, R, S.</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>If the body of a clause is nonempty, the clause is called a nonunit clause or rule, where P is the head and Q, R and S are the goals which make up the body. We can read such a clause either declaratively as</P>
+<P>&#9;<B>P is true if Q and R and S are true</P>
+</B><P>or procedurally as</P>
+<P>&#9;<B>To satisfy goal P, satisfy the goals Q, R and S</B>.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>-&gt;</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>when P succeeds then do Q</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P -&gt; Q</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This is defined internally as</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P -&gt; Q :- P, !, Q</B></FONT><FONT FACE="MS Sans Serif" SIZE=2>.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>!</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Cut (discard) all choice points made since the parent goal started execution.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">!</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Besides the sequencing of goals and clauses, Prolog provides the cut construct for specifying control information. It is inserted in the program just like a goal. However, it is not a part of the logic of the program and can be ignored as far as the declarative semantics is concerned.</P>
+<P>&nbsp;</P>
+<P>The effect of the cut symbol is as follows. When it is first encountered as a goal, cut succeeds immediately. If backtracking returns to the cut, then the parent goal is failed. In other words, the cut operation commits the system to all choices made since the parent goal was invoked, and causes other alternatives to be discarded. Thus, the selected goals include the parent goal itself, any goals occurring before the cut in the clause containing the cut, and any subgoals that were executed during the execution of those preceding goals.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>+</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Addition</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X+Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>-</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Subtraction</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X-Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Unary minus</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">-X</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>*</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Multiplication</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X*Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>/</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Division</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X/Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>( )</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Argument parenthesis</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">( )</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>**</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>X to the power Y</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X**Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>mod</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Modulus</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X mod Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>//</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Integer division</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X // Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>is</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Arithmetic expression X is evaluated and the result is unified with Z.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">Z is X</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This fails if X is not an arithmetic expression. The clause can be read Z is the value of arithmetic expression X.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>==</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The value of X equals the value of Y.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X==Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Note that the predicate X = Y is used for non-numeric instantiations of X and Y, where X is bound to Y or vice versa.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>\==</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The numerical value of X is not equal to the value of Y.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X\==Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>&lt;</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The numerical value of X is less than the value of Y.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X&lt;Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>&gt;</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The numerical value of X is greater than the value of Y.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X&gt;Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>=&lt;</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The numerical value of X is less than or equal to the value of Y.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X=&lt;Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>&gt;=</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The numerical value of X is greater than or equal to the value of Y.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X&gt;=Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>,</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>P and Q.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P, Q</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>;</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>P or Q.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">P; Q</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>|</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The list with head P, second element Q, and remainder of list L</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">[P,Q | L]</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>=</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Bind the Y to value to X or vice versa. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X=Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is the same as defining a clause equal(X,X).</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>\=</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>For bound variables X and Y, this is true if X and Y differ. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">X\=Y</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is the same as defining clauses:</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">not_equal(X,X) :- !, fail.</P>
+<P>&#9;not_equal(X,Y).</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>arg</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Return the Nth argument of list L in A.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">arg(L, N, A)</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>assert</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Assert clause C.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">assert(C)</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The current instance of C is interpreted as a clause and is added to the program (with new private variables replacing any uninstantiated variables). The new clause is positioned after the last clause asserted. C must be instantiated to a non-variable.</P>
+<P>The clause assertz(C) is the same as assert(C), so that the new clause becomes the last clause for the procedure concerned. </P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>asserta</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Assert C as first clause.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">asserta(C)</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This clause is similar to assert(C), except that the new clause becomes the first clause for the procedure concerned.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>atom</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is true if the bound term T is an atom.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">atom(T)</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>call</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Execute the goal X</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">call(X) or X</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>If X is instantiated to an acceptable term in body of a clause, the goal X (i.e. call(X) where call() need not be typed) is executed exactly as if that term appeared textually, except that any cut (!) occurring in X will remove only those choice points in X. If X is not instantiated as described above, an error message is displayed and the call fails.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>concat</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Concatenate the terms in the list L to the atomic term T.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">concat(L, T)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This is implementation dependent and may differ on other Prologs.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>display</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Display an atomic term T to the console.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">display(T)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>fail</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Always fail and backtrack immediately. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">fail</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is used to cause backtracking, and is usually placed at the end of a clause.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>findall</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The set of X's such that P is provable is S.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">findall(X, P, S)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>Multiple solutions of a problem can be collected by repeatedly backtracking and gradually building up a full list of the solutions. The findall builtin predicate is provided to automate this process. Formally findall means: </P>
+<P>&nbsp;</P>
+<P>&#9;"S is the set of all instances of X such that P is provable, where that set is non-empty". </P>
+<P>&nbsp;</P>
+<P>The term P specifies a goal or goals as in call(P). S is a set of terms represented as a list of those terms, without duplicates, in the standard order for terms. The variables appearing in the term X should not appear anywhere else in the clause, except within the term P. For example, the call: </P>
+<P>&nbsp;</P>
+<P>&#9;findall(X, mode(X), S).</P>
+<P>&nbsp;</P>
+<P>may produce this solution:</P>
+<P>&nbsp;</P>
+<P>&#9;S = [pre_flight, takeoff, cruise]</P>
+<P>&nbsp;</P>
+<P>If there are uninstantiated variables in P that do not also appear in X, then a call to this builtin predicate may backtrack, generating alternate values for S. These values correspond to different instantiations of the free variables of P. </P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>float</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>True if the bound term T is a float.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">float(T)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>integer</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>True if the bound term T is an integer.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">integer(T)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>length</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The length of a list L is N. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">length(L, N)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This is an example of how to increase the speed of the interpreter by defining an often used predicate.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>listing</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Display list of clauses.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">listing(C)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>Displays list of clauses C or all clauses in the program if no arguments are provided.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>consult</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Instructs the interpreter to read the program that is in file F. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">consult(F)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>When a clause is read, it is appended after the clauses already entered by the interpreter for that procedure. When a query is read it is immediately executed. </P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>nl</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Print a newline to the output console or file.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">nl</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>not</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>If the goal P has a solution, then fail, otherwise succeed. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">not(P)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This also means goal P is not provable. Equivalent Prolog code for not(P) is:</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">not(P) :- P, !, fail.</P>
+<P>&#9;not(_).</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>prin</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Print the list of terms L or the single term L to the console or file.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">prin(L)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This is implementation dependent and may differ on other Prologs.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>read</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Read the term T from the console.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">read(T)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>retract</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The first clause in the program that matches C is erased. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">retract(C)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>C must be initially instantiated to a non-variable symbol. The predicate may be used in a non-determinate fashion, i.e. it will successively retract clauses matching the argument through backtracking. The space occupied by retracted or abolished clauses will be recovered during garbage collection.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>save</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Save the current database to a file F. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">save(F)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This only works for simple structures consisting of facts only.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>see</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Open a file F for reading. On subsequent reads, the read(X) predicate will bind to one term per line.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">see(F)</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>seen</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Closes a file opened for reading.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">seen</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>tab</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Write N tab characters to the console or file.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">tab(N)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>tell</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Open a file F for writing.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">tell(F)</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>told</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Close the opened write file.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">told</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>trace</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Switch on debugging and start tracing</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">trace</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>The builtin trace turns on the debug mode, and the interpreter starts tracing from the next call to a user goal. If trace was given in a command on its own, the goal(s) traced will be those of the next commands. Since this is a one-time decision, a call to trace is necessary whenever tracing is required right from the start of an execution. </P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>true</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Always succeed.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">true</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>var</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>True if goal X is not bound</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">var(X)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>If X is not bound to a term, then succeed, otherwise fail.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>write</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Write out a term to the terminal display.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">write(S)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>dde</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Function to perform Windows dynamic data exchange. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">dde(ID, Msg, X)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>ID is the identifier, Msg is the data sent, and X is the result returned.</P>
+<P>&nbsp;</P>
+<P>This is not standard Prolog, and only supplied with Windows.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>gc</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Invoke the garbage collection. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">gc</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is not standard Prolog.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>multiple</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Return multiple solutions from AES. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">multiple</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is not standard Prolog.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>only_one</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Return a single solution from AES. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">only_one</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>This is not standard Prolog.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>post</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Post a query message X to the main procedure. </P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">post (X)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>The query will be executed after the current query finishes.</P>
+<P>&nbsp;</P>
+<P>This is not standard Prolog, and only supplied with Windows.</P>
+<P>&nbsp;</P>
+</FONT><B><FONT FACE="MS Sans Serif" COLOR="#000080"><P>system</P>
+</B></FONT><FONT FACE="MS Sans Serif" SIZE=2><P>&nbsp;</P>
+<P>Execute the system command line X.</P>
+<P>&nbsp;</P>
+<P>&#9;</FONT><B><FONT FACE="Courier New" COLOR="#000080">system(X)</B></FONT><FONT FACE="MS Sans Serif" SIZE=2> </P>
+<P>&nbsp;</P>
+<P>This is not standard Prolog, and only supplied with Windows.</P></FONT></BODY>
+</HTML>
+

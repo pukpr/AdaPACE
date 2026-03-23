@@ -1,7 +1,7 @@
 with Ring;
 with Pace.Socket;
 with Pace.Log;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure Pace.Ring_Driver is
 begin
@@ -15,8 +15,8 @@ begin
 	Msg.Color := Pace.Get;
 	Pace.Socket.Send (Msg);
     end;
-    Ses.Pp.Parser;
+    Pace.Ses.Pp.Parser;
 exception
     when others =>
-	Ses.Os_Exit (0);  
+	Pace.Log.Os_Exit (0);  
 end Pace.Ring_Driver;

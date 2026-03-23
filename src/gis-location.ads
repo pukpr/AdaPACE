@@ -16,6 +16,7 @@ generic
    -- hemisphere (H).
    -- southwest_easting (E).
    -- southwest_northing (N).
+   with procedure Set (Name : in String; Pos : in Hal.Position; Rot : in Hal.Orientation; Entity : in String := "");
 package Gis.Location is
 
    pragma Elaborate_Body;

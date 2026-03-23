@@ -1,10 +1,10 @@
 with Pace.Server.Xml;
 with Ada.Strings.Unbounded;
 with Ada.Characters.Handling;
-with Gnu.Xml_Tree.Kbase;
+with Pace.Xml_Tree.Kbase;
 with Text_Io;
 
-function Pace.Kbase_To_Xml (Agent : in Gnu.Rule_Process.Agent_Type;
+function Pace.Kbase_To_Xml (Agent : in Pace.Rule_Process.Agent_Type;
                             Query : in Ada.Strings.Unbounded.Unbounded_String;
                             Is_Xml_Tree : Boolean) return String is
 
@@ -30,16 +30,16 @@ function Pace.Kbase_To_Xml (Agent : in Gnu.Rule_Process.Agent_Type;
       S := S & Text;
    end Xml_Tree_Display;
 
-   Root : Gnu.Xml_Tree.Kbase.Tree;
+   Root : Pace.Xml_Tree.Kbase.Tree;
 
 begin
    Agent.Query (Asu.To_String (Query), Xml_Display'Unrestricted_Access);
    --Pace.Display (":" & Asu.To_String (S));
 
    if Is_Xml_Tree then
-      Gnu.Xml_Tree.Kbase.Parse (Asu.To_String (S), Root);
+      Pace.Xml_Tree.Kbase.Parse (Asu.To_String (S), Root);
       S := Asu.Null_Unbounded_String;
-      Gnu.Xml_Tree.Kbase.Print (Root, 0, Xml_Tree_Display'Unrestricted_Access);
+      Pace.Xml_Tree.Kbase.Print (Root, 0, Xml_Tree_Display'Unrestricted_Access);
    end if;
    return Asu.To_String (S);
 

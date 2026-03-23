@@ -5,7 +5,7 @@ with Pace.Persistent;  -- Persistent Command Pattern
 with Pace.Fault; -- Fault Command Pattern
 with Ada.Strings.Unbounded;
 with Pace.Strings;
-with Gnu.Xml_Tree;
+with Pace.Xml_Tree;
 with Uio.Kbase;
 with Gnu.Jif;
 with Ada.Numerics.Discrete_Random;
@@ -189,7 +189,7 @@ package body Suv.Gyrator is
     -- Ada Command Pattern for Web Server
     --
 
-    type Xt is new Gnu.Xml_Tree.Tree with null record;
+    type Xt is new Pace.Xml_Tree.Tree with null record;
     procedure Callback (Root : in out Xt; Tag, Value, Attributes : in String);
     procedure Callback (Root : in out Xt; Tag, Value, Attributes : in String) is
     begin

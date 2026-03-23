@@ -2,7 +2,8 @@
 --use Articulated_Arm;
 with Hal.Gazebo_Commands;
 with Ada.Numerics.Long_Elementary_Functions;
-with Ses.PP;
+with Pace.Ses.PP;
+with Pace.Log;
 
 
 procedure Test_CW is
@@ -64,10 +65,10 @@ procedure Test_CW is
    task L;
    task body L is
    begin
-      Ses.Pp.Parser;
+      Pace.Ses.Pp.Parser;
    exception
       when others =>
-         Ses.Os_Exit (0);      
+         Pace.Log.Os_Exit (0);      
    end L;
 
 begin

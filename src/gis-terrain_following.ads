@@ -3,6 +3,7 @@ with Pace;
 with Gkb;
 with Mob.Vehicle;
 with Gis.Location;
+with Hal;
 
 generic
    -- amount of time to wait between setting pitch, roll, and terrain_elevation
@@ -23,6 +24,19 @@ generic
    -- utm_raw ("ne", Lat, Long, N, E).
    -- map_name_dted (Name).
    -- map_name_dem (Name).
+   with procedure Get_Coordinate (Assembly : in String; 
+                                  Pos : out Hal.Position; 
+                                  Ori : out Hal.Orientation; 
+                                  Active : out Boolean; 
+                                  Is_Absolute : in Boolean := False; 
+                                  Scale : out Hal.Position; 
+                                  Entity : in String := "");
+                                  
+   with procedure Get_Terrain_Elev (Z_North : in Float; 
+                                    X_East : in Float;
+                                    Y_Elevation : out Float; 
+                                    Active : out Boolean);
+
 package Gis.Terrain_Following is
 
    pragma Elaborate_Body;

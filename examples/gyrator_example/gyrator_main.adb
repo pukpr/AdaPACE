@@ -2,7 +2,7 @@ with Pace.Log;
 with Pace.Socket; -- Needed for remote IPC
 with Gyrator;     -- Force elaboration of Gyrator package
 with Ada.Text_IO;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure Gyrator_Main is
    function ID is new Pace.Log.Unit_ID;
@@ -18,8 +18,8 @@ begin
    --end loop;
    
    -- or do this, whuch is waiting on stdio, ctrl-D to exit
-   Ses.Pp.Parser;
+   Pace.Ses.Pp.Parser;
 exception
     when others =>
-        Ses.Os_Exit (0);   
+        Pace.Log.Os_Exit (0);   
 end Gyrator_Main;

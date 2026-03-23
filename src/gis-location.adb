@@ -5,7 +5,7 @@ with Pace.Server;
 with Pace.Config;
 with Ada.Numerics;
 with Ada.Numerics.Elementary_Functions;
-with Hal.Ve;
+--with Hal.Ve;
 with Hal.Sms;
 with Hal;
 with Gis.Tdb;
@@ -241,7 +241,8 @@ package body Gis.Location is
          loop
             P := Get_Vehicle_Pos_From_Sw_Corner (Radius*Sin(Phi), Radius*Cos(Phi), 0.0);
             R := (0.0, Phi, 0.0);
-            Hal.Ve.Set ("", P, R, Pace_Node);
+            --Hal.Ve.
+            Set ("", P, R, Pace_Node);
             Pace.Log.Wait (Duration (Mobility.Tran.Dt));
             -- speed = Radius * Delta_Phi / Dt
             Phi := Phi + 0.005;
@@ -300,7 +301,8 @@ package body Gis.Location is
             R := (Pitch, -Heading, -Roll);
             -- Use relative coordinates
             P := Get_Vehicle_Pos_From_Sw_Corner (North, East, Altitude);
-            Hal.Ve.Set ("", P, R, Pace_Node);
+            -- Hal.Ve.
+            Set ("", P, R, Pace_Node);
          end if;
       end loop;
 

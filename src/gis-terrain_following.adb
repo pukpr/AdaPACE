@@ -1,6 +1,6 @@
 --with Gis.Ctdb;
 with Hal.Terrain_Elevation;
-with Hal.Ve;
+--with Hal.Ve;
 with Hal;
 with Pace.Server.Xml;
 with Pace.Log;
@@ -69,7 +69,8 @@ package body Gis.Terrain_Following is
                         Viscosity => Mobility.Viscosity);
       else
          -- check to see if a virtual environment can actively respond back with data
-         Hal.Ve.Get_Coordinate ("", Pos, Ori, Active, True, Dummy_Scale);
+         -- Hal.Ve.
+         Get_Coordinate ("", Pos, Ori, Active, True, Dummy_Scale, "");
          -- if active use VE values, otherwise leave the values at zero
          if Active then
             -- vega periodically responds with zeroed out values for pitch and roll
@@ -146,7 +147,8 @@ package body Gis.Terrain_Following is
 --         Pace.Log.Put_Line ("OTF Eleveation not implemented yet!!!");
       else
          -- check to see if a virtual environment can actively respond back with data
-         Hal.Ve.Get_Terrain_Elevation (N, E, Obj.Elevation, Active);
+         -- Hal.Ve.
+         Get_Terrain_Elev (N, E, Obj.Elevation, Active);
          if not Active then
             Obj.Elevation := 0.0;
          end if;

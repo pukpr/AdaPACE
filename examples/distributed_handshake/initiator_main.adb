@@ -2,7 +2,7 @@ with Pace.Log;
 with Pace.Socket;
 with Handshake;
 with Ada.Text_IO;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure Initiator_Main is
    function ID is new Pace.Log.Unit_ID;
@@ -17,10 +17,9 @@ begin
    P.Request_Id := 101;
    Ada.Text_IO.Put_Line ("Initiator: Sending Propose to Responder...");
    Pace.Socket.Send (P, Ack => True);
-
+   Ada.Text_IO.Put_Line ("Initiator: READY");
+   
    -- Listen for shutdown signal
-   Ses.Pp.Parser;
-exception
-    when others =>
-        Ses.Os_Exit (0);
+   Pace.Ses.Pp.Parser;
+   pace.Log.OS_Exit(0);
 end Initiator_Main;

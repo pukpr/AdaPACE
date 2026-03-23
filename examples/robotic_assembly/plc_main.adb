@@ -2,7 +2,7 @@ with Pace.Log;
 with Pace.Socket;
 with Assembly;
 with Ada.Text_IO;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure PLC_Main is
    function ID is new Pace.Log.Unit_ID;
@@ -58,8 +58,8 @@ procedure PLC_Main is
 begin
    Pace.Log.Agent_Id;
    Ada.Text_IO.Put_Line ("PLC Conductor (Node 1) Started.");
-   Ses.Pp.Parser;
+   Pace.Ses.Pp.Parser;
 exception
     when others =>
-        Ses.Os_Exit (0);
+        Pace.Log.Os_Exit (0);
 end PLC_Main;

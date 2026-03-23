@@ -1,9 +1,10 @@
 with Tlc;
-with Ses.Pp;
+with Pace.Ses.Pp;
+with Pace.Log;
 procedure Tlc_Test is
 begin
-    Ses.Pp.Parser;
+    Pace.Ses.Pp.Parser;
 exception
     when others =>
-	Ses.Os_Exit (0);
+	Pace.Log.Os_Exit (0);
 end Tlc_Test;

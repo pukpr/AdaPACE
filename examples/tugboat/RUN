@@ -35,4 +35,4 @@
 #   Live heading stream (server push):
 #     curl "http://localhost:5601/TUGBOT.HEADING_MONITOR"
 
-env P4PATH="../../launch.pro" ../../drivers/p4
+env P4PATH="../../" ../../drivers/p4

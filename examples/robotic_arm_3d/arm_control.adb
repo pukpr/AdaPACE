@@ -1,7 +1,7 @@
 with Arm;
 with Pace.Log;
 with Ada.Numerics.Long_Elementary_Functions;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure Arm_Control is
    use Arm;
@@ -29,8 +29,8 @@ procedure Arm_Control is
 
 begin
    -- Listen for shutdown signal
-   Ses.Pp.Parser;
+   Pace.Ses.Pp.Parser;
 exception
     when others =>
-        Ses.Os_Exit (0);
+        Pace.Log.Os_Exit (0);
 end Arm_Control;

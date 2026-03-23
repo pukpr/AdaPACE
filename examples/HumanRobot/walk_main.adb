@@ -121,7 +121,4 @@ procedure Walk_Main is
 
 begin
    Ses.Pp.Parser;
-exception
-   when others =>
-      Ses.Os_Exit(0);
 end Walk_Main;

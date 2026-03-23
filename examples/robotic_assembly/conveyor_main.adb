@@ -2,7 +2,7 @@ with Pace;
 with Pace.Log;
 with Assembly;
 with Ada.Text_IO;
-with Ses.Pp;
+with Pace.Ses.Pp;
 
 procedure Conveyor_Main is
    function ID is new Pace.Log.Unit_ID;
@@ -10,8 +10,8 @@ procedure Conveyor_Main is
 begin
    Pace.Log.Agent_Id (ID);
    Ada.Text_IO.Put_Line ("Conveyor Agent (Node" & Integer'Image(Node_ID) & ") Started.");
-   Ses.Pp.Parser;
+   Pace.Ses.Pp.Parser;
 exception
     when others =>
-        Ses.Os_Exit (0);
+        Pace.Log.Os_Exit (0);
 end Conveyor_Main;

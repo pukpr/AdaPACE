@@ -1,12 +1,16 @@
 # Object file
 *.o
+*.so
 
 # Ada Library Information
 *.ali
+*.bexch
+b__*
 
 # artifacts
 trace.out
 *.stderr
 *.stdout
-
+*.1
+*.0
 
