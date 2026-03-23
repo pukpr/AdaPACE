@@ -1,7 +1,4 @@
 with Ada.Numerics.Elementary_Functions;
-with Sal.Gen_Math.Gen_Dof_3;
-with Sal.Gen_Math.Gen_Scalar;
-with Ada.Text_Io;
 
 package body Hal.Rotations is
 
@@ -176,51 +173,156 @@ package body Hal.Rotations is
 --    qY : array (Sequence) of Float := (+1.0, +1.0, -1.0, +1.0, -1.0, -1.0);
 --    qZ : array (Sequence) of Float := (-1.0, -1.0, +1.0, +1.0, -1.0, +1.0);
 
-   package SGM is new Sal.Gen_Math(Float);
-   package SGMGS is new SGM.Gen_Scalar(Ada.Numerics.Elementary_Functions);
-   package DOF is new SGM.Gen_Dof_3 (Ada.Numerics.Elementary_Functions,
-                                     SGMGS);
-   use DOF;
+   -- Quaternion and Euler types (formerly from Sal.Gen_Math.Gen_Dof_3)
+
+   type Unit_Quaternion_Type is record
+      X, Y, Z, S : Float;
+   end record;
+
+   type Zyx_Euler_Type is record
+      Theta_Z, Theta_Y, Theta_X : Float;
+   end record;
+
+   type Unit_Vector_Type is record
+      X, Y, Z : Float;
+   end record;
+
+   -- Construct a unit quaternion from XYZS components (normalises input)
+   function To_Unit_Quaternion (Qx, Qy, Qz, Qs : Float)
+                                return Unit_Quaternion_Type is
+      Mag : constant Float :=
+        Sqrt (Qx * Qx + Qy * Qy + Qz * Qz + Qs * Qs);
+   begin
+      if Mag > 0.0 then
+         return (X => Qx / Mag, Y => Qy / Mag,
+                 Z => Qz / Mag, S => Qs / Mag);
+      else
+         raise Constraint_Error with "Cannot normalise zero quaternion";
+      end if;
+   end To_Unit_Quaternion;
+
+   -- Construct a unit quaternion from ZYX Euler angles
+   -- Q = Qz(Theta_Z) * Qy(Theta_Y) * Qx(Theta_X)
+   function To_Unit_Quaternion (Euler : Zyx_Euler_Type)
+                                return Unit_Quaternion_Type is
+      Hz : constant Float := Euler.Theta_Z / 2.0;
+      Hy : constant Float := Euler.Theta_Y / 2.0;
+      Hx : constant Float := Euler.Theta_X / 2.0;
+      Sz : constant Float := Sin (Hz); Cz : constant Float := Cos (Hz);
+      Sy : constant Float := Sin (Hy); Cy : constant Float := Cos (Hy);
+      Sx : constant Float := Sin (Hx); Cx : constant Float := Cos (Hx);
+   begin
+      return (X => Cz * Cy * Sx - Sz * Sy * Cx,
+              Y => Cz * Sy * Cx + Sz * Cy * Sx,
+              Z => Sz * Cy * Cx - Cz * Sy * Sx,
+              S => Cz * Cy * Cx + Sz * Sy * Sx);
+   end To_Unit_Quaternion;
+
+   -- Convert a unit quaternion to ZYX Euler angles
+   function To_Zyx_Euler (Q : Unit_Quaternion_Type) return Zyx_Euler_Type is
+      use Ada.Numerics;
+      Sin_Pitch : Float := 2.0 * (Q.S * Q.Y - Q.X * Q.Z);
+      Theta_Y   : Float;
+      Theta_Z   : Float;
+      Theta_X   : Float;
+   begin
+      -- Clamp to avoid Arcsin domain error at the singularity
+      if Sin_Pitch > 1.0 then
+         Sin_Pitch := 1.0;
+      elsif Sin_Pitch < -1.0 then
+         Sin_Pitch := -1.0;
+      end if;
+      Theta_Y := Arcsin (Sin_Pitch);
+      if abs (Sin_Pitch) >= 1.0 - Float'Model_Epsilon then
+         -- Gimbal-lock singularity: set Theta_Z = 0
+         Theta_Z := 0.0;
+         Theta_X := 2.0 * Arctan (Q.X, Q.S);
+      else
+         Theta_Z := Arctan (2.0 * (Q.X * Q.Y + Q.S * Q.Z),
+                            1.0 - 2.0 * (Q.Y * Q.Y + Q.Z * Q.Z));
+         Theta_X := Arctan (2.0 * (Q.Y * Q.Z + Q.S * Q.X),
+                            1.0 - 2.0 * (Q.X * Q.X + Q.Y * Q.Y));
+      end if;
+      return (Theta_Z, Theta_Y, Theta_X);
+   end To_Zyx_Euler;
+
+   -- Return the quaternion representing the inverse rotation
+   function Unit_Quaternion_Inverse (Item : Unit_Quaternion_Type)
+                                     return Unit_Quaternion_Type is
+   begin
+      return (X => -Item.X, Y => -Item.Y, Z => -Item.Z, S => Item.S);
+   end Unit_Quaternion_Inverse;
+
+   -- Quaternion multiplication
+   function "*" (Left, Right : Unit_Quaternion_Type)
+                 return Unit_Quaternion_Type is
+   begin
+      return
+        (X => Left.S * Right.X + Left.X * Right.S +
+              Left.Y * Right.Z - Left.Z * Right.Y,
+         Y => Left.S * Right.Y - Left.X * Right.Z +
+              Left.Y * Right.S + Left.Z * Right.X,
+         Z => Left.S * Right.Z + Left.X * Right.Y -
+              Left.Y * Right.X + Left.Z * Right.S,
+         S => Left.S * Right.S - Left.X * Right.X -
+              Left.Y * Right.Y - Left.Z * Right.Z);
+   end "*";
+
+   -- Return the X axis of the Cartesian frame represented by the quaternion
+   function X_Axis (Quat : Unit_Quaternion_Type) return Unit_Vector_Type is
+   begin
+      return (X => 1.0 - 2.0 * (Quat.Y * Quat.Y + Quat.Z * Quat.Z),
+              Y => 2.0 * (Quat.X * Quat.Y + Quat.S * Quat.Z),
+              Z => 2.0 * (Quat.X * Quat.Z - Quat.S * Quat.Y));
+   end X_Axis;
+
+   -- Return the Z axis of the Cartesian frame represented by the quaternion
+   function Z_Axis (Quat : Unit_Quaternion_Type) return Unit_Vector_Type is
+   begin
+      return (X => 2.0 * (Quat.X * Quat.Z + Quat.S * Quat.Y),
+              Y => 2.0 * (Quat.Y * Quat.Z - Quat.S * Quat.X),
+              Z => 1.0 - 2.0 * (Quat.Y * Quat.Y + Quat.X * Quat.X));
+   end Z_Axis;
 
    procedure To_Quaternion (Yaw, Pitch, Roll : in Float;
                             W, X, Y, Z : out Float;
                             Latitude, Longitude : in Float := 0.0;
                             Seq : in Sequence := Default) is
-      Q, Q1 : DOF.Unit_Quaternion_Type;
-      E, E1 : DOF.Zyx_Euler_Type := (Yaw, Pitch, Roll);
+      Q, Q1 : Unit_Quaternion_Type;
+      E, E1 : Zyx_Euler_Type := (Yaw, Pitch, Roll);
    begin
 
-      Q := DOF.To_Unit_Quaternion (E);
+      Q := To_Unit_Quaternion (E);
 
       if Latitude /= 0.0 or Longitude /= 0.0 then
          E1 := (Longitude, Ada.Numerics.PI/2.0 - Latitude, 0.0);
-         Q1 := DOF.To_Unit_Quaternion (E1);
-         Q := DOF."*" (Q1, Q);
+         Q1 := To_Unit_Quaternion (E1);
+         Q := Q1 * Q;
       end if;
 
-      X := Dof.X(Q);
-      Y := Dof.Y(Q);
-      Z := Dof.Z(Q);
-      W := Dof.S(Q);
+      X := Q.X;
+      Y := Q.Y;
+      Z := Q.Z;
+      W := Q.S;
       -- Division is (Z, X, Y, W) with Euler of (Pitch, Yaw, Roll)
    end;
 
    procedure To_Euler (W, X, Y, Z : in Float;
                        Yaw, Pitch, Roll : out Float;
                        Latitude, Longitude : in Float := 0.0) is
-      Q, Q1 : DOF.Unit_Quaternion_Type;
-      E, E1 : DOF.Zyx_Euler_Type;
+      Q, Q1 : Unit_Quaternion_Type;
+      E, E1 : Zyx_Euler_Type;
    begin
 
-      Q := DOF.To_Unit_Quaternion (X, Y, Z, W);
+      Q := To_Unit_Quaternion (X, Y, Z, W);
 
       if Latitude /= 0.0 or Longitude /= 0.0 then
          E1 := (Longitude, Ada.Numerics.PI/2.0 - Latitude, 0.0);
-         Q1 := DOF.To_Unit_Quaternion (E1);
-         Q1 := DOF.Unit_Quaternion_Inverse (Q1);
-         Q := DOF."*" (Q1, Q);
+         Q1 := To_Unit_Quaternion (E1);
+         Q1 := Unit_Quaternion_Inverse (Q1);
+         Q := Q1 * Q;
       end if;
-      E := DOF.To_Zyx_Euler (Q);
+      E := To_Zyx_Euler (Q);
       Yaw := E.Theta_Z;
       Pitch := E.Theta_Y;
       Roll := E.Theta_X;
@@ -264,24 +366,24 @@ package body Hal.Rotations is
          -- choose shorter path by choosing the smaller one of...
          declare
             Mag_Diff_Pos : Float :=
-              (DOF.S(Q_From)-DOF.S(Q_To))*(DOF.S(Q_From)-DOF.S(Q_To)) +
-              (DOF.X(Q_From)-DOF.X(Q_To))*(DOF.X(Q_From)-DOF.X(Q_To)) +
-              (DOF.Y(Q_From)-DOF.Y(Q_To))*(DOF.Y(Q_From)-DOF.Y(Q_To)) +
-              (DOF.Z(Q_From)-DOF.Z(Q_To))*(DOF.Z(Q_From)-DOF.Z(Q_To));
+              (Q_From.S-Q_To.S)*(Q_From.S-Q_To.S) +
+              (Q_From.X-Q_To.X)*(Q_From.X-Q_To.X) +
+              (Q_From.Y-Q_To.Y)*(Q_From.Y-Q_To.Y) +
+              (Q_From.Z-Q_To.Z)*(Q_From.Z-Q_To.Z);
             Mag_Diff_Neg : Float :=
-              (DOF.S(Q_From)+DOF.S(Q_To))*(DOF.S(Q_From)+DOF.S(Q_To)) +
-              (DOF.X(Q_From)+DOF.X(Q_To))*(DOF.X(Q_From)+DOF.X(Q_To)) +
-              (DOF.Y(Q_From)+DOF.Y(Q_To))*(DOF.Y(Q_From)+DOF.Y(Q_To)) +
-              (DOF.Z(Q_From)+DOF.Z(Q_To))*(DOF.Z(Q_From)+DOF.Z(Q_To));
+              (Q_From.S+Q_To.S)*(Q_From.S+Q_To.S) +
+              (Q_From.X+Q_To.X)*(Q_From.X+Q_To.X) +
+              (Q_From.Y+Q_To.Y)*(Q_From.Y+Q_To.Y) +
+              (Q_From.Z+Q_To.Z)*(Q_From.Z+Q_To.Z);
          begin
             if Mag_Diff_Neg < Mag_Diff_Pos then
-               Q_To := To_Unit_Quaternion (DOF.X(Q_To), DOF.Y(Q_To), DOF.Z(Q_To), DOF.S(Q_To));
+               Q_To := To_Unit_Quaternion (-Q_To.X, -Q_To.Y, -Q_To.Z, -Q_To.S);
                -- Pace.Log.Put_Line ("switching to negated Q_to to do shorter path");
             end if;
          end;
       end;
 
-      Theta := Arccos (DOF.S (Q_From) * DOF.S (Q_To) + DOF.X (Q_From) * DOF.X (Q_To) + DOF.Y (Q_From) * DOF.Y (Q_To) + DOF.Z (Q_From) * DOF.Z (Q_To));
+      Theta := Arccos (Q_From.S * Q_To.S + Q_From.X * Q_To.X + Q_From.Y * Q_To.Y + Q_From.Z * Q_To.Z);
       Sin_Theta := Sin (Theta);
 
       -- set the first and last quaternions
@@ -294,10 +396,10 @@ package body Hal.Rotations is
          From_Scalar := Sin ((1.0-T)*Theta) / Sin_Theta;
          To_Scalar := Sin (T*Theta) / Sin_Theta;
 
-         W := From_Scalar * DOF.S (Q_From) + To_Scalar * DOF.S (Q_To);
-         X := From_Scalar * DOF.X (Q_From) + To_Scalar * DOF.X (Q_To);
-         Y := From_Scalar * DOF.Y (Q_From) + To_Scalar * DOF.Y (Q_To);
-         Z := From_Scalar * DOF.Z (Q_From) + To_Scalar * DOF.Z (Q_To);
+         W := From_Scalar * Q_From.S + To_Scalar * Q_To.S;
+         X := From_Scalar * Q_From.X + To_Scalar * Q_To.X;
+         Y := From_Scalar * Q_From.Y + To_Scalar * Q_To.Y;
+         Z := From_Scalar * Q_From.Z + To_Scalar * Q_To.Z;
 
          -- should be normalized already... just need in this type for conversion purposes
          Q_T := To_Unit_Quaternion (X, Y, Z, W);
@@ -357,18 +459,18 @@ package body Hal.Rotations is
 
    procedure To_Axis (W, X, Y, Z : in Float;
                       To, Up : out Position) is
-      Q : DOF.Unit_Quaternion_Type;
-      T, U : DOF.Unit_Vector_Type;
+      Q : Unit_Quaternion_Type;
+      T, U : Unit_Vector_Type;
    begin
-      Q := DOF.To_Unit_Quaternion (X, Y, Z, W);
-      T := DOF.X_Axis (Q);
-      U := DOF.Z_Axis (Q);
-      To.X := DOF.X (T);
-      To.Y := DOF.Y (T);
-      To.Z := DOF.Z (T);
-      Up.X := DOF.X (U);
-      Up.Y := DOF.Y (U);
-      Up.Z := DOF.Z (U);
+      Q := To_Unit_Quaternion (X, Y, Z, W);
+      T := X_Axis (Q);
+      U := Z_Axis (Q);
+      To.X := T.X;
+      To.Y := T.Y;
+      To.Z := T.Z;
+      Up.X := U.X;
+      Up.Y := U.Y;
+      Up.Z := U.Z;
    end;
 
    procedure To_Axis (Yaw, Pitch, Roll : in Float;
