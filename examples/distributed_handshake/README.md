@@ -24,7 +24,7 @@ The handshake follows a circular collaborative flow:
 
 This example was authored by an AI assistant (Gemini CLI) through the following process:
 
-1.  **Library Analysis**: Studied the `PetriNetAdaComponentEnvironment.pdf` documentation to understand core mandates (e.g., the "No delay" rule, message-centric design).
+1.  **Library Analysis**: Studied the `pace.pdf` documentation to understand core mandates (e.g., the "No delay" rule, message-centric design).
 2.  **Pattern Extraction**: Analyzed existing examples like `gyrator_example` to identify the required project structure (`.gpr`), configuration files (`nodes.pro`, `session.pro`), and boilerplate for main procedures.
 3.  **Surgical Implementation**: 
     -   Defined a new Ada package (`Handshake`) to encapsulate the message types and their distributed logic.
