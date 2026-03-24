@@ -151,7 +151,6 @@ begin
    Save_Action (Assert_Xml'(Pace.Msg with S2u ("<x><a>1</a></x>")));
    Save_Action (Consult_File'(Pace.Msg with S2u ("xml")));
 
-   -- $Id: gkb.adb,v 1.5 2006/04/14 23:14:11 pukitepa Exp $
 exception
    when E : others =>
       Pace.Log.Ex (E);

@@ -126,6 +126,5 @@ package Hal.Rotations is
                                           Out_X, Out_Y, Out_Z : out Float);
    pragma Export (C, Convert_Vector_Xyz_To_Yxz_C, "convert_vector_xyz_to_yxz");
 
-   -- $Id: hal-rotations.ads,v 1.19 2006/06/19 17:09:35 ludwiglj Exp $
 end Hal.Rotations;
 

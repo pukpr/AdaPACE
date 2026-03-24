@@ -131,5 +131,4 @@ package body Uut.Basic_Delay_Ordering is
       Register_Routine(T, Test_Ordering'Access, "Test_Ordering");
    end Register_Tests;
 
-   -- $Id: uut-basic_delay_ordering.adb,v 1.3 2006/03/31 20:58:22 ludwiglj Exp $
 end Uut.Basic_Delay_Ordering;

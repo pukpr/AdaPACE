@@ -84,5 +84,4 @@ package Hal is
    type Angle_Units is (Degrees, Radians, Mils, Yumamils);
    function Convert_Angle (Value : Float; From_Units : Angle_Units; To_Units : Angle_Units) return Float;
 
-   -- $Id: hal.ads,v 1.12 2006/01/11 21:02:52 ludwiglj Exp $
 end Hal;

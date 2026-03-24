@@ -214,6 +214,5 @@ package Pace.Strings is
    -- Picks out the string between delimiters
 
    ------------------------------------------------------------------------------
-   -- $Id: pace-strings.ads,v 1.5 2006/04/14 23:14:14 pukitepa Exp $
    ------------------------------------------------------------------------------
 end Pace.Strings;

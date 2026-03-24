@@ -11,5 +11,4 @@ package Hal.Memory is
       X : Data;
    end;
 
-   -- $Id: hal-memory.ads,v 1.1 2005/09/23 18:21:18 pukitepa Exp $
 end;

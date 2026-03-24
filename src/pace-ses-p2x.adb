@@ -253,5 +253,4 @@ begin
    else
       Pace.Log.Put_Line ("Note: P2X disabled (no spawned A2X process)");
    end if;
-   -- $Id: ses-p2x.adb,v 1.9 2006/04/19 18:22:14 ludwiglj Exp $
 end Pace.Ses.P2X;

@@ -118,5 +118,4 @@ package body Uio.Server is
       end if;
    end Call;
 
-   -- $Id: uio-server.adb,v 1.14 2006/04/14 23:14:16 pukitepa Exp $
 end Uio.Server;

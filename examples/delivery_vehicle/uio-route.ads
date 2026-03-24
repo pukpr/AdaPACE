@@ -28,5 +28,4 @@ package Uio.Route is
          Waypoint : Natural;
       end record;
 
-   -- $Id: uio-route.ads,v 1.10 2004/09/30 19:28:57 ludwiglj Exp $
 end Uio.Route;

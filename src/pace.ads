@@ -161,6 +161,5 @@ private
    type Clock_Call is access function return Duration;
    procedure Set_Clock (Clock : in Clock_Call);
 
-   -- $Id: pace.ads,v 1.6 2005/11/10 22:24:03 pukitepa Exp $
 
 end Pace;

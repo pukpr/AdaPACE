@@ -13,7 +13,6 @@ generic
    
    Starting_Partitions : in Float_Type := 100.0; -- Initial (X1-X0) decimation
 
-   -- $Id: hal-eq_solver.ads,v 1.4 2005/10/10 15:40:04 pukitepa Exp $
 procedure Hal.Eq_Solver
   (Y      : in Float_Type; -- Dependent variable sol'n desired
    Xf, Yf : out Float_Type; -- Xf result, Yf gives error

@@ -11,5 +11,4 @@ package body Hal.Memory is
       end;
    end;
 
-   -- $Id: hal-memory.adb,v 1.1 2005/09/23 18:21:18 pukitepa Exp $
 end;

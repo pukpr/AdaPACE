@@ -42,6 +42,5 @@ package Gkb is
    -- starts garbage collection... if never called then garbage collection isn't done
    procedure Start_Collector;
 
-   -- $Id: gkb.ads,v 1.4 2006/04/14 23:14:11 pukitepa Exp $
 
 end Gkb;

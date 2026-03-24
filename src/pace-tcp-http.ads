@@ -53,6 +53,5 @@ package Pace.Tcp.Http is
                   Content_Type : in String := "text/xml") return String;
 
 ------------------------------------------------------------------------------
--- $Id: pace-tcp-http.ads,v 1.2 2006/04/06 23:27:46 pukitepa Exp $
 ------------------------------------------------------------------------------
 end Pace.Tcp.Http;

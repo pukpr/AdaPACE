@@ -95,5 +95,4 @@ private
    Initial : constant State  := (Empty, Empty, Empty, Empty, Empty, Empty, Empty, 
                                  Empty, Empty, Empty, Empty, Empty, Empty, Empty);
 
-   -- $Id: gis-dead_reckoning.ads,v 1.4 2005/06/21 17:45:06 pukitepa Exp $
 end Gis.Dead_Reckoning;

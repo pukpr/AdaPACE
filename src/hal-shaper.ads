@@ -70,5 +70,4 @@ package Hal.Shaper is
       Forward  : in Boolean := True)
       return                     Float;
 
-   -- $Id: hal-shaper.ads,v 1.6 2005/11/10 22:22:58 pukitepa Exp $
 end Hal.Shaper;
