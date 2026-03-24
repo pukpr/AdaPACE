@@ -32,6 +32,24 @@ package body Uut.Pubs is
    List : Pace.Socket.Publisher.Subscription_List (10);
    Loops : constant := 100;
    Amount : Integer := 0;
+
+   protected Sync is
+      entry Wait_Complete;
+      procedure Signal_Complete;
+   private
+      Completed : Boolean := False;
+   end Sync;
+
+   protected body Sync is
+      entry Wait_Complete when Completed is
+      begin
+         null;
+      end Wait_Complete;
+      procedure Signal_Complete is
+      begin
+         Completed := True;
+      end Signal_Complete;
+   end Sync;
    
    task body Agent is
       Local_Status : Status;
@@ -39,7 +57,7 @@ package body Uut.Pubs is
       Pace.Log.Agent_ID (Pace.Log.Name);
       accept Start;
       for I in 1..Loops loop
-         delay 0.1;
+         -- delay 0.1;
          Local_Status.Data := I;
          Pace.Socket.Publisher.Publish (List, Local_Status);
       end loop;
@@ -64,6 +82,9 @@ package body Uut.Pubs is
    begin
       Pace.Log.Put_Line ("3" & Obj.Data'Img, 9);
       Amount := Obj.Data;
+      if Amount = Loops then
+         Sync.Signal_Complete;
+      end if;
    end;
 
    function Passed return Boolean is
@@ -78,14 +99,18 @@ package body Uut.Pubs is
       M3 : My_Status3;
       Check : Boolean;
    begin
-      Pace.Log.Put_Line ("Test_Pubs .. if this test updates to 100 in 10 seconds then it passes.");
-      Agent.Start;
-      -- note that this test will fail if:
-      -- 1) Dispatching tag_check suppress doesn't work
+      Pace.Log.Put_Line ("Test_Pubs .. if this test updates to 100 it passes.");
+      
+      -- Subscribe FIRST to avoid race condition
       Input (Status(M1));
       Input (Status(M2));
       Input (Status(M3));
-      delay 11.0;
+
+      Agent.Start;
+      
+      -- Wait for completion instead of delay
+      Sync.Wait_Complete;
+      
       Check := Passed;
 
       Assert (Check, "If this test fails, likely the dispatching didn't work.");

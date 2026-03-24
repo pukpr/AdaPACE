@@ -2,7 +2,7 @@ with "../../pace.gpr";
 -- with "aunit";
 
 project Test is
-   for Source_Dirs use (".", "patterns");
+   for Source_Dirs use (".", "..", "patterns");
    for Object_Dir use "obj";
    for Main use ("test_runner.adb");
 
