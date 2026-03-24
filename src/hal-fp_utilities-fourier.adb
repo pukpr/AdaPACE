@@ -203,6 +203,5 @@ begin
          Ada.Numerics.Elementary_Functions.Cos (min_angle_incr * Float (i));
    end loop;
 
-   -- $Id: hal-fp_utilities-fourier.adb,v 1.2 2005/09/19 21:25:58 pukitepa Exp $
    
 end Hal.Fp_Utilities.Fourier;

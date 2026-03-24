@@ -66,6 +66,5 @@ package Pace.Hash_Table is
    function Hash (Key : Ada.Tags.Tag) return Hash_Type;
 
 ------------------------------------------------------------------------------
--- $Id: pace-hash_table.ads,v 1.1 2006/03/15 22:54:09 pukitepa Exp $
 ------------------------------------------------------------------------------
 end Pace.Hash_Table;

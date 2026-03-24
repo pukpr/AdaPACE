@@ -31,5 +31,4 @@ package Pace.Ses.Launch is
    -- Inject on top of STDOUT
    procedure Post (Str : in String);
 
-   -- $Id: ses-launch.ads,v 1.3 2006/04/03 14:56:02 pukitepa Exp $
 end Pace.Ses.Launch;

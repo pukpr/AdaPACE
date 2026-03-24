@@ -278,5 +278,4 @@ package body Uut.Pace_Notify_Release is
       Register_Routine (T, Test_Asynchronous_Simultaneous'Access, "Test_Asynchronous_Simultaneous");
    end Register_Tests;
 
-   -- $Id: uut-pace_notify_release.adb,v 1.5 2005/08/30 16:38:34 ludwiglj Exp $
 end Uut.Pace_Notify_Release;

@@ -112,6 +112,5 @@ begin
    Save_Action (Name_Service'(Pace.Msg with
                               Set => Pace.Server.Dispatch.Default));
 ------------------------------------------------------------------------------
--- $Id: pace-server-name.adb,v 1.8 2006/04/14 23:14:13 pukitepa Exp $
 ------------------------------------------------------------------------------
 end Pace.Server.Name;

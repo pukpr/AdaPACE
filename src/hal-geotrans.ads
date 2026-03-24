@@ -21,5 +21,4 @@ package Hal.GeoTrans is
          Zone : out Integer;
          hemisphere : out Character);
 
-   -- $Id: hal-geotrans.ads,v 1.1 2004/09/01 14:14:49 pukitepa Exp $
 end;

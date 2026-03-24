@@ -41,5 +41,4 @@ begin
       X_Last  := Float_Type'Min(X1, Xf + 2.0 * Delta_X); -- New upper bound
       Delta_X := Delta_X / 10.0;
    end loop;
-   -- $Id: hal-eq_solver.adb,v 1.6 2005/11/04 22:54:20 pukitepa Exp $
 end Hal.Eq_Solver;
