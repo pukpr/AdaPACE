@@ -1,0 +1,12 @@
+with "../../pace.gpr";
+-- with "aunit";
+
+project Test is
+   for Source_Dirs use (".", "patterns");
+   for Object_Dir use "obj";
+   for Main use ("test_runner.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g", "-gnatwa");
+   end Compiler;
+end Test;
