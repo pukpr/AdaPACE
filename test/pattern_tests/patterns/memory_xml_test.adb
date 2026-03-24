@@ -1,5 +1,5 @@
 with AUnit.Assertions; use AUnit.Assertions;
--- with Pace.Keyed_Shared_Memory; -- Unix specific, fails link on Windows
+with Pace.Keyed_Shared_Memory; -- Unix specific, fails link on Windows
 with Pace.Multicast;
 with Pace;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
@@ -8,35 +8,35 @@ with System.Storage_Pools;
 
 package body Memory_Xml_Test is
 
-   -- procedure Test_Keyed_Shared_Memory (T : in out AUnit.Test_Cases.Test_Case'Class) is
-   --    use Pace.Keyed_Shared_Memory;
+   procedure Test_Keyed_Shared_Memory (T : in out AUnit.Test_Cases.Test_Case'Class) is
+      use Pace.Keyed_Shared_Memory;
       
-   --    -- Declare a pool with a key. Be careful with keys on Windows.
-   --    -- If it fails to attach, we'll catch the exception.
-   --    -- On Windows, GNAT's implementation of shared memory might be limited or fail.
-   --    Pool : Block(Key => 1234);
+      -- Declare a pool with a key. Be careful with keys on Windows.
+      -- If it fails to attach, we'll catch the exception.
+      -- On Windows, GNAT's implementation of shared memory might be limited or fail.
+      Pool : Block(Key => 1234);
       
-   --    type Int_Ptr is access Integer;
-   --    for Int_Ptr'Storage_Pool use Pool;
+      type Int_Ptr is access Integer;
+      for Int_Ptr'Storage_Pool use Pool;
       
-   --    Ptr : Int_Ptr;
-   -- begin
-   --    begin
-   --       Ptr := new Integer'(42);
-   --       Assert (Ptr.all = 42, "Shared memory write/read failed");
+      Ptr : Int_Ptr;
+   begin
+      begin
+         Ptr := new Integer'(42);
+         Assert (Ptr.all = 42, "Shared memory write/read failed");
          
-   --       -- Clean up
-   --       -- Free(Ptr); -- Unchecked_Deallocation needed
-   --    exception
-   --       when Memory_Attach_Error =>
-   --          -- Expected on some systems or if key conflict.
-   --          -- User warned this might happen on Windows.
-   --          null;
-   --       when others =>
-   --          -- Other errors might happen
-   --          null;
-   --    end;
-   -- end Test_Keyed_Shared_Memory;
+         -- Clean up
+         -- Free(Ptr); -- Unchecked_Deallocation needed
+      exception
+         when Memory_Attach_Error =>
+            -- Expected on some systems or if key conflict.
+            -- User warned this might happen on Windows.
+            null;
+         when others =>
+            -- Other errors might happen
+            null;
+      end;
+   end Test_Keyed_Shared_Memory;
 
    procedure Test_Multicast (T : in out AUnit.Test_Cases.Test_Case'Class) is
       use Pace.Multicast;
@@ -53,7 +53,7 @@ package body Memory_Xml_Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      -- Register_Routine (T, Test_Keyed_Shared_Memory'Access, "Test_Keyed_Shared_Memory");
+      Register_Routine (T, Test_Keyed_Shared_Memory'Access, "Test_Keyed_Shared_Memory");
       Register_Routine (T, Test_Multicast'Access, "Test_Multicast");
    end Register_Tests;
 
