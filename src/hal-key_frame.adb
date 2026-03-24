@@ -157,5 +157,4 @@ package body Hal.Key_Frame is
       return Line_Length (P);
    end Line_Length;
 
-   -- $Id: hal-key_frame.adb,v 1.5 2005/05/24 17:29:15 pukitepa Exp $
 end Hal.Key_Frame;

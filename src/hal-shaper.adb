@@ -223,5 +223,4 @@ package body Hal.Shaper is
       end if;
    end Get_Position;
 
-   -- $Id: hal-shaper.adb,v 1.7 2005/11/14 18:34:26 ludwiglj Exp $
 end Hal.Shaper;

@@ -122,5 +122,4 @@ begin
    Save_Action (Set'(Pace.Msg with Set => Pace.Server.Dispatch.Default));
    Save_Action (Get'(Pace.Msg with Set => Pace.Server.Dispatch.Default));
 
-   -- $Id: pace-calendar.adb,v 1.2 2006/07/03 17:35:28 pukitepa Exp $
 end Pace.Calendar;

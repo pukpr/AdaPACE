@@ -30,5 +30,4 @@ package Hal.Audio.Mixer is
 
    procedure Shutdown;
 
-   -- $Id: hal-audio-mixer.ads,v 1.6 2005/12/21 15:47:36 pukitepa Exp $
 end Hal.Audio.Mixer;

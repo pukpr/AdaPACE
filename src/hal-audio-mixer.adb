@@ -35,5 +35,4 @@ package body Hal.Audio.Mixer is
       null;
    end;
 
-   -- $Id: hal-audio-mixer.adb,v 1.8 2005/12/21 15:47:36 pukitepa Exp $
 end Hal.Audio.Mixer;

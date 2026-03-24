@@ -21,5 +21,4 @@ package Hal.Terrain_Elevation.DTED is
       Zone_Number         : out Integer;
       Hemisphere          : out Character);
 
-   -- $Id: hal-terrain_elevation-dted.ads,v 1.1 2005/07/18 13:11:01 pukitepa $
 end Hal.Terrain_Elevation.DTED;

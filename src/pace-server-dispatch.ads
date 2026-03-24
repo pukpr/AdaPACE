@@ -56,6 +56,5 @@ private
      Pace.Strings.Ustr.To_Unbounded_String ("(xml output)");
 
 ------------------------------------------------------------------------------
--- $Id: pace-server-dispatch.ads,v 1.4 2006/04/14 23:14:13 pukitepa Exp $
 ------------------------------------------------------------------------------
 end Pace.Server.Dispatch;

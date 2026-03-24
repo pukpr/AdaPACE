@@ -35,5 +35,4 @@ package Hal.Key_Frame is
 
    function Line_Length (p1 : FPoints; Var :  Float) return Float;
 
-   -- $Id: hal-key_frame.ads,v 1.5 2005/05/24 17:29:15 pukitepa Exp $
 end Hal.Key_Frame;

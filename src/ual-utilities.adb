@@ -217,5 +217,4 @@ package body Ual.Utilities is
       return Ada.Strings.Fixed.Translate(S, Lowercase_Underscore'Access);
    end LL;
 
-   -- $Id: ual-utilities.adb,v 1.21 2006/07/21 18:44:47 ludwiglj Exp $
 end Ual.Utilities;

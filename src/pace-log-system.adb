@@ -316,5 +316,4 @@ begin
      (Tasking_Debug'(Pace.Msg with Set => S2u ("kill")));
    Save_Action
      (Is_Program_Paused'(Pace.Msg with Set => Pace.Server.Dispatch.Default));
-   -- $Id: pace-log-system.adb,v 1.17 2006/06/30 22:20:07 pukitepa Exp $
 end Pace.Log.System;

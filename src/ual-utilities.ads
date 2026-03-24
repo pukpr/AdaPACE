@@ -79,5 +79,4 @@ package Ual.Utilities is
    subtype Strings is Pace.Xml.Strings;
    function Search_Xml (Xml : in String; Key : in String) return Strings renames Pace.Xml.Search_Xml;
 
--- $Id: ual-utilities.ads,v 1.19 2006/07/21 18:44:47 ludwiglj Exp $
 end Ual.Utilities;

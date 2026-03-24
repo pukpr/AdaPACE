@@ -576,5 +576,4 @@ package body Hal.Rotations is
       Out_Z := Result.Z;
    end Convert_Vector_Xyz_To_Yxz_C;
 
-   -- $Id: hal-rotations.adb,v 1.22 2006/06/19 17:09:35 ludwiglj Exp $
 end Hal.Rotations;

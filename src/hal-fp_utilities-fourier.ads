@@ -14,6 +14,5 @@ package Hal.Fp_Utilities.Fourier is
 
    procedure FFT (X : in out FFT_Type; inverse : in Boolean := False);
 
-   -- $Id: hal-fp_utilities-fourier.ads,v 1.2 2005/09/19 21:25:58 pukitepa Exp $
    
 end Hal.Fp_Utilities.Fourier;

@@ -14,6 +14,5 @@ package body Gis.Calendar is
       Seconds_In_Week := Float(Days)*86400.0 + Float(Sec);
    end;
 
-   -- $Id: gis-calendar.adb,v 1.1 2004/09/14 21:35:12 pukitepa Exp $
    
 end Gis.Calendar;

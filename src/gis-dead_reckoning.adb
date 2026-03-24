@@ -211,5 +211,4 @@ package body Gis.Dead_Reckoning is
 
    end Dead_Reckoner;
 
-   -- $Id: gis-dead_reckoning.adb,v 1.5 2005/06/21 17:45:08 pukitepa Exp $
 end Gis.Dead_Reckoning;
