@@ -24,14 +24,16 @@ gprbuild -aP../.. gyrator_ex.gpr
 ## Running a distributed example
 
 ```
-cd ../drivers
+cd ../../drivers
 gprbuild -aP.. p4.gpr
 cd ../examples/gyrator_example
-env P4PATH="../../launch.pro" ../../drivers/p4
+env P4PATH="../.." ../../drivers/p4
 ```
 
 This uses ssh to launch the application
 
+If there is but one .gpr file in a directory, it is enough to run gprbuild, as long as the path to the inherited pace.grp is in that project file.
+Same holds for execution, alias go="env P4PATH="../.." ../../drivers/p4"  is enough to run the example if there is a session.pro file in that dir.
 
 ## Conventions
 
