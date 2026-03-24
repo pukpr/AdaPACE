@@ -1,7 +1,7 @@
 # Tugbot Simulation
 
 Ada/PACE simulation for the **tugbot** warehouse logistics robot, integrated
-with the Gazebo 3D 6-DOF physics model and equipped with a WMI (Woman-Machine
+with the Gazebo 3D 6-DOF physics model and equipped with a WMI (Web-Machine
 Interface) web server for remote manipulation.
 
 ## Architecture
