@@ -1,8 +1,20 @@
-# Review Pipeline Example
+# Review Pipeline — Implementing agent coordination with plumbing logic
 
 This example implements a **Composer → Checker → Critic** agent coordination
 pipeline in a single executable, using local (`Pace.Dispatching.Input`) dispatch
-throughout.  It demonstrates the following typed agent-coordination logic:
+throughout.  It demonstrates typed agent coordination expressed as **plumbing
+logic** — a dataflow notation where agents are connected by typed channels,
+filters, and maps, modelled after functional pipe composition:
+
+```
+input ; composer ; checker
+checker ; filter(verdict = false) ; map({verdict, commentary}) ; composer
+checker ; filter(verdict = true)  ; critic
+critic  ; filter(score < 85)      ; map({score, review})       ; composer
+critic  ; filter(score >= 85).draft ; output
+```
+
+The complete typed agent-coordination logic is:
 
 ```
 type Verdict = { verdict: bool, commentary: string, draft: string }
@@ -77,13 +89,29 @@ pace.pdf **Elaboration Order Pattern**:
 
 ## Building and Running
 
-```bash
-# Build
-sh BUILD
+### Build
 
-# Run (single executable)
-sh RUN
+```bash
+gprbuild -aP../.. review_pipeline.gpr
 ```
+
+Or equivalently:
+
+```bash
+sh BUILD
+```
+
+### Run
+
+```bash
+env  PACE_SIM=1 PACE_NODE=0 PACE=../.. obj/main
+```
+
+| Environment variable | Value | Meaning |
+|----------------------|-------|---------|
+| `PACE_SIM`  | `1`    | Enable simulation mode: time advances by discrete events rather than wall-clock |
+| `PACE_NODE` | `0`    | Standalone single-node execution (no P4 distributed launcher needed) |
+| `PACE`      | `../..`| Path to the PACE root directory (used by the runtime to locate `config.pro`, `kbase/`, etc.) |
 
 ## Extending to Distributed Execution
 
