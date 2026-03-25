@@ -5,7 +5,7 @@ package Review_Pipeline.Critic is
 
    --  Critic agent entry point.
    --  Called via Pace.Dispatching.Input (Verdict) ->
-   --    Review_Pipeline.Input (Verdict) -> Critic.Handle (Verdict).
-   procedure Handle (Obj : in Review_Pipeline.Verdict);
+   --    Review_Pipeline.Input (Verdict) -> Critic.Input (Verdict).
+   procedure Input (Obj : in Review_Pipeline.Verdict);
 
 end Review_Pipeline.Critic;
