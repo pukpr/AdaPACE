@@ -21,5 +21,7 @@ begin
    
    -- Listen for shutdown signal
    Pace.Ses.Pp.Parser;
-   pace.Log.OS_Exit(0);
+exception 
+   when others =>
+      pace.Log.OS_Exit(0);
 end Initiator_Main;

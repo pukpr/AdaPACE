@@ -9,8 +9,9 @@ package body Handshake is
    begin
       Pace.Log.Put_Line ("Responder: Received Propose (Id =" & Integer'Image(Obj.Request_Id) & ")");
       V.Request_Id := Obj.Request_Id;
-      Pace.Log.Put_Line ("Responder: Sending Validate to Verifier...");
+      Pace.Log.Put_Line ("Responder: Sending Validate to Verifier...from node=" & Pace.Get_Node(Obj)'Img & " to right here " &  Pace.Getenv("PACE_NODE", "?"));
       Pace.Socket.Send (V, Ack => True);
+      Pace.Log.Trace (Obj);
    end Input;
 
    -- 2. Verifier (Node 3) receives Validate from Node 2
@@ -19,15 +20,17 @@ package body Handshake is
    begin
       Pace.Log.Put_Line ("Verifier: Received Validate (Id =" & Integer'Image(Obj.Request_Id) & ")");
       C.Request_Id := Obj.Request_Id;
-      Pace.Log.Put_Line ("Verifier: Sending Confirm to Initiator...");
+      Pace.Log.Put_Line ("Verifier: Sending Confirm to Initiator...from node=" & Pace.Get_Node(Obj)'Img & " to right here " & Pace.Getenv("PACE_NODE", "?"));
       Pace.Socket.Send (C, Ack => True);
+      Pace.Log.Trace (Obj);
    end Input;
 
    -- 3. Initiator (Node 1) receives Confirm from Node 3
    procedure Input (Obj : in Confirm) is
    begin
       Pace.Log.Put_Line ("Initiator: Received Confirm (Id =" & Integer'Image(Obj.Request_Id) & ")");
-      Pace.Log.Put_Line ("Initiator: Handshake complete for Id =" & Integer'Image(Obj.Request_Id));
+      Pace.Log.Put_Line ("Initiator: Handshake complete for Id =" & Integer'Image(Obj.Request_Id) & " from node=" & Pace.Get_Node(Obj)'Img & " to right here " & Pace.Getenv("PACE_NODE", "?"));
+      Pace.Log.Trace (Obj);
    end Input;
 
 end Handshake;

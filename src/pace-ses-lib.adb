@@ -2,6 +2,7 @@ with Gnat.Os_Lib;
 with Text_IO;
 with Gnat.Regpat;
 with System;
+with Pace.Strings;
 
 package body Pace.Ses.Lib is
    use Gnat.Expect; 
@@ -62,7 +63,8 @@ package body Pace.Ses.Lib is
       Params : Gnat.Os_Lib.Argument_List (1 .. 2);
       Pid    : Pd := (new Run_Id,Re_Pattern (Match));
 
-      Sh : constant String := "env " & No_Env & " DISPLAY=" & Display & " PATH=. ";
+      PN : constant String := " PACE_NODE=" & Pace.Strings.Trim(Index);
+      Sh : constant String := "env " & No_Env & " DISPLAY=" & Display & PN & " PATH=. ";
       Cd : constant String := "cd " & Dir & " && ";
       function Launching_Shell return String is
       begin

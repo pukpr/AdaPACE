@@ -12,5 +12,7 @@ begin
 
    -- Listen for shutdown signal
    Ses.Pp.Parser;
-   pace.Log.OS_Exit(0);
+exception 
+   when others =>
+      pace.Log.OS_Exit(0);
 end Verifier_Main;
