@@ -378,6 +378,22 @@ package body Pace.Xml_Tree is
    procedure Parse (Text : String; Root : out Tree) is
       Index : aliased Natural := Text'First;
    begin
+      --  Skip any leading whitespace and XML processing instructions
+      --  (<?...?>) that precede the root element, e.g. <?xml version="1.0"?>.
+      Skip_Blanks (Text, Index);
+      while Index + 1 <= Text'Last
+        and then Text (Index) = '<'
+        and then Text (Index + 1) = '?' loop
+         Index := Index + 2;  --  Move past '<?'
+         while Index + 1 <= Text'Last
+           and then not (Text (Index) = '?' and then Text (Index + 1) = '>') loop
+            Index := Index + 1;
+         end loop;
+         if Index + 1 <= Text'Last then
+            Index := Index + 2;  --  Move past '?>'
+         end if;
+         Skip_Blanks (Text, Index);
+      end loop;
       Root.N := Get_Node (Text, Index'Unchecked_Access);
    end Parse;
 
