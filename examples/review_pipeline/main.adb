@@ -17,7 +17,7 @@ procedure Main is
    Output : Ustring;
 
 begin
-   Pace.Log.Agent_Id (Id);
+   Pace.Log.Agent_Id;
 
    Pace.Log.Put_Line ("=== Review Pipeline ===");
    Pace.Log.Put_Line

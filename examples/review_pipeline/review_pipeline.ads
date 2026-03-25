@@ -2,7 +2,7 @@ with Pace;
 with Ada.Strings.Unbounded;
 
 package Review_Pipeline is
-   pragma Elaborate_Body;
+   --pragma Elaborate_Body;
    --
    --  Review Pipeline -- Composer / Checker / Critic agent coordination
    --

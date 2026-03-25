@@ -1,7 +1,7 @@
 with Review_Pipeline;
 
 package Review_Pipeline.Critic is
-   pragma Elaborate_Body;
+   --pragma Elaborate_Body;
 
    --  Critic agent entry point.
    --  Called via Pace.Dispatching.Input (Verdict) ->
