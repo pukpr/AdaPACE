@@ -13,9 +13,11 @@ package body Review_Pipeline is
    --
    --  Pace.Log.Trace is called on every message so the trace log records
    --  each edge of the directed message-flow graph:
-   --    Request  ->  Composer
-   --    Draft    ->  Checker
-   --    Verdict  ->  Critic
+   --    Request  ->  Composer   (trace here, before Handle)
+   --    Draft    ->  Checker    (trace here, before Handle)
+   --    Verdict  ->  Critic     (trace inside accept Input rendezvous)
+   --  The Verdict trace is placed inside Critic.Agent's accept Input so
+   --  it captures the synchronous handshake point in the trace output.
    --  Post-processing the trace output yields the full coordination graph.
    --  -----------------------------------------------------------------------
 
@@ -33,8 +35,7 @@ package body Review_Pipeline is
 
    procedure Input (Obj : in Verdict) is
    begin
-      Pace.Log.Trace (Obj);
-      Review_Pipeline.Critic.Handle (Obj);
+      Review_Pipeline.Critic.Input (Obj);
    end Input;
 
    --  -----------------------------------------------------------------------

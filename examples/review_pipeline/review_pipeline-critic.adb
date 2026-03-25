@@ -15,7 +15,7 @@ package body Review_Pipeline.Critic is
    function Id is new Pace.Log.Unit_Id;
 
    task Agent is
-      entry Handle (Obj : in Review_Pipeline.Verdict);
+      entry Input (Obj : in Review_Pipeline.Verdict);
    end Agent;
 
    task body Agent is
@@ -23,10 +23,11 @@ package body Review_Pipeline.Critic is
    begin
       Pace.Log.Agent_Id (Id);
       loop
-         --  Short rendezvous: copy message only, do work outside.
-         accept Handle (Obj : in Review_Pipeline.Verdict) do
+         --  Short rendezvous: trace synchronous handshake, then copy message.
+         accept Input (Obj : in Review_Pipeline.Verdict) do
+            Pace.Log.Trace (Obj);
             V := Obj;
-         end Handle;
+         end Input;
 
          declare
             Iter        : constant Natural := V.Iteration;
@@ -64,9 +65,9 @@ package body Review_Pipeline.Critic is
       when E : others => Pace.Log.Ex (E);
    end Agent;
 
-   procedure Handle (Obj : in Review_Pipeline.Verdict) is
+   procedure Input (Obj : in Review_Pipeline.Verdict) is
    begin
-      Agent.Handle (Obj);
-   end Handle;
+      Agent.Input (Obj);
+   end Input;
 
 end Review_Pipeline.Critic;
