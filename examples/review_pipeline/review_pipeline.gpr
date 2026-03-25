@@ -1,0 +1,13 @@
+with "../../pace.gpr";
+
+project Review_Pipeline is
+
+   for Source_Dirs use (".");
+   for Object_Dir  use "obj";
+   for Main        use ("main.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g", "-gnat12", "-gnatQ");
+   end Compiler;
+
+end Review_Pipeline;
