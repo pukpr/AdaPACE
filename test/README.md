@@ -4,15 +4,18 @@ This directory contains various test suites for the AdaPACE library, ranging fro
 
 ## Available Suites
 
-### 1. Pattern Tests (`test/pattern_tests`)
-Validates fundamental PACE design patterns (Dispatch, WMI, Data Structures, Shared Memory).
+### 1. Pattern Training (`test/pattern_training`)
+The `pattern_training` folder contains tests and example programs demonstrating various concurrency and messaging patterns supported by AdaPACE. It showcases implementations such as command patterns, synchronized and asynchronous message passing, guarded queues, event handling, and publish-subscribe mechanisms. This suite helps validate the correct functioning of these patterns and serves as a practical reference for using AdaPACE's core features.
+
+### 2. Pattern Tests (`test/pattern_tests`)
+Validates more fundamental PACE design patterns (Dispatch, WMI, Data Structures, Shared Memory).
 - **Run**: `gprbuild -P test/pattern_tests/test.gpr && ./test/pattern_tests/obj/test_runner`
 
-### 2. UUT Integration Tests (`test/uut`)
+### 3. UUT Integration Tests (`test/uut`)
 Functional tests for library components like the Job Scheduler and XML engine.
 - **Run**: `cd test/uut && gprbuild -P common_suite.gpr && env PACE_SIM=1 PACE_NODE=0 PACE=.. ./test_harness`
 
-### 3. IPC & Synchronization Tests (`test/ipc_tests`)
+### 4. IPC & Synchronization Tests (`test/ipc_tests`)
 Tests multi-process communication and synchronization using the P4 launcher.
 - **Run**: `cd test/ipc_tests && source BUILD && source RUN`
 
@@ -20,8 +23,8 @@ Tests multi-process communication and synchronization using the P4 launcher.
 
 Most PACE tests support a simulation mode that allows them to run significantly faster than real-time by using a virtual clock.
 
-- **`PACE_SIM=1`**: Enables DES mode. Delays (`Pace.Log.Wait`) occur instantly in simulation time.
 - **`PACE_SIM=0`**: (Default) Real-time mode. Delays wait for actual wall-clock time.
+- **`PACE_SIM=1`**: Enables DES mode. Delays (`Pace.Log.Wait`) occur instantly in simulation time.  PACE_NODE set to 0. And the main procedure should include the statement Pace.Log.Agent_ID, no parameters.  Pace.Log.Trace statements should be inserted liberally for post-run analysis.
 
 ## Conventions
 
