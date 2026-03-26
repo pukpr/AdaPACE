@@ -1,0 +1,1 @@
+gprbuild -aP../.. main.gpr
