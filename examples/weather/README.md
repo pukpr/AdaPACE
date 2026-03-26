@@ -1,3 +1,5 @@
+*current status, uncertain, may have incorrect headers in http hat defeat crawlers*
+
 # Weather Reporting Agent
 
 A PACE example that fetches current weather data from the National Weather
