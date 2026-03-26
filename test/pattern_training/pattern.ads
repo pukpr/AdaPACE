@@ -108,9 +108,12 @@ package Pattern is
    --type Lookup_Msg is new Pace.Msh with null record;
    --procedure Input (Obj : in Lookup_Msg);
 
-   -- 100 Quit
-   type Quitter is new Pace.Msg with null record;
-   procedure Input (Obj : in Quitter);
+   -- 100 CS
+   type CS is new Pace.Msg with 
+      record   
+         N : Integer;
+      end record;
+   procedure Output (Obj : out CS);
 
 
 end Pattern;

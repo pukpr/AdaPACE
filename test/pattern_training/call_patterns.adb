@@ -8,7 +8,7 @@ procedure Call_Patterns is
    package Proxy_S is new Pace.Surrogates.Asynchronous(Pattern.Proxy);
 begin
    Pace.Dispatching.Set_Trace_Call (Pace.Log.Trace'Access);
-   Pace.Log.Agent_Id ("Main");
+   Pace.Log.Agent_Id;
 
    --Pattern.Agent.Ready; -- Synchronize start
    Pace.Log.Put_Line ("Starting Pattern Training Sequence");
@@ -54,8 +54,8 @@ begin
    declare
       Msg : Pattern.Msg_IO;
    begin
-      Pace.Log.Put_Line ("2. Msg_IO Pattern "  & Pace.Tag(Msg));
       Msg.Data := 42;
+      Pace.Log.Put_Line ("2. Msg_IO Pattern "  & Pace.Tag(Msg));
       Pattern.Input (Msg);
    end;
 
@@ -63,8 +63,8 @@ begin
    declare
       Msg : Pattern.Sub;
    begin
-      Pace.Log.Put_Line ("3. Notify Subscription Pattern "  & Pace.Tag(Msg));
       Msg.Data := 100;
+      Pace.Log.Put_Line ("3. Notify Subscription Pattern "  & Pace.Tag(Msg));
       Pattern.Input (Msg); -- This publishes, agent is subscribing
    end;
 
@@ -72,8 +72,8 @@ begin
    declare
       Msg : Pattern.GC;
    begin
-      Pace.Log.Put_Line ("4. Guarded Queue Pattern "  & Pace.Tag(Msg));
       Msg.Data := 200;
+      Pace.Log.Put_Line ("4. Guarded Queue Pattern "  & Pace.Tag(Msg));
       Pattern.Input (Msg);
    end;
 
@@ -123,8 +123,8 @@ begin
    declare
       Msg : Pattern.Buffer;
    begin
-      Pace.Log.Put_Line ("10. Buffered Command Pattern "  & Pace.Tag(Msg));
       Msg.Char := 'A';
+      Pace.Log.Put_Line ("10. Buffered Command Pattern "  & Pace.Tag(Msg));
       Pattern.Input (Msg);
    end;
 
@@ -132,8 +132,8 @@ begin
    declare
       Msg : Pattern.Proxy;
    begin
-      Pace.Log.Put_Line ("11. Proxy Pattern "  & Pace.Tag(Msg));
       Msg.Data := 999;
+      Pace.Log.Put_Line ("11. Proxy Pattern "  & Pace.Tag(Msg));
       Proxy_S.Surrogate.Input(Msg);
    end;
 
@@ -175,6 +175,22 @@ begin
 
    Pace.Log.Put_Line ("Pattern Training Sequence Complete");
    Pace.Log.Wait(3.0);
-   Pace.Log.Os_Exit(0);
+   
+   declare
+      Msg : Pattern.CS;
+      Regression : constant Integer := 1002341;
+   begin
+      Pattern.Output (Msg);
+      Pace.Log.Put_Line("Checksum match" & Regression'Img  & Msg.N'Img);
+      
+      if Regression = Msg.N then
+         Pace.Log.Os_Exit(0);
+      else
+         Pace.Log.Os_Exit(1);
+      end if;
+      
+   end;
+   
   
 end Call_Patterns;
+

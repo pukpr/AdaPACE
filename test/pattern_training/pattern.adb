@@ -1,5 +1,4 @@
 with Pace.Log;
-with Pace.Log.Task_Lookup;
 with Pace.Msg_Io;
 with Pace.Notify;
 with Pace.Queue;
@@ -10,11 +9,21 @@ with Pace.Signals.Buffers;
 with Pace.Surrogates;
 with Pace.Socket.Publisher;
 with Ada.Tags;
-with Ada.Task_Identification;
 with Pace.Persistent;
+with Pace.Semaphore;
 
 package body Pattern is
 
+   Checksum : Integer := 0;
+   M : aliased Pace.Semaphore.Mutex;
+   
+   procedure Add_To_Checksum(N : Integer) is
+      use Pace.Semaphore;
+      L : Lock(M'Access);
+   begin
+     Checksum := Checksum + N;
+   end Add_To_Checksum;
+  
 
    -- Agent Task for training purposes
    task Agent is 
@@ -71,6 +80,7 @@ package body Pattern is
             Recv : Boolean;
          begin
             M_IO.Await (Msg, Recv, Wait => True);
+            Add_To_Checksum(Msg.Data);
             Pace.Log.Put_Line ("Agent received Msg_IO: " & Integer'Image(Msg.Data));
          end;
 
@@ -79,6 +89,7 @@ package body Pattern is
             S : Sub;
          begin
             Pace.Notify.Subscribe (S);
+            Add_To_Checksum(S.Data);
             Pace.Log.Put_Line ("Agent subscribed to Sub: " & Integer'Image(S.Data));
          end;
 
@@ -90,6 +101,7 @@ package body Pattern is
             declare
                Msg : GC := GC(Pace.To_Msg(C_Msg));
             begin
+               Add_To_Checksum(Msg.Data);
                Pace.Log.Put_Line ("Agent got from Queue: " & Integer'Image(Msg.Data));
             end;
          end;
@@ -148,7 +160,7 @@ package body Pattern is
          Pace.Socket.Publisher.Publish(List, Local_Status);
 
          Pace.Log.Put_Line ("Agent cycle complete.");
-         exit;
+         --exit;
       end loop;
    exception
       when E : others =>
@@ -267,6 +279,7 @@ package body Pattern is
    -- 11 Surrogate (Asynchronus) Pattern
    procedure Input (Obj : in Proxy) is
    begin
+      Add_To_Checksum(Obj.Data);
       Pace.Log.Put_Line ("Surrogate Input: " & Integer'Image(Obj.Data));
    end;
 
@@ -279,6 +292,7 @@ package body Pattern is
 
    procedure Input (Obj : in My_Status) is
    begin
+      Add_To_Checksum(Obj.Data);
       Pace.Log.Put_Line ("PubSub Received a pub " & Integer'Image(Obj.Data) );
    end;
 
@@ -307,10 +321,11 @@ package body Pattern is
    
 
 
-   -- 100 Quit
-   procedure Input (Obj : in Quitter) is
+   -- 100 CS
+   procedure Output (Obj : out CS) is
    begin
-      Pace.Log.Put_Line ("Quit Command");
+      Obj.N := Checksum;
+      Pace.Log.Put_Line ("CS");
    end;
 
 
