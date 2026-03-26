@@ -3,7 +3,6 @@
 Ada/PACE simulation for the **tugbot** warehouse logistics robot, integrated
 with the Gazebo 3D 6-DOF physics model and equipped with a WMI (Web-Machine
 Interface) web server for remote manipulation.
-
 ## Architecture
 
 The simulation follows the patterns established by:
@@ -123,7 +122,9 @@ bash RUN
 ```
 
 Requires Gazebo Sim, `libTablePlugin.so` in `../../plugins/gazebo/`, and the
-P4 launcher in `../../drivers/`.
+P4 launcher in `../../drivers/`.   Should see the Gazenbo window <img align="right" width="72" height="66" alt="image" src="https://github.com/user-attachments/assets/357bd1f6-395f-4792-9498-039e4f62e0d5" />
+
+
 
 ## Remote Manipulation API
 
