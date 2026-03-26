@@ -29,6 +29,17 @@ checksum against the expected regression value.
 
 ## Pattern Catalogue
 
+> **Diagram shape legend**
+> | Shape | Meaning |
+> |-------|---------|
+> | Rectangle (blue) | Client — single-threaded caller |
+> | **Parallelogram (green/orange)** | Agent or Server Task — runs **in parallel** (Ada task / thread) |
+> | Oval (yellow) | Middleware / channel / signal object |
+> | Rectangle (purple) | Procedure — single-threaded handler |
+> | Cylinder (peach) | Persistent store |
+>
+> Solid arrows = synchronous call flow; dashed arrows = asynchronous / unblocking return.
+
 ### Pattern 1 — Command
 
 **Type:** `Pattern.Command` (extends `Pace.Msg`)
@@ -47,6 +58,8 @@ Pattern.Inout (Msg);
 Pattern.Output (Msg);
 ```
 
+![Pattern 1 — Command interaction graph](../../media/screenshots/patterns/pattern_01_command.png)
+
 ### Pattern 1a — Dispatching Command
 
 Same message type as Pattern 1 but dispatched through `Pace.Dispatching.Input`,
@@ -56,6 +69,8 @@ the concrete type at the call site.
 ```ada
 Pace.Dispatching.Input (Msg);   -- routes to Pattern.Input via tag
 ```
+
+![Pattern 1a — Dispatching Command interaction graph](../../media/screenshots/patterns/pattern_01a_dispatching.png)
 
 ### Pattern 1b — Synchronized (Rendezvous) Command
 
@@ -69,6 +84,8 @@ provides a guaranteed handshake before both sides continue.
 Pattern.Input (Msg);   -- blocks until Agent task accepts the entry
 ```
 
+![Pattern 1b — Synchronized Command interaction graph](../../media/screenshots/patterns/pattern_01b_synchronized.png)
+
 ### Pattern 1c — Asynchronous Command
 
 **Type:** `Pattern.Asynch_Command`
@@ -80,6 +97,8 @@ receiver.
 ```ada
 Pace.Surrogates.Input (Msg);   -- non-blocking; surrogate delivers later
 ```
+
+![Pattern 1c — Asynchronous Command interaction graph](../../media/screenshots/patterns/pattern_01c_asynchronous.png)
 
 ---
 
@@ -98,6 +117,8 @@ Pattern.Input (Msg);          -- enqueues via M_IO.Send
 -- Agent: M_IO.Await (Msg, Recv, Wait => True);
 ```
 
+![Pattern 2 — Msg_IO interaction graph](../../media/screenshots/patterns/pattern_02_msg_io.png)
+
 ---
 
 ### Pattern 3 — Notify Subscription
@@ -113,6 +134,8 @@ Msg.Data := 100;
 Pattern.Input (Msg);          -- calls Pace.Notify.Publish
 -- Agent: Pace.Notify.Subscribe (S);
 ```
+
+![Pattern 3 — Notify Subscription interaction graph](../../media/screenshots/patterns/pattern_03_notify.png)
 
 ---
 
@@ -131,6 +154,8 @@ Pattern.Input (Msg);          -- Q.Put (To_Channel_Msg (Obj))
 -- Agent: Q.Get (C_Msg);
 ```
 
+![Pattern 4 — Guarded Queue interaction graph](../../media/screenshots/patterns/pattern_04_guarded_queue.png)
+
 ---
 
 ### Pattern 5 — Signals Event
@@ -145,6 +170,8 @@ then calls `Ev.Signal`.  This is a binary semaphore-style event.
 Pattern.Input (Wakeup_Msg);   -- signals Ev after Agent is suspended
 -- Agent: Ev.Suspend; … Ev.Signal;
 ```
+
+![Pattern 5 — Signals Event interaction graph](../../media/screenshots/patterns/pattern_05_signals_event.png)
 
 ---
 
@@ -162,6 +189,8 @@ Pattern.Input (Signal_Msg);   -- M_Sig.Signal (S2)
 -- Agent: M_Sig.Await (S2);
 ```
 
+![Pattern 6 — Signals Multiple interaction graph](../../media/screenshots/patterns/pattern_06_signals_multiple.png)
+
 ---
 
 ### Pattern 7 — Signals Shared
@@ -177,6 +206,8 @@ hand-off of shared state.
 Pattern.Input (Msg);          -- Shared.Write (Obj)
 -- Agent: Shared.Read (Msg);
 ```
+
+![Pattern 7 — Signals Shared interaction graph](../../media/screenshots/patterns/pattern_07_signals_shared.png)
 
 ---
 
@@ -194,6 +225,8 @@ Pattern.Input (Msg);          -- Pace.Signals.TID.Signal (Task_ID)
 -- Agent: Pace.Signals.Tid.Wait;
 ```
 
+![Pattern 8 — Signals TID interaction graph](../../media/screenshots/patterns/pattern_08_signals_tid.png)
+
 ---
 
 ### Pattern 9 — Channel
@@ -209,6 +242,8 @@ types.
 Pattern.Input (Msg);          -- M_IO.Send (Obj)
 -- Agent: M_IO.Await (Msg, Recv, Wait => True);
 ```
+
+![Pattern 9 — Channel interaction graph](../../media/screenshots/patterns/pattern_09_channel.png)
 
 ---
 
@@ -226,6 +261,8 @@ Pattern.Input (Msg);          -- Pace.Signals.Buffers.Put (B_Queue, Obj)
 -- Agent: Pace.Signals.Buffers.Get (B_Queue, C_Msg);
 ```
 
+![Pattern 10 — Buffered Command interaction graph](../../media/screenshots/patterns/pattern_10_buffered.png)
+
 ---
 
 ### Pattern 11 — Surrogate (Asynchronous Proxy)
@@ -240,6 +277,8 @@ the caller from blocking or distributed delivery.
 ```ada
 Proxy_S.Surrogate.Input (Msg);   -- async dispatch; returns immediately
 ```
+
+![Pattern 11 — Surrogate interaction graph](../../media/screenshots/patterns/pattern_11_surrogate.png)
 
 ---
 
@@ -259,6 +298,8 @@ Pattern.Input (Status(Msg));  -- Publisher.Subscribe (List, Obj)
 -- → routed to My_Status.Input on subscribers
 ```
 
+![Pattern 12 — Publish-Subscribe interaction graph](../../media/screenshots/patterns/pattern_12_pubsub.png)
+
 ---
 
 ### Pattern 13 — Callback Command
@@ -276,6 +317,8 @@ Msg.Callback := Pace.To_Callback (CB_Obj);
 Pattern.Input (Msg);          -- Pace.Dispatching.Input (+Obj.Callback)
 ```
 
+![Pattern 13 — Callback Command interaction graph](../../media/screenshots/patterns/pattern_13_callback.png)
+
 ---
 
 ### Pattern 14 — Persistent Command
@@ -290,6 +333,8 @@ lifetime of a session.
 ```ada
 Pattern.Input (Msg);          -- Persistent.Put / Persistent.Get
 ```
+
+![Pattern 14 — Persistent Command interaction graph](../../media/screenshots/patterns/pattern_14_persistent.png)
 
 ---
 
