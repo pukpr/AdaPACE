@@ -13,6 +13,19 @@ package body Pace.Tcp.Http is
       return "/";
    end Null_Init;
 
+   --  Return the hostname portion of a "host" or "host:port" URL string.
+   --  For example, "forecast.weather.gov:80" returns "forecast.weather.gov".
+   --  IPv6 bracket notation (e.g. "[::1]:8080") is not used in this library.
+   function Extract_Host (Url : String) return String is
+   begin
+      for I in Url'Range loop
+         if Url (I) = ':' then
+            return Url (Url'First .. I - 1);
+         end if;
+      end loop;
+      return Url;
+   end Extract_Host;
+
    function Discard_Header (S : Socket_Type) return Integer is
       Length : Integer := -1;
    begin
@@ -78,6 +91,8 @@ package body Pace.Tcp.Http is
    begin
       S := Establish_Connection (Url);
       Put_Line (S, "GET " & Init.all & Item & " HTTP/1.0");
+      Put_Line (S, "Host: " & Extract_Host (Url));
+      Put_Line (S, "User-Agent: AdaPACE/1.0");
       New_Line (S);
       L := Discard_Header (S);
       if L = 0 then
@@ -160,6 +175,8 @@ package body Pace.Tcp.Http is
    begin
       S := Establish_Connection (Host & ":" & Pace.Strings.Trim (Port));
       Put_Line (S, "GET " & Item & " HTTP/1.0");
+      Put_Line (S, "Host: " & Host);
+      Put_Line (S, "User-Agent: AdaPACE/1.0");
       New_Line (S);
       if Header_Discard then
          L := Discard_Header (S);
@@ -213,6 +230,8 @@ package body Pace.Tcp.Http is
          Put_Line (S, "POST " & Item & " HTTP/1.0");
          Pace.Log.Put_Line ("posting action " & Item);
       end if;
+      Put_Line (S, "Host: " & Extract_Host (Url));
+      Put_Line (S, "User-Agent: AdaPACE/1.0");
       Put_Line (S, "CONTENT-TYPE: " & Content_Type);
       Put_Line (S, "CONTENT-LENGTH: " & Integer'Image (Raw_Data'Length));
       New_Line (S);
