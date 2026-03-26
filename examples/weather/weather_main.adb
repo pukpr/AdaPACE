@@ -118,7 +118,7 @@ begin
          return;
       end if;
 
-      Pace.Log.Put_Line ("Received " & Trim (Xml'Length)
+      Pace.Log.Put_Line ("Received " & Trim (Integer'(Xml'Length))
                          & " bytes of observation XML");
 
       --  ── Step 3: PACE XML-to-KBASE (nested Prolog functor) ────────────
