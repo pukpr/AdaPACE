@@ -32,7 +32,7 @@ tugboat/
 └── RUN                 -- Run script  (env P4PATH … drivers/p4)
 ```
 
-## WMI — Woman-Machine Interface
+## WMI — Web-Machine Interface
 
 `Wmi` (`wmi.ads`) is a rename of `Uio.Server`:
 
