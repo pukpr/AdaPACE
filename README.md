@@ -28,6 +28,8 @@ PACE empowers development of distributed, concurrent, and real-time systems in A
 - **State Machines in Tasks:** Implement complex sequential and parallel logic within coordinated agent tasks.
 - **Socket Abstraction:** Uniform, high-level networking interface for point-to-point, publish/subscribe, and multicast communication.
 
+See the [Test: Pattern Training](https://github.com/pukpr/AdaPACE/tree/main/test#1-pattern-training-testpattern_training) for detailed discussion of the basic communication patterns.
+
 ---
 
 ## Selected Example Systems
