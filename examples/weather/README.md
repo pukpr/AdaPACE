@@ -1,4 +1,4 @@
-*current status, uncertain, may have incorrect headers in http hat defeat crawlers*
+*Fetches NWS current observation XML over plain HTTP (port 80) using `Pace.Tcp.Http.Get` with proper `Host:` and `User-Agent:` request headers.*
 
 # Weather Reporting Agent
 
@@ -23,6 +23,7 @@ can then be queried by a PACE program.
 ```
 NWS endpoint                PACE program
 forecast.weather.gov:80 ──► Pace.Tcp.Http.Get
+                             (Host: + User-Agent: headers included)
         │
         │  raw XML string
         ▼
@@ -54,7 +55,9 @@ Replace `KDAG` with any NWS four-character ICAO station identifier.  A full
 list of stations and their XML URLs is available at:
 <https://w1.weather.gov/xml/current_obs/>
 
-> **Note:** NWS may redirect plain-HTTP requests to HTTPS.  The PACE HTTP
+> **Note:** `Pace.Tcp.Http.Get` now sends `Host:` and `User-Agent:` request
+> headers, which satisfies the anti-bot checks used by the NWS server.
+> NWS may still redirect plain-HTTP requests to HTTPS.  The PACE HTTP
 > client (`Pace.Tcp.Http.Get`) does not support TLS.  If the fetch returns
 > an empty response, verify that the endpoint is accessible on port 80 from
 > your network, or supply cached XML via the `WKB_FILE` / environment

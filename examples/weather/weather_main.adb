@@ -20,6 +20,8 @@ with Pace.Strings; use Pace.Strings;
 --
 --  2. HTTP fetch   – Pace.Tcp.Http.Get retrieves the raw XML from the NWS
 --                    current-observation endpoint on port 80.
+--                    The request includes Host: and User-Agent: headers
+--                    to satisfy anti-bot checks on the server side.
 --                    Note: the NWS may redirect HTTP requests to HTTPS; if
 --                    an empty response is received, check connectivity or
 --                    supply XML from a local mirror / cached file.
@@ -50,7 +52,8 @@ procedure Weather_Main is
    --  NWS current-observation HTTP endpoint (plain HTTP, port 80)
    NWS_Host : constant String  := "forecast.weather.gov";
    NWS_Port : constant Integer := 80;
-   --  Path without leading slash: Pace.Tcp.Http.Get prepends "/" via Init
+   --  Path without leading slash: Pace.Tcp.Http.Get prepends "/" via Init.
+   --  Pace.Tcp.Http.Get sends Host: and User-Agent: headers automatically.
    NWS_Item : constant String  := "xml/current_obs/KDAG.xml";
 
    --  Extract one XML field and assert it as a quoted Prolog atom.
