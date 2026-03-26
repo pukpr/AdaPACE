@@ -1,4 +1,4 @@
-*Fetches NWS current observation XML over plain HTTP (port 80) using `Pace.Tcp.Http.Get` with proper `Host:` and `User-Agent:` request headers.*
+*Fetches NWS current observation XML via `Pace.Tcp.Http.Get` (plain HTTP, port 80); falls back to `curl` over HTTPS when the server redirects.*
 
 # Weather Reporting Agent
 
@@ -10,7 +10,8 @@ can then be queried by a PACE program.
 
 | PACE feature | Where used |
 |---|---|
-| `Pace.Tcp.Http.Get` | Fetches raw XML from the NWS HTTP endpoint |
+| `Pace.Tcp.Http.Get` | Primary fetch of raw XML from the NWS HTTP endpoint |
+| `Gnu.Pipe_Commands` + `curl` | HTTPS fallback when the HTTP response is empty |
 | `Pace.Xml_Tree.Search_Xml` | Extracts individual leaf values from the XML |
 | `Pace.Server.Kbase_Utilities.Xml_To_Kbase` | Converts the full XML tree to a nested Prolog functor (PACE XML-to-KBASE) |
 | `Pace.Rule_Process.Agent_Type.Assert` | Asserts flat single-argument facts for easy rule matching |
@@ -24,6 +25,9 @@ can then be queried by a PACE program.
 NWS endpoint                PACE program
 forecast.weather.gov:80 ──► Pace.Tcp.Http.Get
                              (Host: + User-Agent: headers included)
+        │
+        │  empty (301 redirect to HTTPS)?
+        │  yes ──► Gnu.Pipe_Commands: curl -sf https://...
         │
         │  raw XML string
         ▼
@@ -48,20 +52,20 @@ Prolog query result ──► Pace.Log.Put_Line (printed to console)
 The XML feed for station KDAG (Death Valley National Park, CA) is served at:
 
 ```
-http://forecast.weather.gov/xml/current_obs/KDAG.xml
+https://forecast.weather.gov/xml/current_obs/KDAG.xml
 ```
+
+The program first tries the plain-HTTP URL on port 80.  If the server
+returns an empty response (e.g. a 301 redirect to HTTPS), it retries
+automatically using `curl` with the `https://` URL.
 
 Replace `KDAG` with any NWS four-character ICAO station identifier.  A full
 list of stations and their XML URLs is available at:
 <https://w1.weather.gov/xml/current_obs/>
 
-> **Note:** `Pace.Tcp.Http.Get` now sends `Host:` and `User-Agent:` request
-> headers, which satisfies the anti-bot checks used by the NWS server.
-> NWS may still redirect plain-HTTP requests to HTTPS.  The PACE HTTP
-> client (`Pace.Tcp.Http.Get`) does not support TLS.  If the fetch returns
-> an empty response, verify that the endpoint is accessible on port 80 from
-> your network, or supply cached XML via the `WKB_FILE` / environment
-> variable approach described below.
+> **Note:** `curl` must be installed on the host system for the HTTPS
+> fallback to succeed.  The PACE TCP client (`Pace.Tcp.Http.Get`) does not
+> support TLS.
 
 ### XML-to-KBASE conversion
 
