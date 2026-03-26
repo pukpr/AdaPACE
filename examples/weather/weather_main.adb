@@ -2,6 +2,7 @@ with Wmi;
 with Wkb;
 with Pace.Log;
 with Pace.Tcp.Http;
+with Gnu.Pipe_Commands;
 with Pace.Xml_Tree;
 with Pace.Server.Kbase_Utilities;
 with Pace.Strings; use Pace.Strings;
@@ -18,13 +19,11 @@ with Pace.Strings; use Pace.Strings;
 --                    (GKB instantiation) which starts the Prolog agent and
 --                    loads $PACE/kbase/weather.pro.
 --
---  2. HTTP fetch   – Pace.Tcp.Http.Get retrieves the raw XML from the NWS
---                    current-observation endpoint on port 80.
---                    The request includes Host: and User-Agent: headers
---                    to satisfy anti-bot checks on the server side.
---                    Note: the NWS may redirect HTTP requests to HTTPS; if
---                    an empty response is received, check connectivity or
---                    supply XML from a local mirror / cached file.
+--  2. HTTP fetch   – Pace.Tcp.Http.Get first attempts plain HTTP (port 80).
+--                    If the server redirects to HTTPS the response is empty.
+--                    In that case Gnu.Pipe_Commands invokes `curl` with the
+--                    HTTPS URL as a fallback.  curl must be installed on the
+--                    host system for the HTTPS path to succeed.
 --
 --  3. XML-to-KBASE – Pace.Server.Kbase_Utilities.Xml_To_Kbase converts the
 --                    full XML document into a nested Prolog functor:
@@ -49,12 +48,42 @@ procedure Weather_Main is
 
    use Wkb.Rules;
 
-   --  NWS current-observation HTTP endpoint (plain HTTP, port 80)
+   --  NWS current-observation endpoint.
+   --  Primary: plain HTTP via Pace.Tcp.Http.Get (port 80).
    NWS_Host : constant String  := "forecast.weather.gov";
    NWS_Port : constant Integer := 80;
-   --  Path without leading slash: Pace.Tcp.Http.Get prepends "/" via Init.
-   --  Pace.Tcp.Http.Get sends Host: and User-Agent: headers automatically.
    NWS_Item : constant String  := "xml/current_obs/KDAG.xml";
+
+   --  Fallback: HTTPS via curl when the HTTP response is empty
+   --  (e.g. the server issues a 301 redirect to HTTPS).
+   NWS_Https_Url : constant String :=
+     "https://" & NWS_Host & "/" & NWS_Item;
+
+   --  Fetch XML: try plain HTTP first; if the response is empty, fall back
+   --  to curl over HTTPS.  Returns "" only when both attempts fail.
+   function Fetch_Xml return String is
+      Http_Xml : constant String :=
+        Pace.Tcp.Http.Get (Host => NWS_Host,
+                           Port => NWS_Port,
+                           Item => NWS_Item);
+   begin
+      if Http_Xml /= "" then
+         return Http_Xml;
+      end if;
+      Pace.Log.Put_Line
+        ("HTTP returned empty – retrying over HTTPS via curl...");
+      declare
+         Pipe : Gnu.Pipe_Commands.Stream :=
+           Gnu.Pipe_Commands.Execute
+             ("curl -sS --max-time 30 " & NWS_Https_Url,
+              Gnu.Pipe_Commands.Read_File);
+         Curl_Xml : constant String :=
+           Gnu.Pipe_Commands.Read_All (Pipe);
+      begin
+         Gnu.Pipe_Commands.Close (Pipe);
+         return Curl_Xml;
+      end;
+   end Fetch_Xml;
 
    --  Extract one XML field and assert it as a quoted Prolog atom.
    --  The value is single-quoted so that atoms beginning with an uppercase
@@ -79,15 +108,13 @@ begin
    Pace.Log.Put_Line ("Weather Agent: fetching current observation for KDAG...");
 
    declare
-      Xml : constant String :=
-        Pace.Tcp.Http.Get (Host => NWS_Host,
-                           Port => NWS_Port,
-                           Item => NWS_Item);
+      Xml : constant String := Fetch_Xml;
    begin
       if Xml = "" then
          Pace.Log.Put_Line
-           ("ERROR: empty response from " & NWS_Host & " – "
-            & "the server may require HTTPS or the station may be offline");
+           ("ERROR: no data received from " & NWS_Host
+            & " (tried HTTP port 80 and HTTPS via curl)"
+            & " – check connectivity and that curl is installed");
          return;
       end if;
 
