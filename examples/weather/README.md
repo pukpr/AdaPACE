@@ -92,6 +92,7 @@ Wmi.Call("wkb.assert_xml",
          Wmi.P("set", Xml) + Wmi.P("functor", "weather_obs"))
 ```
 
+
 ### Flat Prolog facts
 
 To make the data easy to query with simple Prolog rules, the program also
@@ -121,6 +122,39 @@ weather_report(Station, Condition, TempF, Humidity, Wind) :-
     obs_humidity(Humidity),
     obs_wind(Wind).
 ```
+To check the kbase contents with a browser:
+http://localhost:5601/wkb.query?set=listing
+
+```
+...
+(:- (weather_report Station Condition TempF Humidity Wind )(
+    (station_id Station )
+    (obs_condition Condition )
+    (obs_temp_f TempF )
+    (obs_humidity Humidity )
+    (obs_wind Wind )))
+(:- (weather_summary Station Condition TempF )(
+    (station_id Station )
+    (obs_condition Condition )
+    (obs_temp_f TempF )))
+(:- (obs_pressure P )(
+    (obs_pressure_mb P )))
+(station_id "KDAG" )
+(obs_location "Daggett, Barstow-Daggett Airport, CA" )
+(obs_condition "Fair and Breezy" )
+(obs_temp_f "75.0" )
+(obs_temp_c "23.9" )
+(obs_humidity "25" )
+(obs_wind "Northwest at 20.7 MPH (18 KT)" )
+(obs_pressure_mb "1010.5" )
+(obs_visibility "10.00" )
+(obs_dewpoint_f "37.0" )
+(obs_obs_time "Last Update on Mar 25 2026, 10:50 pm PDT" )
+** YES
+
+** FINISHED
+```
+
 
 ## Files
 
