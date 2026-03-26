@@ -184,8 +184,10 @@ begin
       Pace.Log.Put_Line("Checksum match" & Regression'Img  & Msg.N'Img);
       
       if Regression = Msg.N then
+         Pace.Log.Put_Line("PASS");
          Pace.Log.Os_Exit(0);
       else
+         Pace.Log.Put_Line("FAIL");
          Pace.Log.Os_Exit(1);
       end if;
       
