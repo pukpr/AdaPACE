@@ -48,13 +48,14 @@ https://github.com/user-attachments/assets/af426389-d518-47b1-a17a-83d65bf1823f
 
 ---
 
-### 2. **[Warehouse Tugbot Simulation](examples/tugboat)**
+### 2. **[Warehouse Tugbot Simulation](examples/tugboat)**  
 - Simulates a logistics robot in Gazebo with remote control through a Web-Machine Interface (WMI).
+- Operating in an environment with constraining walls 
 - Provides: REST-like command API, Ada-side HTTP server, real-time kinematic and sensor tasks.
 
 ![Tugbot agent architecture](media/screenshots/tugboat_arch.png)
 
-<img width="368" height="332" alt="image" src="https://github.com/user-attachments/assets/357bd1f6-395f-4792-9498-039e4f62e0d5" />
+https://github.com/user-attachments/assets/99780fc4-36bd-48cd-9dc2-c48774ce0aa4
 
 
 ---
