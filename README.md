@@ -54,6 +54,9 @@ https://github.com/user-attachments/assets/af426389-d518-47b1-a17a-83d65bf1823f
 
 ![Tugbot agent architecture](media/screenshots/tugboat_arch.png)
 
+<img width="368" height="332" alt="image" src="https://github.com/user-attachments/assets/357bd1f6-395f-4792-9498-039e4f62e0d5" />
+
+
 ---
 
 ### 3. **[Humanoid Walking Robot](examples/HumanRobot)**
