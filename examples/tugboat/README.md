@@ -200,3 +200,14 @@ Wmi.Call (Query  => "tugbot.drive",
                     Wmi.P ("speed", 0.8));
 Wmi.Call (Query => "tugbot.get_status");
 ```
+
+
+
+https://github.com/user-attachments/assets/99780fc4-36bd-48cd-9dc2-c48774ce0aa4
+
+
+Applying 
+ ```
+ curl "http://localhost:5601/TUGBOT.LIGHT?set=TRUE"
+ curl "http://localhost:5601/TUGBOT.DRIVE?direction=MOVING_FORWARD&speed=0.1" 
+```
