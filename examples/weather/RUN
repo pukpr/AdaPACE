@@ -1,1 +1,1 @@
-env PACE=../.. PACE_SIM=1 PACE_NODE=0 obj/weather_main
+env PACE=../.. PACE_SIM=0 PACE_NODE=1 PACE=../.. obj/weather_main
