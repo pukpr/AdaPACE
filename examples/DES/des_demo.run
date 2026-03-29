@@ -1,0 +1,22 @@
+MACRO startup
+# --- simulation started ---
+0.1
+
+AGENT producer
+! startup
+# Producer: queuing first work item
+0.2
+<- pipeline
+# Producer: queuing second work item
+0.3
+<- pipeline
+log producer done
+
+AGENT consumer
+# Consumer: waiting for first item
+>> pipeline
+# Consumer: processed first item
+~0.2
+>> pipeline
+# Consumer: processed second item
+log consumer done
