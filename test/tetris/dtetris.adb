@@ -1,0 +1,1 @@
+-- dtetris body (see dtetris.ads for generic instantiation)

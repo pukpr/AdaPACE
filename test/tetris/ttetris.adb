@@ -1,0 +1,1 @@
+-- ttetris body (see ttetris.ads for generic instantiation)
