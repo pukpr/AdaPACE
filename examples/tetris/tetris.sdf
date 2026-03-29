@@ -1,0 +1,302 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="tetris_world">
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics" />
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster" />
+
+    <!-- Ada controls all motion; gravity is zero so pieces fall only when Ada says so -->
+    <gravity>0 0 0</gravity>
+
+    <scene>
+      <ambient>0.25 0.25 0.25 1</ambient>
+      <background>0.05 0.05 0.15 1</background>
+      <shadows>false</shadows>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 20 0 0 0</pose>
+      <diffuse>1.0 1.0 1.0 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+    </light>
+
+    <!-- GROUND PLANE — visual floor of the Tetris board -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>20 2</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>20 2</size></plane></geometry>
+          <material>
+            <ambient>0.2 0.2 0.2 1</ambient>
+            <diffuse>0.2 0.2 0.2 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================================================================
+         TETROMINO PIECES
+         All seven classic Tetris shapes. Each is one link inside the
+         single "Tetris" model. The Ada control program (tetris_main.adb)
+         drives them via Hal.Gazebo_Commands (SHM key 123456).
+
+         Block size : 0.45 m  (slight gap between blocks)
+         Grid pitch : 0.50 m
+         Pieces are laid out in the X-Z plane; Y is the board depth.
+         All pieces start at Z = 12 m and fall toward Z = 0.
+         ================================================================ -->
+    <model name="Tetris">
+
+      <!-- I-PIECE: four blocks in a horizontal row  (CYAN)
+           Shape:  [ ][ ][ ][ ]
+      -->
+      <link name="i_piece">
+        <pose>-6 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.05</ixx><iyy>0.35</iyy><izz>0.35</izz></inertia>
+        </inertial>
+        <visual name="i1">
+          <pose>-0.75 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 1 1 1</ambient><diffuse>0 0.9 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="i2">
+          <pose>-0.25 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 1 1 1</ambient><diffuse>0 0.9 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="i3">
+          <pose>0.25 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 1 1 1</ambient><diffuse>0 0.9 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="i4">
+          <pose>0.75 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 1 1 1</ambient><diffuse>0 0.9 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>2.0 0.5 0.5</size></box></geometry>
+        </collision>
+      </link>
+
+      <!-- O-PIECE: 2×2 square  (YELLOW)
+           Shape:  [ ][ ]
+                   [ ][ ]
+      -->
+      <link name="o_piece">
+        <pose>-4 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.08</ixx><iyy>0.08</iyy><izz>0.08</izz></inertia>
+        </inertial>
+        <visual name="o1">
+          <pose>-0.25 0 -0.25 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 1 0 1</ambient><diffuse>0.9 0.9 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="o2">
+          <pose>0.25 0 -0.25 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 1 0 1</ambient><diffuse>0.9 0.9 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="o3">
+          <pose>-0.25 0 0.25 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 1 0 1</ambient><diffuse>0.9 0.9 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="o4">
+          <pose>0.25 0 0.25 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 1 0 1</ambient><diffuse>0.9 0.9 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>1.0 0.5 1.0</size></box></geometry>
+        </collision>
+      </link>
+
+      <!-- T-PIECE: T-shape  (PURPLE)
+           Shape:     [ ]
+                   [ ][ ][ ]
+      -->
+      <link name="t_piece">
+        <pose>-2 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.15</ixx><iyy>0.25</iyy><izz>0.25</izz></inertia>
+        </inertial>
+        <visual name="t1">
+          <pose>-0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0.6 0 0.8 1</ambient><diffuse>0.5 0 0.7 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="t2">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0.6 0 0.8 1</ambient><diffuse>0.5 0 0.7 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="t3">
+          <pose>0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0.6 0 0.8 1</ambient><diffuse>0.5 0 0.7 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="t4">
+          <pose>0 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0.6 0 0.8 1</ambient><diffuse>0.5 0 0.7 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>1.5 0.5 1.0</size></box></geometry>
+        </collision>
+      </link>
+
+      <!-- S-PIECE: S-shape  (GREEN)
+           Shape:     [ ][ ]
+                   [ ][ ]
+      -->
+      <link name="s_piece">
+        <pose>0 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.15</ixx><iyy>0.25</iyy><izz>0.25</izz></inertia>
+        </inertial>
+        <visual name="s1">
+          <pose>-0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.85 0 1</ambient><diffuse>0 0.75 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="s2">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.85 0 1</ambient><diffuse>0 0.75 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="s3">
+          <pose>0 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.85 0 1</ambient><diffuse>0 0.75 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="s4">
+          <pose>0.5 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.85 0 1</ambient><diffuse>0 0.75 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>1.5 0.5 1.0</size></box></geometry>
+        </collision>
+      </link>
+
+      <!-- Z-PIECE: Z-shape  (RED)
+           Shape:  [ ][ ]
+                      [ ][ ]
+      -->
+      <link name="z_piece">
+        <pose>2 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.15</ixx><iyy>0.25</iyy><izz>0.25</izz></inertia>
+        </inertial>
+        <visual name="z1">
+          <pose>-0.5 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>0.9 0 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="z2">
+          <pose>0 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>0.9 0 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="z3">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>0.9 0 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="z4">
+          <pose>0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>0.9 0 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>1.5 0.5 1.0</size></box></geometry>
+        </collision>
+      </link>
+
+      <!-- J-PIECE: J-shape  (BLUE)
+           Shape:  [ ]
+                   [ ][ ][ ]
+      -->
+      <link name="j_piece">
+        <pose>4 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.15</ixx><iyy>0.25</iyy><izz>0.25</izz></inertia>
+        </inertial>
+        <visual name="j1">
+          <pose>-0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.3 1 1</ambient><diffuse>0 0.2 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="j2">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.3 1 1</ambient><diffuse>0 0.2 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="j3">
+          <pose>0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.3 1 1</ambient><diffuse>0 0.2 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="j4">
+          <pose>-0.5 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>0 0.3 1 1</ambient><diffuse>0 0.2 0.9 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>1.5 0.5 1.0</size></box></geometry>
+        </collision>
+      </link>
+
+      <!-- L-PIECE: L-shape  (ORANGE)
+           Shape:         [ ]
+                   [ ][ ][ ]
+      -->
+      <link name="l_piece">
+        <pose>6 0 12 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.15</ixx><iyy>0.25</iyy><izz>0.25</izz></inertia>
+        </inertial>
+        <visual name="l1">
+          <pose>-0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0.5 0 1</ambient><diffuse>0.9 0.45 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="l2">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0.5 0 1</ambient><diffuse>0.9 0.45 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="l3">
+          <pose>0.5 0 0 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0.5 0 1</ambient><diffuse>0.9 0.45 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <visual name="l4">
+          <pose>0.5 0 0.5 0 0 0</pose>
+          <geometry><box><size>0.45 0.45 0.45</size></box></geometry>
+          <material><ambient>1 0.5 0 1</ambient><diffuse>0.9 0.45 0 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+        </visual>
+        <collision name="coll">
+          <geometry><box><size>1.5 0.5 1.0</size></box></geometry>
+        </collision>
+      </link>
+
+      <plugin filename="libTablePlugin.so" name="custom_sim::TableControlPlugin" />
+    </model>
+
+  </world>
+</sdf>
