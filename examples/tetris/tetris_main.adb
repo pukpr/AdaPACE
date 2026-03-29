@@ -80,7 +80,7 @@ procedure Tetris_Main is
 
          end loop;
 
-         Pace.Log.Wait (dT);
+         Pace.Log.Wait (duration(dT));
       end loop;
    end Falling_Pieces;
 
