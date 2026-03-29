@@ -3,9 +3,9 @@
 --::::::::::
 --arrival.adb
 --::::::::::
-with Bricks, Wall, Calendar; 
-with Text_IO;
+with Bricks, Wall, Calendar;
 with Pace;
+with Text_IO;
 
 package body Arrival is 
 
@@ -60,31 +60,33 @@ package body Arrival is
             or
                delay Delay_Time;
             end select; 
-            Bricks.Move.Put(X     => 5, 
-                            Y     => 2, 
-                            Brick => Wall.Pick(Style), 
-                            Done  => Done); 
+            declare
+               Msg : Bricks.Move_Put :=
+                  (Pace.Msg with X => 5, Y => 2,
+                   Brick => Wall.Pick(Style), Done => False);
+            begin
+               Pace.Dispatching.Inout (Msg);
+               Done := Msg.Done;
+            end;
             if Done then 
                accept Stop; 
                exit Middle; 
             end if; 
             for Y in Wall.Height'First + 1 .. Wall.Height'Last loop
                declare
-                  Ok : Boolean; 
+                  D : Bricks.Move_Drop;
                begin
                   select
                      accept Tick;
                   or
-                     accept Stop; 
-                     exit Middle; 
-                  or 
+                     accept Stop;
+                     exit Middle;
+                  or
                      delay Delay_Time;
                   end select;
-                  Bricks.Move.Drop(Ok); 
-                  if not Ok then 
-                     exit; 
-                  end if; 
-               end; 
+                  Pace.Dispatching.Inout (D);
+                  exit when not D.Ok;
+               end;
             end loop; 
             Wall.Erase_Lines; 
          end loop Middle; 

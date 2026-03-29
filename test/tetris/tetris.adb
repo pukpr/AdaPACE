@@ -9,9 +9,10 @@ procedure Tetris is
 
    pragma Priority(4); 
 
-   Ch : Character; 
+   Ch        : Character; 
    Available : Boolean;
-   Ok : Boolean; 
+   Finished  : Bricks.Move_Finished;
+   Drop      : Bricks.Move_Drop; 
 
 begin
    loop
@@ -23,7 +24,7 @@ begin
       Screen.MoveCursor((Column => 1, Row => 5)); 
       Text_IO.Put_Line( "2=drop 4=left 5=spin 6=right");
 
-      Bricks.Move.Start; 
+      Pace.Dispatching.Input (Bricks.Move_Start'(Pace.Msg with null record));
       Pace.Dispatching.Input (Arrival.Manager_Start'(Pace.Msg with null record));
       Pace.Dispatching.Input (Arrival.Timer_Start'(Pace.Msg with null record));
       Pace.Dispatching.Input (Arrival.Speeder_Start'(Pace.Msg with null record));
@@ -34,44 +35,29 @@ begin
             exit when Available;
             delay 0.01;
          end loop;
-         exit Outer when Bricks.Finished; 
-         case Ch is 
+         Pace.Dispatching.Output (Finished);
+         exit Outer when Finished.Result;
+         case Ch is
             when '2' => -- Down arrow
                loop
-                  select
-                     Bricks.Move.Drop(Ok); 
-                  else
-                     Ok := TRUE; -- Keep dropping the brick
-                  end select;
-                  exit when not Ok; 
-               end loop; 
+                  Pace.Dispatching.Inout (Drop);
+                  exit when not Drop.Ok;
+               end loop;
                delay 1.0;
             when '4' => -- Left arrow
-               select
-                  Bricks.Move.Left; 
-               else 
-                  null; 
-               end select; 
-            when '5' => -- blank
-               select
-                  Bricks.Move.Rotation; 
-               else 
-                  null; 
-               end select; 
+               Pace.Dispatching.Input (Bricks.Move_Left'(Pace.Msg with null record));
+            when '5' => -- spin
+               Pace.Dispatching.Input (Bricks.Move_Rotation'(Pace.Msg with null record));
             when '6' => -- Right arrow
-               select
-                  Bricks.Move.Right; 
-               else 
-                  null; 
-               end select; 
-            when others => 
-               null; 
-         end case; 
+               Pace.Dispatching.Input (Bricks.Move_Right'(Pace.Msg with null record));
+            when others =>
+               null;
+         end case;
       end loop Outer; 
 
       Pace.Dispatching.Input (Arrival.Speeder_Stop'(Pace.Msg with null record));
       Pace.Dispatching.Input (Arrival.Timer_Stop'(Pace.Msg with null record));
-      Bricks.Move.Stop; 
+      Pace.Dispatching.Input (Bricks.Move_Stop'(Pace.Msg with null record));
       Pace.Dispatching.Input (Arrival.Manager_Stop'(Pace.Msg with null record));
 
       exit when Ch /= 'Y' and Ch /= 'y';
@@ -80,6 +66,5 @@ begin
 
    -- Screen.ClearScreen;
    Text_IO.New_Line(20);
-   abort Bricks.Move; 
 
 end Tetris; 

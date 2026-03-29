@@ -5,13 +5,23 @@
 --::::::::::
 with Text_IO;
 with Screen;
+with Pace;
 package body Bricks is 
    Finished_Flag : Boolean := False; 
 
-   function Finished return Boolean is 
-   begin
-      return Finished_Flag; 
-   end Finished; 
+   task Move is            -- User moves bricks according to key pressed
+      pragma Priority(5); 
+      entry Start; 
+      entry Put (X     : in     Wall.Width; 
+                 Y     : in     Wall.Height; 
+                 Brick : in     Wall.Brick_Type; 
+                 Done  :    out Boolean); 
+      entry Right; 
+      entry Left; 
+      entry Rotation; 
+      entry Drop (Ok : out Boolean); 
+      entry Stop; 
+   end Move; 
 
    task body Move is 
       X, NX            : Wall.Width; 
@@ -19,8 +29,8 @@ package body Bricks is
       New_Brick, Brick : Wall.Brick_Type; 
       Exit_Flag        : Boolean := False; 
 
-      procedure Rotate(Brick     : in     Wall.Brick_Type; 
-                       New_Brick :    out Wall.Brick_Type) is 
+      procedure Rotate (Brick     : in     Wall.Brick_Type; 
+                        New_Brick :    out Wall.Brick_Type) is 
          X, Y : Integer; 
          B    : Wall.Brick_Type; 
       begin
@@ -40,10 +50,10 @@ package body Bricks is
          Finished_Flag := False; 
          Middle : loop
             Exit_Flag := False; 
-            accept Put(X     : in     Wall.Width; 
-                       Y     : in     Wall.Height; 
-                       Brick : in     Wall.Brick_Type; 
-                       Done  :    out Boolean) do
+            accept Put (X     : in     Wall.Width; 
+                        Y     : in     Wall.Height; 
+                        Brick : in     Wall.Brick_Type; 
+                        Done  :    out Boolean) do
                if Wall.Examine(Brick, X, Y) then 
                   Done := False; 
                else 
@@ -90,7 +100,7 @@ package body Bricks is
                      end if; 
                   end Rotation; 
                or 
-                  accept Drop(Ok : out Boolean) do
+                  accept Drop (Ok : out Boolean) do
                      NY := Y + 1; 
                      if Wall.Examine(Brick, X, NY) then 
                         Wall.Erase(Brick, X, Y); 
@@ -107,10 +117,10 @@ package body Bricks is
                   accept Stop; 
                   exit Middle; 
                end select; 
-               if Exit_Flag then 
+               if Exit_Flag then
                   select
-                     accept Drop(Ok : out Boolean) do
-                        Ok := FALSE;
+                     accept Drop (Ok : out Boolean) do
+                        Ok := False;
                      end Drop;
                   or
                      delay 1.0;
@@ -123,5 +133,65 @@ package body Bricks is
    exception 
       when others => Text_IO.Put_Line("Move error");
    end Move; 
+
+   pragma Warnings (Off, "formal parameter ""Obj"" is not referenced");
+
+   procedure Output (Obj : out Move_Finished) is
+   begin
+      Obj.Result := Finished_Flag;
+   end Output;
+
+   procedure Input (Obj : in Move_Start) is
+   begin
+      Move.Start;
+   end Input;
+
+   procedure Inout (Obj : in out Move_Put) is
+   begin
+      Move.Put (Obj.X, Obj.Y, Obj.Brick, Obj.Done);
+   end Inout;
+
+   procedure Input (Obj : in Move_Right) is
+   begin
+      select
+         Move.Right;
+      else
+         null;
+      end select;
+   end Input;
+
+   procedure Input (Obj : in Move_Left) is
+   begin
+      select
+         Move.Left;
+      else
+         null;
+      end select;
+   end Input;
+
+   procedure Input (Obj : in Move_Rotation) is
+   begin
+      select
+         Move.Rotation;
+      else
+         null;
+      end select;
+   end Input;
+
+   procedure Inout (Obj : in out Move_Drop) is
+   begin
+      select
+         Move.Drop (Obj.Ok);
+      else
+         Obj.Ok := True;   -- task busy; caller retries
+      end select;
+   end Inout;
+
+   procedure Input (Obj : in Move_Stop) is
+   begin
+      Move.Stop;
+   end Input;
+
+   pragma Warnings (On, "formal parameter ""Obj"" is not referenced");
 
 end Bricks; 
