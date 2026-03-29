@@ -5,9 +5,12 @@
 --::::::::::
 with Bricks, Wall, Calendar;
 with Pace;
+with Pace.Log;
 with Text_IO;
 
 package body Arrival is 
+
+   function Id is new Pace.Log.Unit_Id;
 
    task Manager is         -- Starts the dropping bricks 
       pragma Priority(8); 
@@ -47,9 +50,10 @@ package body Arrival is
       Style : Wall.Styles; 
       Done  : Boolean;  
    begin
+      Pace.Log.Agent_Id (Id);
       Outer : loop
          Text_IO.Put_Line("Manager");
-         accept Start; 
+         accept Start;
          Middle : loop
             Style := Wall.Styles(Cheap_Random mod Wall.Styles'LAST + 1); 
             select
@@ -97,10 +101,11 @@ package body Arrival is
 
    task body Timer is 
    begin
+      Pace.Log.Agent_Id (Id);
       Outer : loop
-         Delay_Time := Initial_Delay; 
+         Delay_Time := Initial_Delay;
          Text_IO.Put_Line("Timer");
-         accept Start; 
+         accept Start;
          Main : loop
             select
                accept Stop; 
@@ -122,10 +127,11 @@ package body Arrival is
 
    task body Speeder is 
    begin
-      Delay_Time := Initial_Delay; 
+      Pace.Log.Agent_Id (Id);
+      Delay_Time := Initial_Delay;
       Outer : loop
          Text_IO.Put_Line("Speeder");
-         accept Start; 
+         accept Start;
          Middle : loop
             for I in 1 .. 100 loop
                select
@@ -147,6 +153,7 @@ package body Arrival is
    procedure Input (Obj : in Manager_Start) is
    begin
       Manager.Start;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Manager_Tick) is
@@ -156,31 +163,37 @@ package body Arrival is
       else
          null;
       end select;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Manager_Stop) is
    begin
       Manager.Stop;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Timer_Start) is
    begin
       Timer.Start;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Timer_Stop) is
    begin
       Timer.Stop;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Speeder_Start) is
    begin
       Speeder.Start;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Speeder_Stop) is
    begin
       Speeder.Stop;
+      Pace.Log.Trace (Obj);
    end Input;
 
    pragma Warnings (On, "formal parameter ""Obj"" is not referenced");

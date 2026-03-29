@@ -5,6 +5,7 @@
 --::::::::::
 with Screen, Bricks, Wall, Arrival, Text_IO; 
 with Pace;
+with Pace.Log;
 procedure Tetris is 
 
    pragma Priority(4); 
@@ -15,6 +16,7 @@ procedure Tetris is
    Drop      : Bricks.Move_Drop; 
 
 begin
+   Pace.Log.Agent_Id;
    loop
       Screen.ClearScreen; 
 

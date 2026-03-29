@@ -6,8 +6,11 @@
 with Text_IO;
 with Screen;
 with Pace;
+with Pace.Log;
 package body Bricks is 
-   Finished_Flag : Boolean := False; 
+   function Id is new Pace.Log.Unit_Id;
+
+   Finished_Flag : Boolean := False;
 
    task Move is            -- User moves bricks according to key pressed
       pragma Priority(5); 
@@ -44,9 +47,10 @@ package body Bricks is
       end Rotate; 
 
    begin
+      Pace.Log.Agent_Id (Id);
       Outer : loop
          Text_IO.Put_Line("Move");
-         accept Start; 
+         accept Start;
          Finished_Flag := False; 
          Middle : loop
             Exit_Flag := False; 
@@ -139,16 +143,19 @@ package body Bricks is
    procedure Output (Obj : out Move_Finished) is
    begin
       Obj.Result := Finished_Flag;
+      Pace.Log.Trace (Obj);
    end Output;
 
    procedure Input (Obj : in Move_Start) is
    begin
       Move.Start;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Inout (Obj : in out Move_Put) is
    begin
       Move.Put (Obj.X, Obj.Y, Obj.Brick, Obj.Done);
+      Pace.Log.Trace (Obj);
    end Inout;
 
    procedure Input (Obj : in Move_Right) is
@@ -158,6 +165,7 @@ package body Bricks is
       else
          null;
       end select;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Move_Left) is
@@ -167,6 +175,7 @@ package body Bricks is
       else
          null;
       end select;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Move_Rotation) is
@@ -176,6 +185,7 @@ package body Bricks is
       else
          null;
       end select;
+      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Inout (Obj : in out Move_Drop) is
@@ -185,11 +195,13 @@ package body Bricks is
       else
          Obj.Ok := True;   -- task busy; caller retries
       end select;
+      Pace.Log.Trace (Obj);
    end Inout;
 
    procedure Input (Obj : in Move_Stop) is
    begin
       Move.Stop;
+      Pace.Log.Trace (Obj);
    end Input;
 
    pragma Warnings (On, "formal parameter ""Obj"" is not referenced");
