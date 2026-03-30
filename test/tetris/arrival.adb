@@ -1,8 +1,8 @@
 
 
---::::::::::
+--:::::::::::
 --arrival.adb
---::::::::::
+--:::::::::::
 with Bricks, Wall, Calendar;
 with Pace;
 with Pace.Log;
@@ -14,21 +14,21 @@ package body Arrival is
 
    task Manager is         -- Starts the dropping bricks 
       pragma Priority(8); 
-      entry Tick; 
-      entry Start; 
-      entry Stop; 
+      entry Tick  (Obj : in Manager_Tick);
+      entry Start (Obj : in Manager_Start);
+      entry Stop  (Obj : in Manager_Stop);
    end Manager; 
 
    task Timer is           -- Timing between events
       pragma Priority(6); 
-      entry Start; 
-      entry Stop; 
+      entry Start (Obj : in Timer_Start);
+      entry Stop  (Obj : in Timer_Stop);
    end Timer; 
 
    task Speeder is         -- Picks up the pace after certain time
       pragma Priority(7);  
-      entry Start; 
-      entry Stop; 
+      entry Start (Obj : in Speeder_Start);
+      entry Stop  (Obj : in Speeder_Stop);
    end Speeder; 
 
    Initial_Delay : constant := 0.6; 
@@ -53,13 +53,19 @@ package body Arrival is
       Pace.Log.Agent_Id (Id);
       Outer : loop
          Text_IO.Put_Line("Manager");
-         accept Start;
+         accept Start (Obj : in Manager_Start) do
+            Pace.Log.Trace (Obj);
+         end Start;
          Middle : loop
             Style := Wall.Styles(Cheap_Random mod Wall.Styles'LAST + 1); 
             select
-               accept Tick; 
+               accept Tick (Obj : in Manager_Tick) do
+                  Pace.Log.Trace (Obj);
+               end Tick;
             or 
-               accept Stop; 
+               accept Stop (Obj : in Manager_Stop) do
+                  Pace.Log.Trace (Obj);
+               end Stop;
                exit Middle;
             or
                delay Delay_Time;
@@ -73,7 +79,9 @@ package body Arrival is
                Done := Msg.Done;
             end;
             if Done then 
-               accept Stop; 
+               accept Stop (Obj : in Manager_Stop) do
+                  Pace.Log.Trace (Obj);
+               end Stop;
                exit Middle; 
             end if; 
             for Y in Wall.Height'First + 1 .. Wall.Height'Last loop
@@ -81,9 +89,13 @@ package body Arrival is
                   D : Bricks.Move_Drop;
                begin
                   select
-                     accept Tick;
+                     accept Tick (Obj : in Manager_Tick) do
+                        Pace.Log.Trace (Obj);
+                     end Tick;
                   or
-                     accept Stop;
+                     accept Stop (Obj : in Manager_Stop) do
+                        Pace.Log.Trace (Obj);
+                     end Stop;
                      exit Middle;
                   or
                      delay Delay_Time;
@@ -105,16 +117,20 @@ package body Arrival is
       Outer : loop
          Delay_Time := Initial_Delay;
          Text_IO.Put_Line("Timer");
-         accept Start;
+         accept Start (Obj : in Timer_Start) do
+            Pace.Log.Trace (Obj);
+         end Start;
          Main : loop
             select
-               accept Stop; 
+               accept Stop (Obj : in Timer_Stop) do
+                  Pace.Log.Trace (Obj);
+               end Stop;
                exit Main;
             or 
                delay Delay_Time; 
             end select; 
             select
-               Manager.Tick; 
+               Manager.Tick (Manager_Tick'(Pace.Msg with null record));
             else
                null;
             end select;
@@ -131,11 +147,15 @@ package body Arrival is
       Delay_Time := Initial_Delay;
       Outer : loop
          Text_IO.Put_Line("Speeder");
-         accept Start;
+         accept Start (Obj : in Speeder_Start) do
+            Pace.Log.Trace (Obj);
+         end Start;
          Middle : loop
             for I in 1 .. 100 loop
                select
-                  accept Stop; 
+                  accept Stop (Obj : in Speeder_Stop) do
+                     Pace.Log.Trace (Obj);
+                  end Stop;
                   exit Middle; 
                or 
                   delay Delay_Time; 
@@ -148,54 +168,43 @@ package body Arrival is
       when others => Text_IO.Put_Line("Speeder error");
    end Speeder; 
 
-   pragma Warnings (Off, "formal parameter ""Obj"" is not referenced");
-
    procedure Input (Obj : in Manager_Start) is
    begin
-      Manager.Start;
-      Pace.Log.Trace (Obj);
+      Manager.Start (Obj);
    end Input;
 
    procedure Input (Obj : in Manager_Tick) is
    begin
       select
-         Manager.Tick;
+         Manager.Tick (Obj);
       else
          null;
       end select;
-      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Manager_Stop) is
    begin
-      Manager.Stop;
-      Pace.Log.Trace (Obj);
+      Manager.Stop (Obj);
    end Input;
 
    procedure Input (Obj : in Timer_Start) is
    begin
-      Timer.Start;
-      Pace.Log.Trace (Obj);
+      Timer.Start (Obj);
    end Input;
 
    procedure Input (Obj : in Timer_Stop) is
    begin
-      Timer.Stop;
-      Pace.Log.Trace (Obj);
+      Timer.Stop (Obj);
    end Input;
 
    procedure Input (Obj : in Speeder_Start) is
    begin
-      Speeder.Start;
-      Pace.Log.Trace (Obj);
+      Speeder.Start (Obj);
    end Input;
 
    procedure Input (Obj : in Speeder_Stop) is
    begin
-      Speeder.Stop;
-      Pace.Log.Trace (Obj);
+      Speeder.Stop (Obj);
    end Input;
-
-   pragma Warnings (On, "formal parameter ""Obj"" is not referenced");
 
 end Arrival;

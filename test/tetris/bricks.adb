@@ -14,16 +14,13 @@ package body Bricks is
 
    task Move is            -- User moves bricks according to key pressed
       pragma Priority(5); 
-      entry Start; 
-      entry Put (X     : in     Wall.Width; 
-                 Y     : in     Wall.Height; 
-                 Brick : in     Wall.Brick_Type; 
-                 Done  :    out Boolean); 
-      entry Right; 
-      entry Left; 
-      entry Rotation; 
-      entry Drop (Ok : out Boolean); 
-      entry Stop; 
+      entry Start    (Obj : in     Move_Start);
+      entry Put      (Obj : in out Move_Put);
+      entry Right    (Obj : in     Move_Right);
+      entry Left     (Obj : in     Move_Left);
+      entry Rotation (Obj : in     Move_Rotation);
+      entry Drop     (Obj : in out Move_Drop);
+      entry Stop     (Obj : in     Move_Stop);
    end Move; 
 
    task body Move is 
@@ -50,30 +47,30 @@ package body Bricks is
       Pace.Log.Agent_Id (Id);
       Outer : loop
          Text_IO.Put_Line("Move");
-         accept Start;
+         accept Start (Obj : in Move_Start) do
+            Pace.Log.Trace (Obj);
+         end Start;
          Finished_Flag := False; 
          Middle : loop
             Exit_Flag := False; 
-            accept Put (X     : in     Wall.Width; 
-                        Y     : in     Wall.Height; 
-                        Brick : in     Wall.Brick_Type; 
-                        Done  :    out Boolean) do
-               if Wall.Examine(Brick, X, Y) then 
-                  Done := False; 
+            accept Put (Obj : in out Move_Put) do
+               if Wall.Examine(Obj.Brick, Obj.X, Obj.Y) then 
+                  Obj.Done := False; 
                else 
-                  Done := True; 
+                  Obj.Done := True; 
                   Finished_Flag := True; 
                   Screen.MoveCursor((Column => 10, Row => 12));
                   Text_IO.Put_Line ("Try Again [Y/N] ?");
                end if; 
-               Move.X := X; 
-               Move.Y := Y; 
-               Move.Brick := Brick; 
+               X     := Obj.X; 
+               Y     := Obj.Y; 
+               Brick := Obj.Brick; 
+               Pace.Log.Trace (Obj);
             end Put; 
             Wall.Put(Brick, X, Y); 
             Inner : loop
                select
-                  accept Right do
+                  accept Right (Obj : in Move_Right) do
                      if X < Wall.Width'Last then 
                         NX := X + 1; 
                         if Wall.Examine(Brick, NX, Y) then 
@@ -82,9 +79,10 @@ package body Bricks is
                            Wall.Put(Brick, X, Y); 
                         end if; 
                      end if; 
+                     Pace.Log.Trace (Obj);
                   end Right; 
                or 
-                  accept Left do
+                  accept Left (Obj : in Move_Left) do
                      if Wall.Width'First < X then 
                         NX := X - 1; 
                         if Wall.Examine(Brick, NX, Y) then 
@@ -93,38 +91,44 @@ package body Bricks is
                            Wall.Put(Brick, X, Y); 
                         end if; 
                      end if; 
+                     Pace.Log.Trace (Obj);
                   end Left; 
                or 
-                  accept Rotation do
+                  accept Rotation (Obj : in Move_Rotation) do
                      Rotate(Brick, New_Brick); 
                      if Wall.Examine(New_Brick, X, Y) then 
                         Wall.Erase(Brick, X, Y); 
                         Brick := New_Brick; 
                         Wall.Put(Brick, X, Y); 
                      end if; 
+                     Pace.Log.Trace (Obj);
                   end Rotation; 
                or 
-                  accept Drop (Ok : out Boolean) do
+                  accept Drop (Obj : in out Move_Drop) do
                      NY := Y + 1; 
                      if Wall.Examine(Brick, X, NY) then 
                         Wall.Erase(Brick, X, Y); 
                         Y := NY; 
                         Wall.Put(Brick, X, Y); 
-                        Ok := True; 
+                        Obj.Ok := True; 
                      else 
                         Wall.Place(Brick, X, Y); 
-                        Ok := False; 
+                        Obj.Ok := False; 
                         Exit_Flag := True; 
                      end if; 
+                     Pace.Log.Trace (Obj);
                   end Drop; 
                or 
-                  accept Stop; 
+                  accept Stop (Obj : in Move_Stop) do
+                     Pace.Log.Trace (Obj);
+                  end Stop;
                   exit Middle; 
                end select; 
                if Exit_Flag then
                   select
-                     accept Drop (Ok : out Boolean) do
-                        Ok := False;
+                     accept Drop (Obj : in out Move_Drop) do
+                        Obj.Ok := False;
+                        Pace.Log.Trace (Obj);
                      end Drop;
                   or
                      delay 1.0;
@@ -138,8 +142,6 @@ package body Bricks is
       when others => Text_IO.Put_Line("Move error");
    end Move; 
 
-   pragma Warnings (Off, "formal parameter ""Obj"" is not referenced");
-
    procedure Output (Obj : out Move_Finished) is
    begin
       Obj.Result := Finished_Flag;
@@ -148,62 +150,53 @@ package body Bricks is
 
    procedure Input (Obj : in Move_Start) is
    begin
-      Move.Start;
-      Pace.Log.Trace (Obj);
+      Move.Start (Obj);
    end Input;
 
    procedure Inout (Obj : in out Move_Put) is
    begin
-      Move.Put (Obj.X, Obj.Y, Obj.Brick, Obj.Done);
-      Pace.Log.Trace (Obj);
+      Move.Put (Obj);
    end Inout;
 
    procedure Input (Obj : in Move_Right) is
    begin
       select
-         Move.Right;
+         Move.Right (Obj);
       else
          null;
       end select;
-      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Move_Left) is
    begin
       select
-         Move.Left;
+         Move.Left (Obj);
       else
          null;
       end select;
-      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Input (Obj : in Move_Rotation) is
    begin
       select
-         Move.Rotation;
+         Move.Rotation (Obj);
       else
          null;
       end select;
-      Pace.Log.Trace (Obj);
    end Input;
 
    procedure Inout (Obj : in out Move_Drop) is
    begin
       select
-         Move.Drop (Obj.Ok);
+         Move.Drop (Obj);
       else
          Obj.Ok := True;   -- task busy; caller retries
       end select;
-      Pace.Log.Trace (Obj);
    end Inout;
 
    procedure Input (Obj : in Move_Stop) is
    begin
-      Move.Stop;
-      Pace.Log.Trace (Obj);
+      Move.Stop (Obj);
    end Input;
-
-   pragma Warnings (On, "formal parameter ""Obj"" is not referenced");
 
 end Bricks; 
