@@ -51,11 +51,21 @@ function obj(s) {
 
 # creates a transition arc (edge) according to notation
 function dot(from, to, color, weight) {
-  nf_to = split (obj(to), dest, ".")
-  if (nf_to == 2)
-     edge [edges++] = "\"" obj(from) "\" -> \"" dest[1] "\" [label=\"" counter ":" dest[2] "\", color=" color ", style=\"setlinewidth(" weight ")\"]"
-  else
-     edge [edges++] = "\"" obj(from) "\" -> \"" dest[1] "." dest[2] "\" [label=\"" counter ":" dest[3] "\", color=" color ", style=\"setlinewidth(" weight ")\"]"
+  nf_to = split(obj(to), dest, ".")
+  if (nf_to == 1) {
+     # single-package message: "pkg:msg\npart" -> node=pkg, label=msg\npart
+     n = split(dest[1], parts, ":")
+     node = (n >= 2) ? parts[1] : dest[1]
+     lbl  = (n >= 2) ? parts[2] : dest[1]
+     edge[edges++] = "\"" obj(from) "\" -> \"" node "\" [label=\"" counter ":" lbl "\", color=" color ", style=\"setlinewidth(" weight ")\"]"
+     dest_node[node] = node
+  } else if (nf_to == 2) {
+     edge[edges++] = "\"" obj(from) "\" -> \"" dest[1] "\" [label=\"" counter ":" dest[2] "\", color=" color ", style=\"setlinewidth(" weight ")\"]"
+     dest_node[dest[1]] = dest[1]
+  } else {
+     edge[edges++] = "\"" obj(from) "\" -> \"" dest[1] "." dest[2] "\" [label=\"" counter ":" dest[3] "\", color=" color ", style=\"setlinewidth(" weight ")\"]"
+     dest_node[dest[1] "." dest[2]] = dest[1] "." dest[2]
+  }
 }
 
 $4 == ">>" { dot($3, $5, "black", 3) }
@@ -63,7 +73,7 @@ $4 == "->" { dot($3, $5, "red",   1) }
 $4 == "=>" { dot($3, $5, "blue",  2) }
 $4 == "<>" { dot($3, $5, "green", 4) }
 
-# Make sure every active object is registered
+# Make sure every active object (sender) is registered
 { 
   task[$3] = obj($3)
   counter++
@@ -72,6 +82,9 @@ $4 == "<>" { dot($3, $5, "green", 4) }
 END {
   for (i in task) {
     print "node [shape=parallelogram]; \"" task[i] "\";"
+  }
+  for (i in dest_node) {
+    print "node [shape=parallelogram]; \"" dest_node[i] "\";"
   }
   print "node [shape=ellipse];"
   for (i=0; i<edges; i++) {
