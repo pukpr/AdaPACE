@@ -4,28 +4,34 @@
 --arrival.ads
 --::::::::::
 with Pace;
-package Arrival is         
+package Arrival is
    pragma Elaborate_Body;
 
-   type Manager_Tick is new Pace.Msg with null record;
-   procedure Input (Obj : in Manager_Tick);
+   package Manager is
+      type Tick  is new Pace.Msg with null record;
+      procedure Input (Obj : in Tick);
 
-   type Manager_Start is new Pace.Msg with null record;
-   procedure Input (Obj : in Manager_Start);
+      type Start is new Pace.Msg with null record;
+      procedure Input (Obj : in Start);
 
-   type Manager_Stop is new Pace.Msg with null record;
-   procedure Input (Obj : in Manager_Stop);
+      type Stop  is new Pace.Msg with null record;
+      procedure Input (Obj : in Stop);
+   end Manager;
 
-   type Timer_Start is new Pace.Msg with null record;
-   procedure Input (Obj : in Timer_Start);
+   package Timer is
+      type Start is new Pace.Msg with null record;
+      procedure Input (Obj : in Start);
 
-   type Timer_Stop is new Pace.Msg with null record;
-   procedure Input (Obj : in Timer_Stop);
+      type Stop  is new Pace.Msg with null record;
+      procedure Input (Obj : in Stop);
+   end Timer;
 
-   type Speeder_Start is new Pace.Msg with null record;
-   procedure Input (Obj : in Speeder_Start);
+   package Speeder is
+      type Start is new Pace.Msg with null record;
+      procedure Input (Obj : in Start);
 
-   type Speeder_Stop is new Pace.Msg with null record;
-   procedure Input (Obj : in Speeder_Stop);
+      type Stop  is new Pace.Msg with null record;
+      procedure Input (Obj : in Stop);
+   end Speeder;
 
-end Arrival; 
+end Arrival;

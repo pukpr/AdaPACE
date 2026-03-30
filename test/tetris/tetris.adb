@@ -27,9 +27,9 @@ begin
       Text_IO.Put_Line( "2=drop 4=left 5=spin 6=right");
 
       Pace.Dispatching.Input (Bricks.Move_Start'(Pace.Msg with null record));
-      Pace.Dispatching.Input (Arrival.Manager_Start'(Pace.Msg with null record));
-      Pace.Dispatching.Input (Arrival.Timer_Start'(Pace.Msg with null record));
-      Pace.Dispatching.Input (Arrival.Speeder_Start'(Pace.Msg with null record));
+      Pace.Dispatching.Input (Arrival.Manager.Start'(Pace.Msg with null record));
+      Pace.Dispatching.Input (Arrival.Timer.Start'(Pace.Msg with null record));
+      Pace.Dispatching.Input (Arrival.Speeder.Start'(Pace.Msg with null record));
 
       Outer : loop
          loop
@@ -57,10 +57,10 @@ begin
          end case;
       end loop Outer; 
 
-      Pace.Dispatching.Input (Arrival.Speeder_Stop'(Pace.Msg with null record));
-      Pace.Dispatching.Input (Arrival.Timer_Stop'(Pace.Msg with null record));
+      Pace.Dispatching.Input (Arrival.Speeder.Stop'(Pace.Msg with null record));
+      Pace.Dispatching.Input (Arrival.Timer.Stop'(Pace.Msg with null record));
       Pace.Dispatching.Input (Bricks.Move_Stop'(Pace.Msg with null record));
-      Pace.Dispatching.Input (Arrival.Manager_Stop'(Pace.Msg with null record));
+      Pace.Dispatching.Input (Arrival.Manager.Stop'(Pace.Msg with null record));
 
       exit when Ch /= 'Y' and Ch /= 'y';
 
