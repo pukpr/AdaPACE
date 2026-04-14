@@ -8,6 +8,7 @@ Design documents, architecture guides, and reference material for AdaPACE.
 |---|---|
 | `architecture.md` | High-level system architecture and design decisions |
 | `comms-protocol.md` | IPC command-pattern protocol specification |
+| `earth-science-visualization.md` | Draft note on using AdaPACE visualization and knowledgebase examples for Earth-science modeling |
 | `getting-started.md` | Step-by-step guide for new contributors |
 | `api/` | Per-package API reference (generated from `src/`) |
 
